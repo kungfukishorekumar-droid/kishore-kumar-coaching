@@ -1,0 +1,164 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --radius: 0.9rem;
+    --background: 240 6% 4%;
+    --foreground: 40 30% 96%;
+  }
+
+  * {
+    @apply border-white/10;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-ink text-foreground font-sans antialiased;
+    color: #efece4;
+    overflow-x: hidden;
+    background-color: #08080a;
+    /* deep navy → charcoal → black, low-light cinematic base */
+    background-image:
+      radial-gradient(ellipse 90% 50% at 50% -8%, rgba(13, 20, 42, 0.55), transparent 60%),
+      radial-gradient(ellipse 70% 40% at 100% 100%, rgba(11, 16, 34, 0.35), transparent 55%);
+    background-attachment: fixed;
+  }
+
+  ::selection {
+    background: rgba(224, 169, 60, 0.3);
+    color: #fff;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #0a0a0b;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #a8741d, #7e5614);
+    border-radius: 99px;
+  }
+}
+
+@layer components {
+  /* Gold gradient text */
+  .text-gradient-gold {
+    @apply bg-gold-text bg-clip-text text-transparent;
+  }
+  .text-gradient-electric {
+    background: linear-gradient(180deg, #9dbef5 0%, #3b82f6 72%, #2456c8 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  /* subtle silver / metallic finish */
+  .text-gradient-silver {
+    @apply bg-silver-text bg-clip-text text-transparent;
+  }
+
+  /* Glassmorphism */
+  .glass {
+    background: linear-gradient(
+      160deg,
+      rgba(255, 255, 255, 0.045) 0%,
+      rgba(255, 255, 255, 0.012) 100%
+    );
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .glass-gold {
+    background: linear-gradient(
+      160deg,
+      rgba(207, 156, 58, 0.07) 0%,
+      rgba(207, 156, 58, 0.015) 100%
+    );
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(207, 156, 58, 0.16);
+  }
+
+  .glass-electric {
+    background: linear-gradient(
+      160deg,
+      rgba(59, 130, 246, 0.08) 0%,
+      rgba(59, 130, 246, 0.015) 100%
+    );
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(59, 130, 246, 0.18);
+  }
+
+  .eyebrow {
+    @apply inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.25em] text-gold-300;
+  }
+
+  .hairline-gold {
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(224, 169, 60, 0.7),
+      transparent
+    );
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  .text-pretty {
+    text-wrap: pretty;
+  }
+  /* Spotlight glow behind hero portrait */
+  .spotlight {
+    background: radial-gradient(
+      ellipse 50% 60% at 50% 40%,
+      rgba(207, 156, 58, 0.15),
+      transparent 72%
+    );
+  }
+  .spotlight-blue {
+    background: radial-gradient(
+      ellipse 50% 60% at 50% 40%,
+      rgba(59, 130, 246, 0.12),
+      transparent 72%
+    );
+  }
+
+  /* Animated shine border (21st.dev style) */
+  .shine-border {
+    position: relative;
+    border-radius: var(--radius);
+  }
+  .shine-border::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(
+      110deg,
+      transparent 25%,
+      rgba(224, 206, 156, 0.45) 42%,
+      rgba(150, 175, 220, 0.4) 58%,
+      transparent 75%
+    );
+    background-size: 200% 100%;
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    animation: shine 4s linear infinite;
+    pointer-events: none;
+  }
+}
