@@ -356,6 +356,33 @@ export const REVIEW_SOURCES: ReviewSource[] = [
   },
 ];
 
+export const WORKSHOP = {
+  title: "Warrior Mind Workshop",
+  subtitle: "1-Day Athlete Mindset Intensive",
+  /** ⚠️ PLACEHOLDER — update to real date before launch (ISO 8601, IST = +05:30) */
+  date: "2026-07-19T10:00:00+05:30",
+  durationMinutes: 90,
+  price: "₹999",
+  priceNote: "Early bird · Limited seats",
+  totalSeats: 30,
+  /** ⚠️ Update spotsLeft manually as registrations come in */
+  spotsLeft: 12,
+  mode: "Online + Chennai (Hybrid)",
+  includes: [
+    "Live 90-minute intensive session",
+    "Warrior Mind Framework workbook (PDF)",
+    "Free Athlete Focus & Confidence Checklist",
+    "30-day access to session recording",
+  ],
+  agenda: [
+    { time: "10:00 AM", topic: "The Warrior Mind Framework — Focus, Fire, Flow, Forge, Fight" },
+    { time: "10:30 AM", topic: "Practical Focus Drills & Competition Visualization" },
+    { time: "11:00 AM", topic: "Pressure Handling & Big-Match Mindset" },
+    { time: "11:30 AM", topic: "Building Your Personal Warrior Routine" },
+    { time: "12:00 PM", topic: "Live Q&A + Bonus: Free Mindset Checklist" },
+  ],
+};
+
 /** Lead-magnet form options */
 export const LEAD_FORM = {
   title: "Free Athlete Focus & Confidence Checklist",

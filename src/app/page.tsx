@@ -1,3 +1,8 @@
+// ISR: re-render this page on the server at most once per 24 hours.
+// Content stays fresh without a full rebuild — ideal for a coaching site
+// where copy changes weekly but doesn't need millisecond freshness.
+export const revalidate = 86400;
+
 import { Navbar } from "@/components/shared/Navbar";
 import { Footer } from "@/components/shared/Footer";
 import { FloatingCTA } from "@/components/shared/FloatingCTA";
@@ -14,6 +19,7 @@ import { WarriorMindMethod } from "@/components/sections/WarriorMindMethod";
 import { PageSixAuthority } from "@/components/sections/PageSixAuthority";
 import { SplineHeroBlock } from "@/components/sections/SplineHeroBlock";
 import { Programs } from "@/components/sections/Programs";
+import { WorkshopSection } from "@/components/sections/WorkshopSection";
 import { LocalSEOSection } from "@/components/sections/LocalSEOSection";
 import { Reviews } from "@/components/sections/Reviews";
 import { Institutions } from "@/components/sections/Institutions";
@@ -39,6 +45,7 @@ export default function Home() {
         {/* 3D showcase block (Spline + Spotlight) */}
         <SplineHeroBlock />
         {/* 8 */} <Programs />
+        {/* Workshop */} <WorkshopSection />
         {/* 9 */} <LocalSEOSection />
         {/* 10 */} <Reviews />
         {/* 11 */} <Institutions />

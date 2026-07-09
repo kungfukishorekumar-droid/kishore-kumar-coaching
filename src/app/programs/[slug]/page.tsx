@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { FloatingShapes, GlowRing } from "@/components/ui/floating-shapes";
 import { PROGRAMS, getProgram, whatsappLink, SITE } from "@/lib/site";
 import { SEO } from "@/lib/seo";
+import { jsonLdString } from "@/lib/utils";
 
 export function generateStaticParams() {
   return PROGRAMS.map((p) => ({ slug: p.slug }));
@@ -71,7 +72,7 @@ export default function ProgramPage({ params }: { params: { slug: string } }) {
     <div className="relative min-h-screen bg-ink text-foreground">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdString(jsonLd) }}
       />
       <Navbar />
 

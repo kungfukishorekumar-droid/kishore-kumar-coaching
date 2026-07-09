@@ -1,3 +1,5 @@
+export const revalidate = 86400;
+
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, Check } from "lucide-react";
@@ -9,6 +11,7 @@ import { BackToTop } from "@/components/shared/BackToTop";
 import { FloatingShapes } from "@/components/ui/floating-shapes";
 import { PROGRAMS } from "@/lib/site";
 import { SEO } from "@/lib/seo";
+import { jsonLdString } from "@/lib/utils";
 
 const url = `${SEO.siteUrl}/programs`;
 
@@ -56,7 +59,7 @@ export default function ProgramsIndex() {
     <div className="relative min-h-screen bg-ink text-foreground">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdString(jsonLd) }}
       />
       <Navbar />
 
