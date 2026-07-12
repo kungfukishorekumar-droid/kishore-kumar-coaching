@@ -29,6 +29,7 @@ const cspDirectives = [
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",
+  "frame-ancestors 'none'",
   // Only force HTTPS upgrades in production — on localhost this breaks resources
   ...(isProd ? ["upgrade-insecure-requests"] : []),
 ];
@@ -49,7 +50,7 @@ const nextConfig = {
 
   async headers() {
     const securityHeaders = [
-      { key: "X-Frame-Options", value: "SAMEORIGIN" },
+      { key: "X-Frame-Options", value: "DENY" },
       { key: "X-Content-Type-Options", value: "nosniff" },
       { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
       { key: "X-DNS-Prefetch-Control", value: "on" },

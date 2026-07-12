@@ -87,10 +87,17 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: false, error: "bad-json" }, { status: 400 });
   }
 
-  // Field length validation.
+  // Type + length validation. Every known field must be a string (or absent).
+  // Rejecting non-strings stops NoSQL-operator payloads (e.g. { "$gt": "" })
+  // from ever being forwarded to the Mongo-backed CRM, and prevents a crash
+  // when a non-string value hits .trim() below.
   for (const [field, max] of Object.entries(MAX_LENGTHS)) {
     const val = (data as Record<string, unknown>)[field];
-    if (typeof val === "string" && val.length > max) {
+    if (val === undefined || val === null) continue;
+    if (typeof val !== "string") {
+      return NextResponse.json({ ok: false, error: `${field}-invalid` }, { status: 422 });
+    }
+    if (val.length > max) {
       return NextResponse.json({ ok: false, error: `${field}-too-long` }, { status: 422 });
     }
   }
