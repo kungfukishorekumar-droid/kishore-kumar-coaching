@@ -7,6 +7,7 @@ import { Navbar } from "@/components/shared/Navbar";
 import { Footer } from "@/components/shared/Footer";
 import { FloatingCTA } from "@/components/shared/FloatingCTA";
 import { BackToTop } from "@/components/shared/BackToTop";
+import { AmbientBackground } from "@/components/ui/ambient-background";
 import { JsonLd } from "@/components/seo/JsonLd";
 
 import { Hero } from "@/components/sections/Hero";
@@ -32,8 +33,9 @@ export default function Home() {
   return (
     <div className="relative min-h-screen bg-ink text-foreground">
       <JsonLd />
+      <AmbientBackground />
       <Navbar />
-      <main>
+      <main id="main">
         {/* 1 */} <Hero />
         <Stats />
         {/* 2 */} <QuickAnswer />

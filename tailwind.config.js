@@ -54,8 +54,19 @@ module.exports = {
         bronze: "#8B5E2B",
       },
       fontFamily: {
-        display: ["var(--font-oswald)", "ui-sans-serif", "system-ui", "sans-serif"],
-        sans: ["var(--font-inter)", "ui-sans-serif", "system-ui", "sans-serif"],
+        display: ["var(--font-display)", "ui-sans-serif", "system-ui", "sans-serif"],
+        sans: ["var(--font-body)", "ui-sans-serif", "system-ui", "sans-serif"],
+        mono: ["var(--font-mono)", "ui-monospace", "SFMono-Regular", "monospace"],
+      },
+      // Fluid headline sizes — scale with the viewport instead of stepping at
+      // breakpoints, so there's no awkward size jump on tablet widths.
+      // Archivo sets noticeably wider than the Oswald it replaced, so these caps
+      // are deliberately lower than they'd be for a condensed face — same
+      // optical weight on the line, without the headline running long.
+      fontSize: {
+        "fluid-xl": ["clamp(1.5rem, 1.25rem + 1.3vw, 2.125rem)", { lineHeight: "1.15" }],
+        "fluid-2xl": ["clamp(1.875rem, 1.45rem + 2.1vw, 2.75rem)", { lineHeight: "1.08" }],
+        "fluid-3xl": ["clamp(2.125rem, 1.55rem + 2.9vw, 3.75rem)", { lineHeight: "1.02" }],
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -111,6 +122,21 @@ module.exports = {
           "0%": { opacity: "0", transform: "translate(-72%, -62%) scale(0.5)" },
           "100%": { opacity: "1", transform: "translate(-50%, -40%) scale(1)" },
         },
+        // Ambient background: two aurora fields drifting on opposing paths.
+        // Transform-only, so it never triggers layout.
+        "aurora-a": {
+          "0%, 100%": { transform: "translate3d(-6%, -3%, 0) scale(1)" },
+          "50%": { transform: "translate3d(6%, 4%, 0) scale(1.12)" },
+        },
+        "aurora-b": {
+          "0%, 100%": { transform: "translate3d(5%, 4%, 0) scale(1.08)" },
+          "50%": { transform: "translate3d(-5%, -4%, 0) scale(1)" },
+        },
+        // Slow vertical drift for the hairline grid.
+        "grid-drift": {
+          "0%": { transform: "translate3d(0, 0, 0)" },
+          "100%": { transform: "translate3d(0, -60px, 0)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.25s ease-out",
@@ -120,6 +146,9 @@ module.exports = {
         shimmer: "shimmer 3s linear infinite",
         marquee: "marquee 28s linear infinite",
         spotlight: "spotlight 2s ease 0.75s 1 forwards",
+        "aurora-a": "aurora-a 22s ease-in-out infinite",
+        "aurora-b": "aurora-b 28s ease-in-out infinite",
+        "grid-drift": "grid-drift 14s linear infinite",
       },
     },
   },

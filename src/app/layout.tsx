@@ -1,18 +1,39 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Oswald } from "next/font/google";
+import { Archivo, Manrope, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({
+/**
+ * Type system — three roles, each doing one job.
+ *
+ *  display (Archivo)     headlines. A grotesque that stays dense and
+ *                        authoritative at 800/900 uppercase, where Oswald's
+ *                        condensed forms started to feel like a sports poster.
+ *  body    (Manrope)     running text. Slightly geometric, a little warmer
+ *                        than the usual Inter default, and very legible small.
+ *  mono    (JetBrains)   figures only — stat counters, countdown, prices.
+ *                        Tabular by design, so digits never jitter as they tick.
+ *
+ * All three are variable fonts loaded through next/font, so they're
+ * self-hosted (no CDN request, no CSP exception) and swap without FOIT.
+ */
+const archivo = Archivo({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-inter",
+  weight: ["600", "700", "800", "900"],
+  variable: "--font-display",
   display: "swap",
 });
 
-const oswald = Oswald({
+const manrope = Manrope({
   subsets: ["latin"],
-  weight: ["500", "600", "700"],
-  variable: "--font-oswald",
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-body",
+  display: "swap",
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  weight: ["500", "700"],
+  variable: "--font-mono",
   display: "swap",
 });
 
@@ -134,8 +155,20 @@ export default function RootLayout({
 }) {
   return (
     // lang="en-IN" signals Indian English locale to search engines + screen readers
-    <html lang="en-IN" className={`dark ${inter.variable} ${oswald.variable}`}>
-      <body>{children}</body>
+    <html
+      lang="en-IN"
+      className={`dark ${archivo.variable} ${manrope.variable} ${jetbrainsMono.variable}`}
+    >
+      <body>
+        {/* Keyboard users land here first — lets them jump the navbar entirely */}
+        <a
+          href="#main"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-gold-400 focus:px-5 focus:py-3 focus:font-semibold focus:text-ink"
+        >
+          Skip to content
+        </a>
+        {children}
+      </body>
     </html>
   );
 }

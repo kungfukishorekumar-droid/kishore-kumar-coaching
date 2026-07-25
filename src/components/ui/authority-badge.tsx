@@ -1,14 +1,21 @@
-"use client";
-
-import { motion } from "framer-motion";
 import { type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 /**
- * Premium 3D motion authority badge.
- * Effects: scale-in reveal, gentle floating, soft glow pulse, hover shine sweep.
- * Use `position` (absolute classes) to float it around the hero image on desktop,
- * or drop it into a flex row (float={false}) for the mobile swipe row.
+ * Credential badge — floats around the hero portrait on desktop, or sits in the
+ * mobile swipe row when `float` is false.
+ *
+ * Deliberately CSS-only (no Framer, no "use client"). These sit above the fold
+ * next to the LCP element, and a JS-driven entrance leaves them invisible until
+ * React hydrates — or indefinitely, if the page was opened in a background tab
+ * where requestAnimationFrame is paused. As plain CSS they render with the
+ * first paint and cost nothing in the client bundle.
+ *
+ * Four layers of motion, all transform/opacity:
+ *   entrance   scale-in, staggered by `delay`
+ *   float      slow vertical drift, desynchronised per badge
+ *   glow       pulsing halo behind the pill
+ *   shine      light sweep across the face on hover
  */
 export function AuthorityBadge({
   title,
@@ -22,32 +29,28 @@ export function AuthorityBadge({
   title: string;
   icon: LucideIcon;
   position?: string;
+  /** Entrance stagger, in seconds. */
   delay?: number;
   tint?: "gold" | "electric";
   float?: boolean;
   className?: string;
 }) {
   return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.82, y: 8 }}
-      animate={{ opacity: 1, scale: 1, y: 0 }}
-      transition={{ delay, duration: 0.5, type: "spring", stiffness: 220, damping: 18 }}
-      className={cn("group relative", position, className)}
+    <div
+      className={cn("anim-scale group relative", position, className)}
+      style={{ "--d": `${delay}s` } as React.CSSProperties}
     >
-      <motion.div
-        animate={float ? { y: [0, -8, 0] } : undefined}
-        transition={
-          float
-            ? { duration: 5.5 + delay * 2, repeat: Infinity, ease: "easeInOut" }
-            : undefined
-        }
-        className="relative"
+      <div
+        className={cn("relative", float && "badge-float")}
+        // Varying the period per badge stops them bobbing in unison, which
+        // reads as mechanical rather than ambient.
+        style={float ? ({ "--float-dur": `${5.5 + delay * 2}s` } as React.CSSProperties) : undefined}
       >
         {/* soft glow pulse behind the badge */}
         <span
-          aria-hidden
+          aria-hidden="true"
           className={cn(
-            "pointer-events-none absolute -inset-1.5 -z-10 rounded-[1.4rem] blur-lg animate-pulse-glow",
+            "pointer-events-none absolute -inset-1.5 -z-10 rounded-[1.4rem] blur-lg motion-safe:animate-pulse-glow",
             tint === "gold" ? "bg-gold-400/15" : "bg-electric-500/15"
           )}
         />
@@ -58,10 +61,10 @@ export function AuthorityBadge({
             tint === "gold" ? "glass-gold" : "glass-electric"
           )}
         >
-          {/* light sweep on hover (desktop) */}
+          {/* light sweep on hover */}
           <span
-            aria-hidden
-            className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform [transition-duration:900ms] ease-out group-hover:translate-x-full"
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform [transition-duration:900ms] ease-out group-hover:translate-x-full motion-reduce:hidden"
           />
           <Icon
             className={cn(
@@ -73,7 +76,7 @@ export function AuthorityBadge({
             {title}
           </span>
         </div>
-      </motion.div>
-    </motion.div>
+      </div>
+    </div>
   );
 }

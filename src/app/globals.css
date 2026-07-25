@@ -7,6 +7,13 @@
     --radius: 0.9rem;
     --background: 240 6% 4%;
     --foreground: 40 30% 96%;
+
+    /* Motion tokens, mirrored from src/lib/motion.ts so CSS and Framer
+       transitions share one rhythm. */
+    --ease-out: cubic-bezier(0.22, 0.61, 0.36, 1);
+    --ease-overshoot: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --dur-fast: 200ms;
+    --dur-base: 320ms;
   }
 
   * {
@@ -21,13 +28,41 @@
   body {
     @apply bg-ink text-foreground font-sans antialiased;
     color: #efece4;
-    overflow-x: hidden;
     background-color: #08080a;
-    /* deep navy → charcoal → black, low-light cinematic base */
-    background-image:
-      radial-gradient(ellipse 90% 50% at 50% -8%, rgba(13, 20, 42, 0.55), transparent 60%),
-      radial-gradient(ellipse 70% 40% at 100% 100%, rgba(11, 16, 34, 0.35), transparent 55%);
-    background-attachment: fixed;
+    overflow-x: clip;
+    /* Atmosphere is handled by <AmbientBackground />, which is position:fixed.
+       Dropping background-attachment:fixed here removes a well-known mobile
+       repaint cost on every scroll frame. */
+    text-rendering: optimizeLegibility;
+    font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+  }
+
+  /* Headlines are set tight; Archivo's default tracking is a touch loose at
+     display sizes and reads soft in uppercase. */
+  h1, h2, h3 {
+    letter-spacing: -0.02em;
+  }
+
+  /* Figures that update in place — counters, countdown, prices — get tabular
+     figures so digits never change width and shift the layout mid-tick. */
+  .tabular,
+  [data-tabular] {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum" 1;
+  }
+
+  /* One consistent focus ring for everything that isn't a Button (which
+     defines its own). Only shows for keyboard users. */
+  a:focus-visible,
+  button:focus-visible,
+  summary:focus-visible,
+  [tabindex]:focus-visible,
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible {
+    outline: 2px solid theme("colors.gold.300");
+    outline-offset: 3px;
+    border-radius: 6px;
   }
 
   ::selection {
@@ -45,9 +80,96 @@
     background: linear-gradient(180deg, #a8741d, #7e5614);
     border-radius: 99px;
   }
+  ::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #c8902a, #a8741d);
+  }
+}
+
+/* ── Reduced motion ─────────────────────────────────────────────────────
+   A global backstop. Components already gate their own motion via Tailwind's
+   motion-safe/motion-reduce variants and Framer's useReducedMotion; this
+   catches anything that slips through — including third-party CSS — so a
+   visitor who asks for stillness actually gets it.
+   Durations are near-zero rather than 0 so transitionend still fires and no
+   state machine waiting on it can stall.                                   */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 @layer components {
+  /* ── Hero entrance ───────────────────────────────────────────────────
+     The hero is the LCP element, so its entrance is CSS rather than JS.
+     Framer's initial/animate would leave the headline at opacity:0 until
+     React hydrates — on a slow connection that's the most important text on
+     the page waiting on a bundle, and in a background tab (where rAF is
+     paused) it never arrives at all. CSS starts as soon as the stylesheet
+     parses and is unaffected by hydration.
+
+     Stagger via `style="--d: 120ms"` on each element.
+     `both` fill keeps the from-state before the delay elapses; the global
+     reduced-motion rule collapses the duration so it lands visible at once. */
+  .anim-rise,
+  .anim-scale {
+    animation-duration: 700ms;
+    animation-timing-function: var(--ease-out);
+    animation-delay: var(--d, 0ms);
+    animation-fill-mode: both;
+  }
+  .anim-rise {
+    animation-name: rise-in;
+  }
+  .anim-scale {
+    animation-name: scale-in;
+  }
+
+  @keyframes rise-in {
+    from {
+      opacity: 0;
+      transform: translate3d(0, 26px, 0);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes scale-in {
+    from {
+      opacity: 0;
+      transform: scale(0.94);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  /* Ambient drift for the hero credential badges. Period is set per badge via
+     --float-dur so they don't bob in lockstep. */
+  .badge-float {
+    animation: badge-float var(--float-dur, 6s) ease-in-out infinite;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .badge-float {
+      animation: none;
+    }
+  }
+  @keyframes badge-float {
+    0%,
+    100% {
+      transform: translate3d(0, 0, 0);
+    }
+    50% {
+      transform: translate3d(0, -8px, 0);
+    }
+  }
+
   /* Gold gradient text */
   .text-gradient-gold {
     @apply bg-gold-text bg-clip-text text-transparent;
@@ -58,7 +180,6 @@
     background-clip: text;
     color: transparent;
   }
-  /* subtle silver / metallic finish */
   .text-gradient-silver {
     @apply bg-silver-text bg-clip-text text-transparent;
   }
@@ -97,6 +218,19 @@
     border: 1px solid rgba(59, 130, 246, 0.18);
   }
 
+  /* Card that lifts toward the pointer. Paired with .glass on most surfaces. */
+  .card-interactive {
+    transition:
+      transform var(--dur-base) var(--ease-out),
+      border-color var(--dur-base) var(--ease-out),
+      box-shadow var(--dur-base) var(--ease-out);
+  }
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .card-interactive:hover {
+      transform: translateY(-4px);
+    }
+  }
+
   .eyebrow {
     @apply inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.25em] text-gold-300;
   }
@@ -109,6 +243,27 @@
       transparent
     );
   }
+
+  /* Underline that draws in from the left — for text links in prose. */
+  .link-underline {
+    position: relative;
+  }
+  .link-underline::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -2px;
+    height: 1px;
+    width: 100%;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--dur-base) var(--ease-out);
+  }
+  .link-underline:hover::after,
+  .link-underline:focus-visible::after {
+    transform: scaleX(1);
+  }
 }
 
 @layer utilities {
@@ -118,6 +273,7 @@
   .text-pretty {
     text-wrap: pretty;
   }
+
   /* Spotlight glow behind hero portrait */
   .spotlight {
     background: radial-gradient(
@@ -134,7 +290,7 @@
     );
   }
 
-  /* Animated shine border (21st.dev style) */
+  /* Animated shine border */
   .shine-border {
     position: relative;
     border-radius: var(--radius);
@@ -160,5 +316,20 @@
     mask-composite: exclude;
     animation: shine 4s linear infinite;
     pointer-events: none;
+  }
+
+  /* Horizontal scrollers (badge rows, marquees) — hide the bar, keep the
+     scroll, and snap so items never rest half-cut. */
+  .scroll-row {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    scroll-snap-type: x proximity;
+    overscroll-behavior-x: contain;
+  }
+  .scroll-row::-webkit-scrollbar {
+    display: none;
+  }
+  .scroll-row > * {
+    scroll-snap-align: start;
   }
 }

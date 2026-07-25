@@ -1,36 +1,51 @@
 "use client";
 
-import { motion, type Variants } from "framer-motion";
+import { motion, useReducedMotion, type Variants } from "framer-motion";
 import { type ReactNode } from "react";
 import { cn } from "@/lib/utils";
+import {
+  reducedVariants,
+  revealUp,
+  popIn,
+  fadeIn,
+  staggerContainer,
+  viewportOnce,
+} from "@/lib/motion";
 
-const variants: Variants = {
-  hidden: { opacity: 0, y: 28, filter: "blur(6px)" },
-  show: {
-    opacity: 1,
-    y: 0,
-    filter: "blur(0px)",
-    transition: { duration: 0.7, ease: [0.21, 0.47, 0.32, 0.98] },
-  },
-};
+const PRESETS = { up: revealUp, pop: popIn, fade: fadeIn } as const;
 
 interface RevealProps {
   children: ReactNode;
   className?: string;
   delay?: number;
-  as?: "div" | "li" | "span";
+  /** Motion character: travel up (default), scale in, or plain fade. */
+  variant?: keyof typeof PRESETS;
+  as?: "div" | "li" | "span" | "p" | "section";
 }
 
-export function Reveal({ children, className, delay = 0, as = "div" }: RevealProps) {
+/**
+ * Scroll-triggered entrance. Honours prefers-reduced-motion — content still
+ * fades in so nothing is hidden, it just stops moving.
+ */
+export function Reveal({
+  children,
+  className,
+  delay = 0,
+  variant = "up",
+  as = "div",
+}: RevealProps) {
+  const reduce = useReducedMotion();
   const MotionTag = motion[as];
+  const variants: Variants = reduce ? reducedVariants : PRESETS[variant];
+
   return (
     <MotionTag
       className={cn(className)}
       variants={variants}
       initial="hidden"
       whileInView="show"
-      viewport={{ once: true, margin: "-80px" }}
-      transition={{ delay }}
+      viewport={viewportOnce}
+      transition={{ delay: reduce ? 0 : delay }}
     >
       {children}
     </MotionTag>
@@ -41,24 +56,28 @@ export function Reveal({ children, className, delay = 0, as = "div" }: RevealPro
 export function RevealGroup({
   children,
   className,
-  stagger = 0.12,
+  stagger = 0.045,
+  delayChildren = 0,
+  as = "div",
 }: {
   children: ReactNode;
   className?: string;
   stagger?: number;
+  delayChildren?: number;
+  as?: "div" | "ul" | "section";
 }) {
+  const reduce = useReducedMotion();
+  const MotionTag = motion[as];
+
   return (
-    <motion.div
+    <MotionTag
       className={cn(className)}
       initial="hidden"
       whileInView="show"
-      viewport={{ once: true, margin: "-80px" }}
-      variants={{
-        hidden: {},
-        show: { transition: { staggerChildren: stagger } },
-      }}
+      viewport={viewportOnce}
+      variants={staggerContainer(reduce ? 0 : stagger, reduce ? 0 : delayChildren)}
     >
       {children}
-    </motion.div>
+    </MotionTag>
   );
 }
