@@ -140,6 +140,21 @@ module.exports = {
           "0%": { transform: "translate3d(0, 0, 0)" },
           "100%": { transform: "translate3d(0, -60px, 0)" },
         },
+        // Light travelling across gold gradient text.
+        "text-sheen": {
+          "0%": { backgroundPosition: "200% center" },
+          "100%": { backgroundPosition: "-200% center" },
+        },
+        // Divider diamond.
+        "spin-slow": {
+          from: { transform: "rotate(45deg)" },
+          to: { transform: "rotate(405deg)" },
+        },
+        // Halo breathing behind key CTAs.
+        "halo-pulse": {
+          "0%, 100%": { opacity: "0.35", transform: "scale(1)" },
+          "50%": { opacity: "0.7", transform: "scale(1.06)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.25s ease-out",
@@ -152,6 +167,9 @@ module.exports = {
         "aurora-a": "aurora-a 22s ease-in-out infinite",
         "aurora-b": "aurora-b 28s ease-in-out infinite",
         "grid-drift": "grid-drift 14s linear infinite",
+        "text-sheen": "text-sheen 6s linear infinite",
+        "spin-slow": "spin-slow 18s linear infinite",
+        "halo-pulse": "halo-pulse 3.5s ease-in-out infinite",
       },
     },
   },

@@ -176,6 +176,34 @@
   .text-gradient-gold {
     @apply bg-gold-text bg-clip-text text-transparent;
   }
+
+  /* Gold text with a highlight travelling across it — for the one or two
+     headlines that should catch the eye. The gradient is oversized so there's
+     room for the sheen to move through; background-position animates, which
+     doesn't touch layout. Deliberately slow (6s) so it reads as a sheen on
+     metal rather than a blinking banner. */
+  .text-gradient-gold-sheen {
+    background-image: linear-gradient(
+      100deg,
+      #a8741d 0%,
+      #e3ce9c 18%,
+      #fff6df 28%,
+      #e3ce9c 38%,
+      #c5963a 55%,
+      #7e5614 100%
+    );
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: text-sheen 6s linear infinite;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .text-gradient-gold-sheen {
+      animation: none;
+      background-position: 40% center;
+    }
+  }
   .text-gradient-electric {
     background: linear-gradient(180deg, #9dbef5 0%, #3b82f6 72%, #2456c8 100%);
     -webkit-background-clip: text;

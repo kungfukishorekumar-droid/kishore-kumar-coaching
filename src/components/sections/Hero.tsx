@@ -15,6 +15,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { FloatingShapes, GlowRing } from "@/components/ui/floating-shapes";
 import { AuthorityBadge } from "@/components/ui/authority-badge";
+import { Sparkles } from "@/components/ui/sparkles";
 import { IMAGES, HERO, SITE, whatsappLink } from "@/lib/site";
 import { scrollToId } from "@/lib/utils";
 
@@ -71,6 +72,8 @@ export function Hero() {
           maskImage: "radial-gradient(ellipse 70% 60% at 50% 40%, black, transparent)",
         }}
       />
+      {/* Drifting motes of light over the whole hero */}
+      <Sparkles />
 
       <div className="container relative grid items-center gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-12">
         {/* IMAGE — seen first (top on mobile, right on desktop) */}
@@ -134,7 +137,7 @@ export function Hero() {
             </span>
             {HERO.headlineTop}
             <br />
-            <span className="text-gradient-gold drop-shadow-[0_1px_12px_rgba(207,156,58,0.14)]">
+            <span className="text-gradient-gold-sheen drop-shadow-[0_1px_12px_rgba(207,156,58,0.14)]">
               {HERO.headlineBottom}
             </span>
           </h1>

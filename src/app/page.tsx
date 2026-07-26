@@ -8,6 +8,8 @@ import { Footer } from "@/components/shared/Footer";
 import { FloatingCTA } from "@/components/shared/FloatingCTA";
 import { BackToTop } from "@/components/shared/BackToTop";
 import { AmbientBackground } from "@/components/ui/ambient-background";
+import { ScrollProgress } from "@/components/shared/ScrollProgress";
+import { SectionDivider } from "@/components/ui/section-divider";
 import { JsonLd } from "@/components/seo/JsonLd";
 
 import { Hero } from "@/components/sections/Hero";
@@ -34,26 +36,38 @@ export default function Home() {
     <div className="relative min-h-screen bg-ink text-foreground">
       <JsonLd />
       <AmbientBackground />
+      <ScrollProgress />
       <Navbar />
+      {/*
+        Dividers mark the chapter breaks in the scroll-told story — between the
+        problem, the method, the offer, the proof and the ask. They're placed at
+        the narrative seams rather than between every section, so they stay a
+        signal instead of decoration.
+      */}
       <main id="main">
         {/* 1 */} <Hero />
         <Stats />
         {/* 2 */} <QuickAnswer />
         {/* 3 */} <Problems />
+        <SectionDivider className="container max-w-3xl" />
         {/* 4 */} <Solution />
         {/* 5 */} <PageThreeMindset />
+        <SectionDivider className="container max-w-3xl" tint="electric" />
         {/* 6 */} <WarriorMindMethod />
         {/* 7 */} <PageSixAuthority />
-        {/* 3D showcase block (Spline + Spotlight) */}
+        {/* 3D showcase block */}
         <SplineHeroBlock />
+        <SectionDivider className="container max-w-3xl" />
         {/* 8 */} <Programs />
         {/* Workshop */} <WorkshopSection />
         {/* 9 */} <LocalSEOSection />
+        <SectionDivider className="container max-w-3xl" tint="electric" />
         {/* 10 */} <Reviews />
         {/* 11 */} <Institutions />
         {/* 12 */} <LeadForm />
         {/* 13 */} <CustomGPT />
         {/* 14 */} <FAQ />
+        <SectionDivider className="container max-w-3xl" />
         {/* 15 */} <FinalCTA />
       </main>
       <Footer />
