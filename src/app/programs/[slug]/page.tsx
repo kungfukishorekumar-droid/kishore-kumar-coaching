@@ -17,8 +17,17 @@ export function generateStaticParams() {
   return PROGRAMS.map((p) => ({ slug: p.slug }));
 }
 
-export function generateMetadata({ params }: { params: { slug: string } }): Metadata {
-  const p = getProgram(params.slug);
+/**
+ * Next 15 made route `params` a Promise, so it must be awaited. Reading
+ * `params.slug` synchronously (correct under Next 14, which this file was
+ * written for) yielded undefined, so every program page fell through to
+ * notFound() — all six 404'd while still being listed in the sitemap.
+ */
+type Params = { params: Promise<{ slug: string }> };
+
+export async function generateMetadata({ params }: Params): Promise<Metadata> {
+  const { slug } = await params;
+  const p = getProgram(slug);
   if (!p) return {};
   const url = `${SEO.siteUrl}/programs/${p.slug}`;
   return {
@@ -36,8 +45,9 @@ export function generateMetadata({ params }: { params: { slug: string } }): Meta
   };
 }
 
-export default function ProgramPage({ params }: { params: { slug: string } }) {
-  const program = getProgram(params.slug);
+export default async function ProgramPage({ params }: Params) {
+  const { slug } = await params;
+  const program = getProgram(slug);
   if (!program) notFound();
 
   const related = PROGRAMS.filter((p) => p.slug !== program.slug).slice(0, 3);

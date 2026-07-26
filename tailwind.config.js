@@ -56,17 +56,20 @@ module.exports = {
       fontFamily: {
         display: ["var(--font-display)", "ui-sans-serif", "system-ui", "sans-serif"],
         sans: ["var(--font-body)", "ui-sans-serif", "system-ui", "sans-serif"],
-        mono: ["var(--font-mono)", "ui-monospace", "SFMono-Regular", "monospace"],
       },
       // Fluid headline sizes — scale with the viewport instead of stepping at
       // breakpoints, so there's no awkward size jump on tablet widths.
-      // Archivo sets noticeably wider than the Oswald it replaced, so these caps
-      // are deliberately lower than they'd be for a condensed face — same
-      // optical weight on the line, without the headline running long.
+      // Fluid headline sizes — scale with the viewport instead of stepping at
+      // breakpoints, so there's no awkward size jump at tablet widths.
       fontSize: {
-        "fluid-xl": ["clamp(1.5rem, 1.25rem + 1.3vw, 2.125rem)", { lineHeight: "1.15" }],
-        "fluid-2xl": ["clamp(1.875rem, 1.45rem + 2.1vw, 2.75rem)", { lineHeight: "1.08" }],
-        "fluid-3xl": ["clamp(2.125rem, 1.55rem + 2.9vw, 3.75rem)", { lineHeight: "1.02" }],
+        // Bebas Neue is tall and narrow: it takes far less width per character
+        // than Archivo did, and its caps read smaller at the same px. Caps are
+        // pushed back up so headlines land with poster impact rather than
+        // looking undersized, and leading tightens because there are no
+        // descenders to clear.
+        "fluid-xl": ["clamp(1.75rem, 1.4rem + 1.8vw, 2.75rem)", { lineHeight: "1.05" }],
+        "fluid-2xl": ["clamp(2.25rem, 1.7rem + 2.8vw, 3.75rem)", { lineHeight: "0.98" }],
+        "fluid-3xl": ["clamp(2.75rem, 1.95rem + 4.1vw, 5.25rem)", { lineHeight: "0.94" }],
       },
       borderRadius: {
         lg: "var(--radius)",

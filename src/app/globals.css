@@ -37,14 +37,16 @@
     font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
   }
 
-  /* Headlines are set tight; Archivo's default tracking is a touch loose at
-     display sizes and reads soft in uppercase. */
+  /* Bebas Neue is already condensed, so the negative tracking a wider
+     grotesque wanted would jam the strokes together. A hair of positive
+     tracking opens the caps back up and keeps long headlines legible. */
   h1, h2, h3 {
-    letter-spacing: -0.02em;
+    letter-spacing: 0.005em;
   }
 
   /* Figures that update in place — counters, countdown, prices — get tabular
-     figures so digits never change width and shift the layout mid-tick. */
+     figures so digits never change width and shift the layout mid-tick.
+     Inter's tabular set covers this, which is why no mono face is loaded. */
   .tabular,
   [data-tabular] {
     font-variant-numeric: tabular-nums;
@@ -267,6 +269,18 @@
 }
 
 @layer utilities {
+  /* Bebas Neue ships a single weight (400). Roughly 60 places in the codebase
+     pair .font-display with font-bold/extrabold/semibold, and against a
+     one-weight family the browser fakes those by smearing the glyphs, which
+     looks muddy at headline sizes.
+     The doubled class selector raises specificity above Tailwind's own
+     single-class font-weight utilities, so display text is pinned to its real
+     weight without editing every call site or resorting to !important.
+     Hierarchy in display type comes from size, not weight. */
+  .font-display.font-display {
+    font-weight: 400;
+  }
+
   .text-balance {
     text-wrap: balance;
   }

@@ -1,39 +1,38 @@
 import type { Metadata, Viewport } from "next";
-import { Archivo, Manrope, JetBrains_Mono } from "next/font/google";
+import { Bebas_Neue, Inter } from "next/font/google";
 import "./globals.css";
 
 /**
- * Type system — three roles, each doing one job.
+ * Type system — Bebas Neue + Inter, matching the workshop page's stack.
  *
- *  display (Archivo)     headlines. A grotesque that stays dense and
- *                        authoritative at 800/900 uppercase, where Oswald's
- *                        condensed forms started to feel like a sports poster.
- *  body    (Manrope)     running text. Slightly geometric, a little warmer
- *                        than the usual Inter default, and very legible small.
- *  mono    (JetBrains)   figures only — stat counters, countdown, prices.
- *                        Tabular by design, so digits never jitter as they tick.
+ *  display (Bebas Neue)  headlines. A tall condensed poster face — the whole
+ *                        point of it is impact at large sizes.
+ *                        Two constraints it imposes, both handled in
+ *                        globals.css rather than across 25 files:
+ *                          • no lowercase — every glyph renders as a capital,
+ *                            so display text is inherently all-caps;
+ *                          • one weight (400) — any bold utility would make
+ *                            the browser fake it and smear the strokes, so
+ *                            .font-display is pinned to 400 and hierarchy
+ *                            comes from size instead.
+ *  body    (Inter)       running text, and figures. Inter's tabular numerals
+ *                        cover the counters and countdown, which is why no
+ *                        separate mono face is loaded.
  *
- * All three are variable fonts loaded through next/font, so they're
- * self-hosted (no CDN request, no CSP exception) and swap without FOIT.
+ * Both come through next/font, so they're self-hosted — no CDN request and no
+ * CSP exception needed — and swap without invisible text.
  */
-const archivo = Archivo({
+const bebasNeue = Bebas_Neue({
   subsets: ["latin"],
-  weight: ["600", "700", "800", "900"],
+  weight: ["400"],
   variable: "--font-display",
   display: "swap",
 });
 
-const manrope = Manrope({
+const inter = Inter({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["400", "500", "600", "700", "800"],
   variable: "--font-body",
-  display: "swap",
-});
-
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ["latin"],
-  weight: ["500", "700"],
-  variable: "--font-mono",
   display: "swap",
 });
 
@@ -157,7 +156,7 @@ export default function RootLayout({
     // lang="en-IN" signals Indian English locale to search engines + screen readers
     <html
       lang="en-IN"
-      className={`dark ${archivo.variable} ${manrope.variable} ${jetbrainsMono.variable}`}
+      className={`dark ${bebasNeue.variable} ${inter.variable}`}
     >
       <body>
         {/* Keyboard users land here first — lets them jump the navbar entirely */}
