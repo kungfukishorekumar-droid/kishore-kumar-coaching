@@ -7,8 +7,43 @@
  * (Google Business Profile, Justdial, BookMyPlayer URLs) before launch.
  */
 
+/**
+ * The site's canonical origin — the single source of truth for canonical tags,
+ * the sitemap, robots host, OG image URLs and every JSON-LD @id.
+ *
+ * Resolution order:
+ *   1. NEXT_PUBLIC_SITE_URL           — set this in Vercel once the real
+ *                                       domain is live; always wins.
+ *   2. VERCEL_PROJECT_PRODUCTION_URL  — Vercel sets this automatically to the
+ *                                       project's production domain. Chosen
+ *                                       over VERCEL_URL deliberately: the
+ *                                       latter changes per deployment, so
+ *                                       preview builds would each canonicalise
+ *                                       to their own throwaway URL. Pointing
+ *                                       previews at production is the correct
+ *                                       behaviour — preview URLs should never
+ *                                       be the indexed version.
+ *   3. the fallback below.
+ *
+ * This must never point at a domain the deploy doesn't serve: a canonical tag
+ * aimed elsewhere tells Google the real page lives at that other address, and
+ * the deployed site may not get indexed at all.
+ */
+const FALLBACK_SITE_URL = "https://kishorekumar.coach";
+
+function resolveSiteUrl(): string {
+  const explicit = process.env.NEXT_PUBLIC_SITE_URL;
+  // Vercel supplies these without a protocol (e.g. "kishore.vercel.app").
+  const vercel = process.env.VERCEL_PROJECT_PRODUCTION_URL;
+
+  const raw = explicit || (vercel ? `https://${vercel}` : FALLBACK_SITE_URL);
+
+  // Trailing slashes would produce "//sitemap.xml" style joins downstream.
+  return raw.replace(/\/+$/, "");
+}
+
 export const SEO = {
-  siteUrl: "https://kishorekumar.coach",
+  siteUrl: resolveSiteUrl(),
   brand: "Spartacus Martial Arts Chennai",
   founder: "Kishore Kumar",
   role: "Sports Psychology & Martial Arts Coach",

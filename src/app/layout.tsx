@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Bebas_Neue, Inter } from "next/font/google";
+import { SEO } from "@/lib/seo";
 import "./globals.css";
 
 /**
@@ -36,7 +37,10 @@ const inter = Inter({
   display: "swap",
 });
 
-const SITE_URL = "https://kishorekumar.coach";
+// Single source of truth (env-driven) — see resolveSiteUrl() in lib/seo.ts.
+// Previously hardcoded here, which meant a deploy on any other origin still
+// emitted canonical/OG URLs pointing at kishorekumar.coach.
+const SITE_URL = SEO.siteUrl;
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
