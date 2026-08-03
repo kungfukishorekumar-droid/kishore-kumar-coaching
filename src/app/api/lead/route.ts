@@ -122,10 +122,68 @@ export async function POST(req: Request) {
     submittedAt: new Date().toISOString(),
   };
 
+  // ── WarriorCRM (Supabase) ────────────────────────────────────────────────
+  // Preferred path: post straight into the CRM's `public_leads` queue, which
+  // the CRM drains on open. Shapes the payload to the CRM's field names so it
+  // lands as a complete lead rather than raw form data.
+  const sbUrl = process.env.WARRIORCRM_SUPABASE_URL;
+  const sbKey = process.env.WARRIORCRM_SUPABASE_KEY;
+
+  if (sbUrl && sbKey) {
+    if (!isHttpsUrl(sbUrl)) {
+      console.error("[lead] WARRIORCRM_SUPABASE_URL must be https — aborting forward");
+      return NextResponse.json({ ok: true, forwarded: false });
+    }
+    // "Athlete / Student" | "Parent" | "Coach / Institution" → CRM role enum
+    const roleMap: Record<string, string> = {
+      "athlete / student": "Athlete",
+      parent: "Parent",
+      "coach / institution": "Coach",
+    };
+    const crmLead = {
+      name: lead.name,
+      phone: lead.phone,
+      whatsapp: lead.phone,
+      email: lead.email,
+      athleteAge: lead.age,
+      sport: lead.sport,
+      leadType: roleMap[lead.who.toLowerCase()] || "Athlete",
+      mainProblem: lead.challenge,
+      goal: lead.goal,
+      source: "Coach Website",
+      campaign: lead.magnet,
+      landingPage: req.headers.get("referer") || "",
+      dateAdded: lead.submittedAt.slice(0, 10),
+      stage: "New Lead",
+      status: "Active",
+    };
+    try {
+      const res = await fetch(`${sbUrl}/rest/v1/public_leads`, {
+        method: "POST",
+        headers: {
+          apikey: sbKey,
+          Authorization: `Bearer ${sbKey}`,
+          "Content-Type": "application/json",
+          Prefer: "return=minimal",
+        },
+        body: JSON.stringify({ payload: crmLead }),
+      });
+      if (!res.ok) {
+        console.error("[lead] WarriorCRM responded", res.status);
+        return NextResponse.json({ ok: true, forwarded: false });
+      }
+      return NextResponse.json({ ok: true, forwarded: true });
+    } catch (err) {
+      console.error("[lead] WarriorCRM forwarding error:", err instanceof Error ? err.message : "unknown");
+      return NextResponse.json({ ok: true, forwarded: false });
+    }
+  }
+
+  // ── Generic webhook fallback (unchanged) ─────────────────────────────────
   const webhook = process.env.CRM_WEBHOOK_URL;
 
   if (!webhook) {
-    console.warn("[lead] CRM_WEBHOOK_URL not set; lead not forwarded (fields: name, phone/email)");
+    console.warn("[lead] no CRM destination configured; lead not forwarded (fields: name, phone/email)");
     return NextResponse.json({ ok: true, forwarded: false });
   }
 
