@@ -248,6 +248,69 @@
     border: 1px solid rgba(59, 130, 246, 0.18);
   }
 
+  /* ── Pointer-tracked glow surface ────────────────────────────────────
+     Paired with <GlowCard>, which writes --mx/--my. Two layers:
+       ::before  a soft radial wash inside the card
+       ::after   the same radial, masked to the 1px border so the edge
+                 brightens where the pointer is
+     Both are pointer-events-none and fade on opacity, so nothing here can
+     intercept a click or trigger layout. Touch devices never get the
+     listener, so the glow simply stays parked off-surface.                */
+  .glow-card {
+    position: relative;
+    isolation: isolate;
+    --mx: -100%;
+    --my: -100%;
+    --glow: rgba(224, 169, 60, 0.16);
+    --glow-edge: rgba(224, 169, 60, 0.55);
+  }
+  .glow-card--electric {
+    --glow: rgba(59, 130, 246, 0.16);
+    --glow-edge: rgba(93, 156, 255, 0.55);
+  }
+  .glow-card::before,
+  .glow-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity var(--dur-base) var(--ease-out);
+  }
+  /* Painted above the children, not behind: these cards use .glass, which is
+     opaque enough to swallow a glow sitting underneath it. Light falling on
+     the surface is also the truthful model. Both layers stay
+     pointer-events-none, so nothing below becomes unclickable. */
+  .glow-card::before {
+    z-index: 1;
+    background: radial-gradient(
+      260px circle at var(--mx) var(--my),
+      var(--glow),
+      transparent 70%
+    );
+  }
+  .glow-card::after {
+    z-index: 2;
+    padding: 1px;
+    background: radial-gradient(
+      220px circle at var(--mx) var(--my),
+      var(--glow-edge),
+      transparent 65%
+    );
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+  }
+  @media (hover: hover) {
+    .glow-card:hover::before,
+    .glow-card:hover::after {
+      opacity: 1;
+    }
+  }
+
   /* Card that lifts toward the pointer. Paired with .glass on most surfaces. */
   .card-interactive {
     transition:
@@ -258,6 +321,51 @@
   @media (hover: hover) and (prefers-reduced-motion: no-preference) {
     .card-interactive:hover {
       transform: translateY(-4px);
+    }
+  }
+
+  /* ── Button enrichment ───────────────────────────────────────────────
+     Kept in CSS rather than per-button JS: there are ~64 buttons on the home
+     page, and none of this needs a listener.                              */
+
+  /* Oversized gradient that slides on hover — reads as light moving across
+     brushed metal rather than a flat colour swap. */
+  .btn-gradient-shift {
+    background-size: 200% auto;
+    background-position: left center;
+    transition: background-position 600ms var(--ease-out);
+  }
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .btn-gradient-shift:hover {
+      background-position: right center;
+    }
+  }
+
+  /* Breathing halo behind the single most important CTA. Deliberately opt-in
+     (not on the primary variant by default) — if every button pulses, none of
+     them is the primary action any more. */
+  .btn-halo {
+    position: relative;
+  }
+  .btn-halo::after {
+    content: "";
+    position: absolute;
+    inset: -5px;
+    z-index: -1;
+    border-radius: inherit;
+    background: radial-gradient(
+      closest-side,
+      rgba(224, 169, 60, 0.55),
+      transparent 78%
+    );
+    filter: blur(10px);
+    animation: halo-pulse 3.5s ease-in-out infinite;
+    pointer-events: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .btn-halo::after {
+      animation: none;
+      opacity: 0.4;
     }
   }
 

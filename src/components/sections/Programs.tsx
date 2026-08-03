@@ -62,11 +62,23 @@ export function Programs() {
                   whileHover={{ y: -6 }}
                   transition={{ type: "spring", stiffness: 300, damping: 22 }}
                   className={cn(
-                    "relative flex h-full flex-col overflow-hidden rounded-3xl p-7",
+                    "glow-card relative flex h-full flex-col overflow-hidden rounded-3xl p-7",
                     p.featured
                       ? "glass-gold shadow-glow ring-1 ring-gold-400/40 shine-border"
                       : "glass"
                   )}
+                  // Pointer position for the glow — see .glow-card in globals.css.
+                  // Written straight to CSS vars so React never re-renders on move.
+                  onPointerMove={(e) => {
+                    const el = e.currentTarget;
+                    const r = el.getBoundingClientRect();
+                    el.style.setProperty("--mx", `${e.clientX - r.left}px`);
+                    el.style.setProperty("--my", `${e.clientY - r.top}px`);
+                  }}
+                  onPointerLeave={(e) => {
+                    e.currentTarget.style.setProperty("--mx", "-100%");
+                    e.currentTarget.style.setProperty("--my", "-100%");
+                  }}
                 >
                   {p.featured && (
                     <>

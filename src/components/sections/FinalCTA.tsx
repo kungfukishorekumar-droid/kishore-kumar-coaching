@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { ArrowRight, MessageCircle, Bot, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { GlowRing } from "@/components/ui/floating-shapes";
+import { Sparkles } from "@/components/ui/sparkles";
 import { SITE, whatsappLink } from "@/lib/site";
 import { scrollToId } from "@/lib/utils";
 
@@ -15,6 +16,8 @@ export function FinalCTA() {
           <div className="absolute inset-0 bg-gradient-to-br from-navy-800/70 via-ink to-ink" />
           <GlowRing className="left-1/2 top-1/2 size-[520px] max-w-[120%] -translate-x-1/2 -translate-y-1/2" />
           <div className="pointer-events-none absolute left-1/2 top-0 size-96 -translate-x-1/2 rounded-full bg-gold-400/20 blur-3xl" />
+          {/* Glitter inside the closing panel — the page's last beat */}
+          <Sparkles density={0.00028} maxParticles={110} />
 
           <motion.div
             initial={{ opacity: 0, y: 24 }}
@@ -40,7 +43,9 @@ export function FinalCTA() {
             </p>
 
             <div className="mt-9 flex flex-col flex-wrap items-stretch justify-center gap-3 sm:flex-row sm:items-center">
-              <Button asChild size="lg">
+              {/* The one action the whole page builds toward — the only button
+                  on the site that gets the pulsing halo. */}
+              <Button asChild size="lg" className="btn-halo">
                 <a
                   href={whatsappLink("Hi Kishore, I'd like to book a free call.")}
                   target="_blank"

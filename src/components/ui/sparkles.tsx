@@ -36,8 +36,8 @@ type Particle = {
 
 export function Sparkles({
   className,
-  density = 0.00012,
-  maxParticles = 90,
+  density = 0.0002,
+  maxParticles = 150,
 }: {
   className?: string;
   /** Particles per px² of canvas area. */
@@ -80,7 +80,9 @@ export function Sparkles({
       particles = Array.from({ length: target }, () => ({
         x: Math.random() * rect.width,
         y: Math.random() * rect.height,
-        r: Math.random() * 1.5 + 0.4,
+        // A few noticeably larger motes among many fine ones — a uniform size
+        // reads as noise, a mixed one reads as depth.
+        r: Math.random() < 0.14 ? Math.random() * 1.6 + 1.7 : Math.random() * 1.2 + 0.4,
         phase: Math.random() * Math.PI * 2,
         speed: Math.random() * 0.02 + 0.006,
         drift: Math.random() * 0.12 + 0.03,
@@ -138,11 +140,30 @@ export function Sparkles({
       cancelAnimationFrame(raf);
     };
 
-    if (!build()) return;
-    draw(); // paint once so something is there even before/without motion
+    let built = build();
+    if (built) draw(); // paint once, so there's texture even without motion
+
+    /**
+     * ResizeObserver rather than a window resize listener, because it also
+     * covers the initial layout. A canvas below the fold frequently has no
+     * box yet when the effect runs — build() bails, and without this it would
+     * stay at the default 300x150 and never draw anything at all.
+     */
+    let resizeTimer: ReturnType<typeof setTimeout>;
+    const ro = new ResizeObserver(() => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        if (build()) {
+          built = true;
+          draw();
+        }
+      }, 120);
+    });
+    ro.observe(canvas);
 
     const io = new IntersectionObserver(
-      ([entry]) => (entry.isIntersecting && !document.hidden ? start() : stop()),
+      ([entry]) =>
+        entry.isIntersecting && !document.hidden && built ? start() : stop(),
       { rootMargin: "120px" }
     );
     io.observe(canvas);
@@ -150,20 +171,11 @@ export function Sparkles({
     const onVisibility = () => (document.hidden ? stop() : undefined);
     document.addEventListener("visibilitychange", onVisibility);
 
-    let resizeTimer: ReturnType<typeof setTimeout>;
-    const onResize = () => {
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(() => {
-        if (build()) draw();
-      }, 150);
-    };
-    window.addEventListener("resize", onResize);
-
     return () => {
       stop();
       io.disconnect();
+      ro.disconnect();
       document.removeEventListener("visibilitychange", onVisibility);
-      window.removeEventListener("resize", onResize);
       clearTimeout(resizeTimer);
     };
   }, [density, maxParticles]);

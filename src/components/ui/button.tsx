@@ -47,9 +47,9 @@ const buttonVariants = cva(
     variants: {
       variant: {
         primary:
-          "bg-gold-gradient text-ink font-bold shadow-glow hover:shadow-glow-lg",
+          "btn-gradient-shift bg-gold-gradient text-ink font-bold shadow-glow hover:shadow-glow-lg",
         electric:
-          "bg-electric-gradient text-white font-bold shadow-glow-blue hover:shadow-glow-blue-lg",
+          "btn-gradient-shift bg-electric-gradient text-white font-bold shadow-glow-blue hover:shadow-glow-blue-lg",
         outline:
           "border border-gold-400/40 bg-white/5 text-gold-100 backdrop-blur hover:border-gold-400/70 hover:bg-gold-400/10",
         ghost: "text-foreground/80 hover:bg-white/5 hover:text-gold-200",

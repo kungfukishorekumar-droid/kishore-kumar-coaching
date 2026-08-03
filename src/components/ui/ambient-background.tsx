@@ -57,7 +57,23 @@ export function AmbientBackground() {
         />
       </div>
 
-      {/* 4 — film grain (inline SVG turbulence, no network request) */}
+      {/* 4 — light rays raking down from the top-left, like a window in a
+             dark training hall. Skewed repeating-linear-gradient, masked so
+             they fade before they reach the content. Static: rays that sweep
+             read as a loading shimmer, which is the wrong signal. */}
+      <div
+        className="absolute inset-x-0 top-0 h-[70vh] opacity-[0.25]"
+        style={{
+          backgroundImage:
+            "repeating-linear-gradient(100deg, transparent 0px, transparent 34px, rgba(230,190,110,0.055) 34px, rgba(230,190,110,0.055) 36px, transparent 36px, transparent 90px)",
+          maskImage:
+            "radial-gradient(ellipse 60% 100% at 22% 0%, #000 5%, transparent 72%)",
+          WebkitMaskImage:
+            "radial-gradient(ellipse 60% 100% at 22% 0%, #000 5%, transparent 72%)",
+        }}
+      />
+
+      {/* 5 — film grain (inline SVG turbulence, no network request) */}
       <div
         className="absolute inset-0 opacity-[0.14] mix-blend-overlay"
         style={{
