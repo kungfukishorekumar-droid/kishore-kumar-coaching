@@ -1,0 +1,43 @@
+# Kishore Kumar — static site on Hostinger (Apache / LiteSpeed)
+#
+# This replaces the security headers that Next's next.config used to send.
+# A static export can't set headers from code, so they live here and Hostinger
+# applies them to every response. Upload this file to public_html alongside the
+# exported site (it ships from public/, so `out/` already contains it).
+
+# ── Security headers ─────────────────────────────────────────────────────────
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "DENY"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(self), payment=(), usb=(), serial=()"
+  Header always set Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"
+
+  # CSP. No 'unsafe-eval' (that was dev-only). connect-src allows the Supabase
+  # host the lead form posts to — REPLACE the placeholder with your real
+  # project ref, or the form's request will be blocked by the browser.
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' fonts.googleapis.com; img-src 'self' data: blob: https://i.ytimg.com; font-src 'self' fonts.gstatic.com data:; connect-src 'self' https://YOUR-PROJECT.supabase.co; frame-src https://www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
+</IfModule>
+
+# ── Force HTTPS ──────────────────────────────────────────────────────────────
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteCond %{HTTPS} off
+  RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+</IfModule>
+
+# ── Caching ──────────────────────────────────────────────────────────────────
+# Next fingerprints hashed assets, so they can cache forever; HTML must not.
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType text/html "access plus 0 seconds"
+  ExpiresByType text/css "access plus 1 year"
+  ExpiresByType application/javascript "access plus 1 year"
+  ExpiresByType image/jpeg "access plus 6 months"
+  ExpiresByType image/webp "access plus 6 months"
+  ExpiresByType image/svg+xml "access plus 6 months"
+  ExpiresByType image/png "access plus 6 months"
+</IfModule>
+
+# ── Nice 404 ─────────────────────────────────────────────────────────────────
+ErrorDocument 404 /404.html

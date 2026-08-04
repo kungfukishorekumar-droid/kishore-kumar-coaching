@@ -109,8 +109,8 @@ export const metadata: Metadata = {
     siteName: "Kishore Kumar — Spartacus Martial Arts Chennai",
     images: [
       {
-        // Dynamic OG image served from /opengraph-image (next/og)
-        url: "/opengraph-image",
+        // Static OG image (dynamic next/og route can't run on static hosting)
+        url: "/images/strong-mind.jpg",
         width: 1200,
         height: 630,
         alt: "Kishore Kumar — Train Your Mind Like a Warrior. Perform Like a Champion.",
@@ -123,7 +123,7 @@ export const metadata: Metadata = {
     title: "Kishore Kumar | Sports Psychology & Martial Arts Coach",
     description:
       "Train Your Mind Like a Warrior. Perform Like a Champion. Athlete mindset + martial arts coaching in Chennai.",
-    images: ["/opengraph-image"],
+    images: ["/images/strong-mind.jpg"],
   },
 
   icons: {

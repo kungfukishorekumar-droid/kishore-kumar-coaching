@@ -6,6 +6,7 @@ import { CheckCircle2, Loader2, ShieldCheck, Download, MessageCircle } from "luc
 import { Reveal } from "@/components/ui/reveal";
 import { Button } from "@/components/ui/button";
 import { IMAGES, SITE, LEAD_FORM, whatsappLink } from "@/lib/site";
+import { submitLead } from "@/lib/lead-client";
 import { cn } from "@/lib/utils";
 
 export function LeadForm() {
@@ -20,13 +21,11 @@ export function LeadForm() {
     const form = e.currentTarget;
     const data = Object.fromEntries(new FormData(form).entries()) as Record<string, string>;
 
-    // Send to CRM backend (WarriorCRM) via our server-side API route.
+    // Static build: post straight to WarriorCRM's Supabase queue. Failures are
+    // swallowed on purpose — the WhatsApp fallback in the success panel is the
+    // real safety net, so a CRM hiccup must never block the user.
     try {
-      await fetch("/api/lead", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...data, who, challenge, magnet: "focus-confidence-checklist" }),
-      });
+      await submitLead({ ...data, who, challenge, magnet: "focus-confidence-checklist" });
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error("lead submit failed", err);

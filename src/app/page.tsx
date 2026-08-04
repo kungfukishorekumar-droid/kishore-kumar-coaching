@@ -1,7 +1,6 @@
 // ISR: re-render this page on the server at most once per 24 hours.
 // Content stays fresh without a full rebuild — ideal for a coaching site
 // where copy changes weekly but doesn't need millisecond freshness.
-export const revalidate = 86400;
 
 import { Navbar } from "@/components/shared/Navbar";
 import { Footer } from "@/components/shared/Footer";

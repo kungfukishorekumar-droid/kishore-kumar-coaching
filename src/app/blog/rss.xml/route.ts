@@ -1,7 +1,9 @@
 import { SEO } from "@/lib/seo";
 import { SORTED_POSTS } from "@/content/blog";
 
-export const revalidate = 86400;
+// Emitted as a static file at build time (required for output: "export").
+export const dynamic = "force-static";
+
 
 /**
  * RSS 2.0 feed for the blog.
