@@ -123,6 +123,25 @@ export default async function BlogPostPage({ params }: Params) {
           { "@type": "ListItem", position: 3, name: post.title, item: url },
         ],
       },
+      // VideoObject only when the post actually carries a video — emitting one
+      // with placeholder values would be structured-data spam, and Google
+      // penalises markup that doesn't match visible content.
+      ...(post.video
+        ? [
+            {
+              "@type": "VideoObject",
+              "@id": `${url}/#video`,
+              name: post.video.title,
+              description: post.description,
+              thumbnailUrl: `https://i.ytimg.com/vi/${post.video.id}/maxresdefault.jpg`,
+              uploadDate: post.publishedAt,
+              contentUrl: `https://www.youtube.com/watch?v=${post.video.id}`,
+              embedUrl: `https://www.youtube-nocookie.com/embed/${post.video.id}`,
+              publisher: { "@id": `${SEO.siteUrl}/#organization` },
+              author: { "@id": `${SEO.siteUrl}/#kishore` },
+            },
+          ]
+        : []),
     ],
   };
 
@@ -241,6 +260,18 @@ export default async function BlogPostPage({ params }: Params) {
                     {para}
                   </p>
                 ))}
+                {s.link && (
+                  <a
+                    href={s.link.href}
+                    {...(s.link.external
+                      ? { target: "_blank", rel: "noreferrer" }
+                      : {})}
+                    className="link-underline mt-4 inline-flex items-center gap-1.5 font-semibold text-gold-200"
+                  >
+                    {s.link.label}
+                    <ArrowRight className="size-4" aria-hidden="true" />
+                  </a>
+                )}
                 {s.list && (
                   <ul className="mt-4 space-y-2.5">
                     {s.list.map((item) => (

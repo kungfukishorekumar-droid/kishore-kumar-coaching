@@ -27,6 +27,8 @@ export type BlogSection = {
   heading: string;
   body: string[];
   list?: string[];
+  /** Optional in-content link. Rendered after the body, before any list. */
+  link?: { href: string; label: string; external?: boolean };
 };
 
 export type BlogPost = {
@@ -701,6 +703,90 @@ export const POSTS: BlogPost[] = [
     ],
   },
 ];
+
+/**
+ * Note on the academy link below: it appears in body prose rather than only in
+ * the footer. An in-content editorial link from a topically relevant paragraph
+ * carries materially more weight than a sitewide footer link, which search
+ * engines heavily discount.
+ */
+POSTS.push({
+  slug: "spartacus-martial-arts-academy-chennai",
+  title:
+    "Spartacus Martial Arts Academy Chennai: Wushu, Kung Fu, Karate, Judo & Boxing",
+  description:
+    "Inside Spartacus Martial Arts Academy in Chennai — the disciplines taught, who it's for, and how mindset training is built into the coaching by Kishore Kumar.",
+  excerpt:
+    "The academy is where the physical half of this work happens. Here's what we actually teach, and who each discipline suits.",
+  publishedAt: "2026-08-04",
+  readingMinutes: 6,
+  category: "Martial Arts",
+  keywords: [
+    "Spartacus Martial Arts Chennai",
+    "martial arts academy Chennai",
+    "Kung Fu classes Chennai",
+    "Karate classes Chennai",
+    "Judo Chennai",
+    "kick boxing Chennai",
+    "Kishore Kumar martial arts academy",
+  ],
+  image: "/images/gesture.jpg",
+  imageAlt: "Training at Spartacus Martial Arts Academy, Chennai",
+  quickAnswer:
+    "Spartacus Martial Arts Academy is a Chennai martial arts academy founded by Kishore Kumar, a National Wushu Medalist and sports psychologist. It teaches Wushu, Kung Fu, Karate, Judo, kick boxing and boxing, with mental-skills training built into the coaching rather than taught separately.",
+  sections: [
+    {
+      heading: "One academy, several disciplines",
+      body: [
+        "People arrive wanting different things. Someone chasing competition needs a different path from a parent who wants their child to build confidence, and both differ from an adult who mainly wants to be fitter and defend themselves.",
+        "The academy covers Wushu, Kung Fu, Karate, Judo, kick boxing and boxing precisely so the discipline can be matched to the goal rather than the other way round.",
+      ],
+    },
+    {
+      heading: "Which discipline suits whom",
+      body: [],
+      list: [
+        "Wushu — the competitive route, and the one I came through. Strong on body control, form and, in Sanda, full-contact composure.",
+        "Kung Fu — traditional depth, patience and structure. Suits people who want the philosophy alongside the physical craft.",
+        "Karate — clean, linear technique with clear progression. A good first discipline for children.",
+        "Judo — grappling, throws and falling safely. Excellent for confidence, because you stop fearing the ground.",
+        "Kick boxing and boxing — conditioning, timing and pressure tolerance, with the fastest visible fitness gains.",
+      ],
+    },
+    {
+      heading: "Why mindset is not a separate class",
+      body: [
+        "Most academies treat mental training as a workshop bolted on after a bad season. Here it is inside the coaching, because that is the only place it survives.",
+        "When an athlete freezes in a spar, that is the moment to teach the reset — not three weeks later in a classroom. The mat provides the pressure that makes psychological skills real, which is the entire reason I coach both halves.",
+      ],
+    },
+    {
+      heading: "Visiting the academy",
+      body: [
+        "The academy has its own site with class details, timings and enrolment. If you are deciding between disciplines, message me and describe the goal rather than the style — the goal is what should pick the style.",
+      ],
+      link: {
+        href: "https://spartacus-martial-arts.vercel.app/",
+        label: "Visit Spartacus Martial Arts Academy Chennai",
+        external: true,
+      },
+    },
+  ],
+  faqs: [
+    {
+      q: "Where is Spartacus Martial Arts Academy?",
+      a: "Chennai, Tamil Nadu. It was founded by Kishore Kumar, a National Wushu Medalist, sports psychologist and state-level judge.",
+    },
+    {
+      q: "Which martial art should a complete beginner choose?",
+      a: "Choose by goal rather than style. Competition suits Wushu, confidence and safe falling suits Judo, structured progression for children suits Karate, and fitness with pressure tolerance suits kick boxing.",
+    },
+    {
+      q: "Does the academy teach adults as well as children?",
+      a: "Yes — children, teenagers and adults, including complete beginners with no prior training or fitness base.",
+    },
+  ],
+});
 
 /** Newest first — the order the blog index and sitemap use. */
 export const SORTED_POSTS = [...POSTS].sort(

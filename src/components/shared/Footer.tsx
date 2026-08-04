@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { Instagram, MessageCircle, Bot, Mail, MapPin, Phone } from "lucide-react";
+import { Instagram, MessageCircle, Bot, Mail, MapPin, Phone, Youtube, ExternalLink } from "lucide-react";
 import { NAV_LINKS, SITE, whatsappLink } from "@/lib/site";
+import { SEO } from "@/lib/seo";
 import { scrollToId } from "@/lib/utils";
 
 export function Footer() {
@@ -32,6 +33,7 @@ export function Footer() {
             <div className="mt-5 flex gap-3">
               {[
                 { icon: Instagram, href: SITE.socials.instagram, label: "Instagram" },
+                { icon: Youtube, href: SEO.youtube.url, label: "YouTube channel" },
                 { icon: MessageCircle, href: whatsappLink(), label: "WhatsApp" },
                 { icon: Bot, href: SITE.customGpt, label: "AI Mindset Coach" },
               ].map((s) => (
@@ -73,6 +75,20 @@ export function Footer() {
                   )}
                 </li>
               ))}
+              {/* Sister property. Linked here and declared in sameAs so search
+                  engines merge the two sites into one entity rather than
+                  treating them as unrelated competitors. */}
+              <li>
+                <a
+                  href={SEO.academy.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1.5 text-sm text-foreground/55 transition-colors hover:text-gold-200"
+                >
+                  {SEO.academy.name}
+                  <ExternalLink className="size-3" aria-hidden="true" />
+                </a>
+              </li>
             </ul>
           </div>
 
