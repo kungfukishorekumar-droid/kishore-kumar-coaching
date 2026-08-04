@@ -23,6 +23,8 @@
  *       LocalBusiness entity so the blog reinforces one place, not many.
  */
 
+import { VIDEO_POSTS } from "./video-blog";
+
 export type BlogSection = {
   heading: string;
   body: string[];
@@ -788,10 +790,18 @@ POSTS.push({
   ],
 });
 
+// One article per YouTube Short. Kept in its own file so the written articles
+// above stay readable; `import type` above is erased at compile, so there is no
+// runtime import cycle between the two modules.
+POSTS.push(...VIDEO_POSTS);
+
 /** Newest first — the order the blog index and sitemap use. */
 export const SORTED_POSTS = [...POSTS].sort(
   (a, b) => +new Date(b.publishedAt) - +new Date(a.publishedAt)
 );
+
+/** Articles that embed a video — used for the /blog video rail. */
+export const VIDEO_ARTICLES = SORTED_POSTS.filter((p) => p.video);
 
 export function getPost(slug: string) {
   return POSTS.find((p) => p.slug === slug);
