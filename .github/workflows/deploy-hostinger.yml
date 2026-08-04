@@ -47,6 +47,27 @@ jobs:
           node-version: "20"
           cache: "npm"
 
+      # Fail early with a readable message. Without this the FTP action stops
+      # with "Input required and not supplied: server", which doesn't tell you
+      # that the cause is a missing GitHub secret.
+      - name: Check FTP secrets are set
+        env:
+          FTP_SERVER: ${{ secrets.FTP_SERVER }}
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+        run: |
+          missing=""
+          [ -n "$FTP_SERVER" ]   || missing="$missing FTP_SERVER"
+          [ -n "$FTP_USERNAME" ] || missing="$missing FTP_USERNAME"
+          [ -n "$FTP_PASSWORD" ] || missing="$missing FTP_PASSWORD"
+          if [ -n "$missing" ]; then
+            echo "::error::Missing repository secret(s):$missing"
+            echo "Add them in GitHub → Settings → Secrets and variables → Actions."
+            echo "The values come from hPanel → Files → FTP Accounts."
+            exit 1
+          fi
+          echo "All FTP secrets present."
+
       - name: Install dependencies
         run: npm ci
 

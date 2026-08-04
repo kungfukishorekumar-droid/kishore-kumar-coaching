@@ -88,29 +88,50 @@ launch. Keep the same shape (`quote`, `name`, `category`, `rating`, `source`).
 
 ## Connect the CRM (WarriorCRM)
 
-The lead form posts to a **server-side** route so the CRM stays private:
+The site is a static export, so there is no server route to hide a secret behind.
+The form posts **straight from the browser** into the CRM's Supabase intake queue:
 
 ```
-LeadForm → POST /api/lead → src/app/api/lead/route.ts → WarriorCRM
+LeadForm → src/lib/lead-client.ts → Supabase public_leads → WarriorCRM drains it
 ```
 
-Copy `.env.example` → `.env.local` and set your intake endpoint:
+Copy `.env.example` → `.env.local` and set:
 
 ```bash
-CRM_WEBHOOK_URL=https://warriorcrm.netlify.app/api/leads   # your real endpoint
-CRM_API_KEY=                                               # optional auth token
+NEXT_PUBLIC_SUPABASE_URL=https://YOUR-PROJECT.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
 ```
 
-Until that's set, submissions still succeed and log server-side. WhatsApp is the
-fallback after submit. Payload sent: `{ name, phone, age, sport, who, challenge,
-magnet, source, submittedAt }` — remap in the route if your CRM expects other names.
+Both are public by design — safety comes from row-level security, which lets this
+key INSERT into `public_leads` and nothing else. Never use the service_role key.
 
-## Deploy
+Until they're set, submissions still succeed locally and WhatsApp remains the
+fallback after submit. Also add your Supabase host to `connect-src` in
+`public/.htaccess`, or the browser's CSP will block the request in production.
 
-- **Vercel** (easiest for Next.js): import the repo → deploy. Add `CRM_WEBHOOK_URL`
-  in Project → Settings → Environment Variables.
-- **Netlify**: it auto-detects Next.js (`@netlify/plugin-nextjs`) so the `/api/lead`
-  route works as a function. Add the same env vars in Site settings.
+## Deploy (Hostinger — kishorekumarcoach.com)
+
+Hostinger shared hosting cannot run `next build`; its Git integration only serves
+files. So GitHub Actions builds the site and uploads the finished `out/` folder
+over FTP: [.github/workflows/deploy-hostinger.yml](.github/workflows/deploy-hostinger.yml).
+
+Every push to `main` deploys. One-time setup — GitHub → repo Settings → Secrets
+and variables → Actions → New repository secret:
+
+| Secret | Where to find it |
+| --- | --- |
+| `FTP_SERVER` | hPanel → Files → FTP Accounts → *FTP IP* (or `ftp.kishorekumarcoach.com`) |
+| `FTP_USERNAME` | same panel, e.g. `u123456789.kishorekumarcoach` |
+| `FTP_PASSWORD` | the FTP account password (use *Change account password* if unknown) |
+| `NEXT_PUBLIC_SUPABASE_URL` | optional — Supabase project settings |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | optional — Supabase project settings |
+
+`server-dir` in the workflow must match the domain's document root: `/public_html/`
+when kishorekumarcoach.com is the primary domain, or
+`/domains/kishorekumarcoach.com/public_html/` when it's an addon domain.
+
+Build it locally the same way Actions does with `npm run build` — the deployable
+site is everything inside `out/`.
 
 ## Recreating / improving in Lovable.com
 
