@@ -42,5 +42,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "monthly" as const,
       priority: 0.65,
     })),
+    // Topic hubs, derived from the same categories the pages are built from.
+    ...[
+      ...new Set(
+        SORTED_POSTS.map((p) =>
+          p.category.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")
+        )
+      ),
+    ].map((topic) => ({
+      url: `${SEO.siteUrl}/blog/topic/${topic}`,
+      lastModified: new Date(SORTED_POSTS[0]?.publishedAt ?? HOME_UPDATED),
+      changeFrequency: "weekly" as const,
+      priority: 0.6,
+    })),
   ];
 }

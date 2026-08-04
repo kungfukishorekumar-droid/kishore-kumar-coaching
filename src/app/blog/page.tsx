@@ -16,6 +16,18 @@ import { SORTED_POSTS } from "@/content/blog";
 
 const url = `${SEO.siteUrl}/blog`;
 
+/** Topic hubs, derived from post categories so they can never drift apart. */
+const TOPICS = Object.values(
+  SORTED_POSTS.reduce<Record<string, { slug: string; name: string; count: number }>>(
+    (acc, p) => {
+      const slug = p.category.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+      acc[slug] = { slug, name: p.category, count: (acc[slug]?.count ?? 0) + 1 };
+      return acc;
+    },
+    {}
+  )
+).sort((a, b) => b.count - a.count);
+
 export const metadata: Metadata = {
   title: "Blog — Sports Psychology & Martial Arts, Chennai",
   description:
@@ -98,6 +110,20 @@ export default function BlogIndex() {
               martial arts training — from Kishore Kumar, National Wushu
               Medalist and sports psychologist in Chennai.
             </p>
+
+            {/* Topic hubs — the cluster entry points */}
+            <div className="mt-7 flex flex-wrap justify-center gap-2.5">
+              {TOPICS.map((t) => (
+                <Link
+                  key={t.slug}
+                  href={`/blog/topic/${t.slug}`}
+                  className="rounded-full border border-gold-400/25 bg-white/5 px-4 py-2 text-sm text-foreground/75 transition-colors hover:border-gold-400/60 hover:text-gold-100"
+                >
+                  {t.name}
+                  <span className="ml-1.5 text-foreground/40">{t.count}</span>
+                </Link>
+              ))}
+            </div>
           </div>
         </section>
 

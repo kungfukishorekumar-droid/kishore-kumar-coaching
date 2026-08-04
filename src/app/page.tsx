@@ -28,6 +28,7 @@ import { Reviews } from "@/components/sections/Reviews";
 import { Institutions } from "@/components/sections/Institutions";
 import { LeadForm } from "@/components/sections/LeadForm";
 import { CustomGPT } from "@/components/sections/CustomGPT";
+import { LatestArticles } from "@/components/sections/LatestArticles";
 import { FAQ } from "@/components/sections/FAQ";
 import { FinalCTA } from "@/components/sections/FinalCTA";
 
@@ -66,6 +67,8 @@ export default function Home() {
         {/* 11 */} <Institutions />
         {/* 12 */} <LeadForm />
         {/* 13 */} <CustomGPT />
+        {/* Blog teaser — in-content links from the strongest page on the domain */}
+        <LatestArticles />
         {/* 14 */} <FAQ />
         <SectionDivider className="container max-w-3xl" />
         {/* 15 */} <FinalCTA />

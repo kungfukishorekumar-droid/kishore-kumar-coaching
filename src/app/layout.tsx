@@ -90,6 +90,12 @@ export const metadata: Metadata = {
   alternates: {
     canonical: SITE_URL,
     languages: { "en-IN": SITE_URL },
+    // Advertises the feed sitewide, so readers and crawlers auto-discover it.
+    types: {
+      "application/rss+xml": [
+        { url: "/blog/rss.xml", title: "Kishore Kumar — Blog" },
+      ],
+    },
   },
 
   openGraph: {
