@@ -17,7 +17,7 @@
  * to the placeholder below, which tells Google the real site lives elsewhere
  * and can stop the deployed site being indexed at all.
  */
-const FALLBACK_SITE_URL = "https://kishorekumar.coach";
+const FALLBACK_SITE_URL = "https://kishorekumarcoach.com";
 
 function resolveSiteUrl(): string {
   const raw = process.env.NEXT_PUBLIC_SITE_URL || FALLBACK_SITE_URL;
