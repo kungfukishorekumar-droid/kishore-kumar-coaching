@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Instagram, MessageCircle, Bot, Mail, MapPin, Phone } from "lucide-react";
 import { NAV_LINKS, SITE, whatsappLink } from "@/lib/site";
 import { scrollToId } from "@/lib/utils";
@@ -54,13 +55,22 @@ export function Footer() {
             </h4>
             <ul className="mt-4 space-y-2.5">
               {NAV_LINKS.map((l) => (
-                <li key={l.id}>
-                  <button
-                    onClick={() => scrollToId(l.id)}
-                    className="text-sm text-foreground/55 transition-colors hover:text-gold-200"
-                  >
-                    {l.label}
-                  </button>
+                <li key={l.label}>
+                  {l.href ? (
+                    <Link
+                      href={l.href}
+                      className="text-sm text-foreground/55 transition-colors hover:text-gold-200"
+                    >
+                      {l.label}
+                    </Link>
+                  ) : (
+                    <button
+                      onClick={() => scrollToId(l.id!)}
+                      className="text-sm text-foreground/55 transition-colors hover:text-gold-200"
+                    >
+                      {l.label}
+                    </button>
+                  )}
                 </li>
               ))}
             </ul>

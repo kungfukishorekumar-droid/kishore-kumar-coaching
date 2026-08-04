@@ -38,10 +38,22 @@ export const IMAGES = {
   gesture: "/images/gesture.jpg",
 };
 
-export const NAV_LINKS = [
+/**
+ * Primary navigation.
+ *
+ * Most entries scroll to a section on the home page (`id`). Entries with an
+ * `href` are real routes and must navigate instead — scrollToId would look for
+ * a matching element, fail, and bounce to "/#blog", which is not a page.
+ */
+export const NAV_LINKS: {
+  label: string;
+  id?: string;
+  href?: string;
+}[] = [
   { label: "Home", id: "top" },
   { label: "Method", id: "method" },
   { label: "Programs", id: "programs" },
+  { label: "Blog", href: "/blog" },
   { label: "Reviews", id: "reviews" },
   { label: "Workshops", id: "institutions" },
   { label: "FAQ", id: "faq" },

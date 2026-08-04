@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -52,15 +53,25 @@ export function Navbar() {
           </button>
 
           <nav className="hidden items-center gap-1 lg:flex">
-            {NAV_LINKS.map((link) => (
-              <button
-                key={link.id}
-                onClick={() => go(link.id)}
-                className="rounded-full px-4 py-2 text-sm font-medium text-foreground/70 transition-colors hover:bg-white/5 hover:text-gold-100"
-              >
-                {link.label}
-              </button>
-            ))}
+            {NAV_LINKS.map((link) =>
+              link.href ? (
+                <Link
+                  key={link.label}
+                  href={link.href}
+                  className="rounded-full px-4 py-2 text-sm font-medium text-foreground/70 transition-colors hover:bg-white/5 hover:text-gold-100"
+                >
+                  {link.label}
+                </Link>
+              ) : (
+                <button
+                  key={link.label}
+                  onClick={() => go(link.id!)}
+                  className="rounded-full px-4 py-2 text-sm font-medium text-foreground/70 transition-colors hover:bg-white/5 hover:text-gold-100"
+                >
+                  {link.label}
+                </button>
+              )
+            )}
           </nav>
 
           <div className="flex items-center gap-2">
@@ -98,15 +109,26 @@ export function Navbar() {
               transition={{ duration: 0.2 }}
               className="glass mt-2 flex flex-col gap-1 rounded-3xl p-3 lg:hidden"
             >
-              {NAV_LINKS.map((link) => (
-                <button
-                  key={link.id}
-                  onClick={() => go(link.id)}
-                  className="rounded-xl px-4 py-3 text-left text-sm font-medium text-foreground/80 transition-colors hover:bg-white/5 hover:text-gold-100"
-                >
-                  {link.label}
-                </button>
-              ))}
+              {NAV_LINKS.map((link) =>
+                link.href ? (
+                  <Link
+                    key={link.label}
+                    href={link.href}
+                    onClick={() => setOpen(false)}
+                    className="rounded-xl px-4 py-3 text-left text-sm font-medium text-foreground/80 transition-colors hover:bg-white/5 hover:text-gold-100"
+                  >
+                    {link.label}
+                  </Link>
+                ) : (
+                  <button
+                    key={link.label}
+                    onClick={() => go(link.id!)}
+                    className="rounded-xl px-4 py-3 text-left text-sm font-medium text-foreground/80 transition-colors hover:bg-white/5 hover:text-gold-100"
+                  >
+                    {link.label}
+                  </button>
+                )
+              )}
               <Button asChild className="mt-1 w-full">
                 <a href={whatsappLink("Hi Kishore, I'd like to book a free athlete mindset call.")} target="_blank" rel="noreferrer">
                   Book Free Call
