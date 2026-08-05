@@ -86,11 +86,18 @@ export function Hero() {
           <div className="absolute -bottom-10 -right-10 -z-10 size-48 rounded-full bg-electric-500/15 blur-3xl" />
 
           <div className="shine-border relative overflow-hidden rounded-[2rem] border border-white/10 bg-ink-50 shadow-glow-lg">
+            {/* Mobile LCP element. fetchPriority high tells the browser to
+                pull this ahead of the fonts and decorative assets; width/height
+                reserve the box so it never shifts layout (CLS). */}
             <img
               src={IMAGES.portrait}
               alt="Kishore Kumar — Sports Psychology & Martial Arts Coach, Chennai"
               className="aspect-[4/5] w-full object-cover object-top lg:aspect-[5/6]"
+              width={800}
+              height={1000}
               loading="eager"
+              fetchPriority="high"
+              decoding="async"
             />
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-transparent" />
             <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-ink to-transparent" />

@@ -10,6 +10,7 @@ import { AmbientBackground } from "@/components/ui/ambient-background";
 import { ScrollProgress } from "@/components/shared/ScrollProgress";
 import { SectionDivider } from "@/components/ui/section-divider";
 import { JsonLd } from "@/components/seo/JsonLd";
+import { IMAGES } from "@/lib/site";
 
 import { Hero } from "@/components/sections/Hero";
 import { Stats } from "@/components/sections/Stats";
@@ -34,6 +35,10 @@ import { FinalCTA } from "@/components/sections/FinalCTA";
 export default function Home() {
   return (
     <div className="relative min-h-screen bg-ink text-foreground">
+      {/* Start the LCP portrait downloading before the Hero component parses.
+          Next hoists this to <head>. */}
+      {/* eslint-disable-next-line @next/next/no-head-element */}
+      <link rel="preload" as="image" href={IMAGES.portrait} fetchPriority="high" />
       <JsonLd />
       <AmbientBackground />
       <ScrollProgress />

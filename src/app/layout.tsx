@@ -32,7 +32,10 @@ const bebasNeue = Bebas_Neue({
 
 const inter = Inter({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
+  // 800 was shipped but never rendered — headings use Bebas Neue, so no body
+  // text is ever extra-bold. Dropping it removes a font file from the critical
+  // path, which is the cheapest FCP/LCP win available.
+  weight: ["400", "500", "600", "700"],
   variable: "--font-body",
   display: "swap",
 });
@@ -144,8 +147,10 @@ export const metadata: Metadata = {
     },
   },
 
-  // ⚠️ Add your real Google Search Console verification token below
-  // verification: { google: "your-token-here" },
+  // Google Search Console verification. This is a second, independent method
+  // from the DNS TXT record — either alone verifies the property, and having
+  // both means a DNS change can't accidentally un-verify the site.
+  verification: { google: "k7Z30AyqlrGJ_pfaErNYKwxp7BPgPKMynfF1Z6Dhz58" },
 
   category: "sports coaching",
 };

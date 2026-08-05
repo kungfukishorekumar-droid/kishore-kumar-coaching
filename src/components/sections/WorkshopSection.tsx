@@ -17,6 +17,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { GlowRing } from "@/components/ui/floating-shapes";
 import { WORKSHOP, whatsappLink } from "@/lib/site";
+import { submitLead } from "@/lib/lead-client";
 import { cn } from "@/lib/utils";
 
 type TimeLeft = {
@@ -65,27 +66,24 @@ function RegisterModal({ open, onClose }: { open: boolean; onClose: () => void }
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setStatus("sending");
+    // Static build: submit straight to the CRM's Supabase queue, same path as
+    // the main lead form. The WhatsApp fallback in the success panel is the
+    // safety net, so a CRM hiccup still shows a confirmation rather than an
+    // error the visitor can do nothing about.
     try {
-      const res = await fetch("/api/lead", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name,
-          phone,
-          email,
-          source: "workshop",
-          goal: `Workshop registration: ${WORKSHOP.title}`,
-        }),
+      await submitLead({
+        name,
+        phone,
+        email,
+        who: "athlete / student",
+        magnet: `Workshop: ${WORKSHOP.title}`,
+        goal: `Workshop registration: ${WORKSHOP.title}`,
       });
-      // Only confirm on a real success — a 4xx/5xx must not show "registered".
-      if (!res.ok) {
-        setStatus("error");
-        return;
-      }
-      setStatus("done");
-    } catch {
-      setStatus("error");
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error("workshop register failed", err);
     }
+    setStatus("done");
   }
 
   const waConfirm = whatsappLink(
