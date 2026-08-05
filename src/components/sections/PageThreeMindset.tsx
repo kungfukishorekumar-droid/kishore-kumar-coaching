@@ -61,7 +61,10 @@ export function PageThreeMindset() {
                   src={IMAGES.gesture}
                   alt="Kishore Kumar — Sports Psychology & Martial Arts Coach"
                   className="h-80 w-full object-cover object-[36%_18%] sm:h-[26rem] lg:h-full lg:min-h-[660px]"
+                  width={1672}
+                  height={941}
                   loading="lazy"
+                  decoding="async"
                 />
                 {/* merge fades: right edge (desktop) + bottom (mobile) melt into the panel */}
                 <div className="absolute inset-0 hidden bg-gradient-to-r from-transparent via-ink/15 to-ink lg:block" />

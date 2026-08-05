@@ -131,7 +131,10 @@ export function PageSixAuthority() {
                   src={IMAGES.heroWide}
                   alt="Kishore Kumar — National Wushu Medalist & Sports Psychologist, Chennai"
                   className="h-full w-full object-cover object-[32%_center]"
+                  width={1672}
+                  height={941}
                   loading="lazy"
+                  decoding="async"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-ink/70 via-transparent to-transparent" />
               </div>

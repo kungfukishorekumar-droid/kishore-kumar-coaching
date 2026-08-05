@@ -52,9 +52,11 @@ export function Footer() {
           </div>
 
           <div>
-            <h4 className="font-display text-sm font-semibold uppercase tracking-wider text-foreground">
+            {/* h3, not h4: the deepest heading above the footer is an h2, so an
+                h4 here skips a level and fails the a11y heading-order audit. */}
+            <h3 className="font-display text-sm font-semibold uppercase tracking-wider text-foreground">
               Explore
-            </h4>
+            </h3>
             <ul className="mt-4 space-y-2.5">
               {NAV_LINKS.map((l) => (
                 <li key={l.label}>
@@ -93,9 +95,9 @@ export function Footer() {
           </div>
 
           <div>
-            <h4 className="font-display text-sm font-semibold uppercase tracking-wider text-foreground">
+            <h3 className="font-display text-sm font-semibold uppercase tracking-wider text-foreground">
               Get in touch
-            </h4>
+            </h3>
             <ul className="mt-4 space-y-3 text-sm text-foreground/55">
               <li>
                 <a href={whatsappLink()} target="_blank" rel="noreferrer" className="flex items-center gap-2 transition-colors hover:text-gold-200">

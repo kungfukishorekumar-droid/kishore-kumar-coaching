@@ -12,6 +12,13 @@
   "engines": {
     "node": ">=20.0.0"
   },
+  "//browserslist": "Without this, Next's default target ships ES5 helpers and polyfills for browsers no visitor uses — Lighthouse flags it as 'Legacy JavaScript'. These four lines cover ~96% of Indian mobile traffic while letting the compiler emit native async/await, optional chaining and classes.",
+  "browserslist": [
+    "chrome >= 87",
+    "edge >= 88",
+    "firefox >= 78",
+    "safari >= 14"
+  ],
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.2",
     "@radix-ui/react-slot": "^1.1.1",

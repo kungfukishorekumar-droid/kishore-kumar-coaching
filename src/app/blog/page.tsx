@@ -156,7 +156,11 @@ export default function BlogIndex() {
                       src={lead.image}
                       alt={lead.imageAlt}
                       className="h-full min-h-52 w-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+                      width={1672}
+                      height={941}
                       loading="eager"
+                      fetchPriority="high"
+                      decoding="async"
                     />
                   </div>
                 </Link>
@@ -176,7 +180,10 @@ export default function BlogIndex() {
                         src={p.image}
                         alt={p.imageAlt}
                         className="size-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+                        width={1672}
+                        height={941}
                         loading="lazy"
+                        decoding="async"
                       />
                       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-ink/90 to-transparent" />
                     </div>

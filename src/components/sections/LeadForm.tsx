@@ -47,7 +47,10 @@ export function LeadForm() {
                 src={IMAGES.strongMind}
                 alt="Strong Mind. Stronger You. — Athlete focus & confidence"
                 className="absolute inset-0 size-full object-cover object-left"
+                width={1672}
+                height={941}
                 loading="lazy"
+                decoding="async"
               />
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-ink" />
             </div>

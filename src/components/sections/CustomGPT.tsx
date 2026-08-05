@@ -85,7 +85,10 @@ export function CustomGPT() {
                     src={IMAGES.portrait}
                     alt="Kishore Kumar — the coach behind the Athlete Mindset GPT"
                     className="size-full object-cover object-[center_18%]"
+                    width={1122}
+                    height={1402}
                     loading="lazy"
+                    decoding="async"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/30 to-transparent" />
                   <span className="absolute left-4 top-4 inline-flex items-center gap-1.5 rounded-full glass px-3 py-1.5 text-[11px] font-semibold text-foreground/85">
@@ -99,6 +102,10 @@ export function CustomGPT() {
                         alt=""
                         aria-hidden
                         className="size-full object-cover object-top"
+                        width={44}
+                        height={44}
+                        loading="lazy"
+                        decoding="async"
                       />
                     </span>
                     <div>
@@ -128,7 +135,7 @@ export function CustomGPT() {
                     >
                       {m.from === "bot" && (
                         <span className="size-6 shrink-0 overflow-hidden rounded-full ring-1 ring-electric-400/40">
-                          <img src={IMAGES.portrait} alt="" aria-hidden className="size-full object-cover object-top" />
+                          <img src={IMAGES.portrait} alt="" aria-hidden className="size-full object-cover object-top" width={24} height={24} loading="lazy" decoding="async" />
                         </span>
                       )}
                       <div

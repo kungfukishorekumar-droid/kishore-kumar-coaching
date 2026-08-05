@@ -209,7 +209,11 @@ export default async function BlogPostPage({ params }: Params) {
                 src={post.image}
                 alt={post.imageAlt}
                 className="aspect-[16/9] w-full object-cover"
+                width={1672}
+                height={941}
                 loading="eager"
+                fetchPriority="high"
+                decoding="async"
               />
               <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-ink to-transparent" />
             </div>
