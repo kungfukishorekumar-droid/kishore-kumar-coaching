@@ -133,6 +133,34 @@ when kishorekumarcoach.com is the primary domain, or
 Build it locally the same way Actions does with `npm run build` — the deployable
 site is everything inside `out/`.
 
+## Google Search Console
+
+The site claims ownership three independent ways, so losing one never unverifies
+the property:
+
+| Method | Where it lives |
+| --- | --- |
+| Meta tag | [src/app/layout.tsx:153](src/app/layout.tsx#L153) — `verification.google` |
+| HTML file | `public/google7db206634843f0fa.html` |
+| **DNS TXT** | Hostinger hPanel → **Domains → DNS / Nameservers → DNS Zone** — *not in this repo* |
+
+The DNS record must be added by hand in hPanel, because DNS is served by Hostinger,
+not by the site:
+
+```
+Type:  TXT
+Name:  @            (some panels want it blank — that means the root domain)
+TTL:   14400        (or whatever the panel defaults to)
+Value: google-site-verification=k7Z30AyqlrGJ_pfaErNYKwxp7BPgPKMynfF1Z6Dhz58
+```
+
+DNS is the only method that verifies a **Domain property**, which covers `http`
+and `https`, `www` and non-`www`, and every subdomain in one entry. The other two
+only verify the exact `https://kishorekumarcoach.com/` URL prefix.
+
+After verifying, submit `sitemap.xml` in Search Console → **Sitemaps**. Indexing
+takes days to weeks; it is not instant.
+
 ## Recreating / improving in Lovable.com
 
 This is built on Lovable's underlying stack (Vite-equivalent Next + React + Tailwind
