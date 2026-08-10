@@ -68,6 +68,15 @@ jobs:
           fi
           echo "All FTP secrets present."
 
+      # NOTE: this workflow was written when the site was a static export and
+      # FTP-uploaded ./out/. The site now runs as a real Next.js app on
+      # Hostinger's Node runtime (its responses carry x-nextjs-cache /
+      # x-nextjs-prerender), and Hostinger deploys it from Git itself — this
+      # workflow has never completed a successful upload. There is no ./out/
+      # any more, so the FTP step below would publish nothing.
+      #
+      # It is kept as a build check: it proves every push still compiles.
+      # Delete the FTP step, or restore output:"export", before re-enabling it.
       - name: Install dependencies
         run: npm ci
 
