@@ -19,6 +19,14 @@
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
+/**
+ * Which website this lead came from. Both this site and the Spartacus site feed
+ * the same Supabase `public_leads` queue, so the CRM needs a stable label to
+ * tell them apart and route/report on each. The Spartacus site sends
+ * "spartacusmartialarts.com" for the same field (see docs/connect-spartacus-to-crm.md).
+ */
+const LEAD_SOURCE = "kishorekumarcoach.com";
+
 const ROLE_MAP: Record<string, string> = {
   "athlete / student": "Athlete",
   parent: "Parent",
@@ -55,7 +63,7 @@ export async function submitLead(input: LeadInput): Promise<{ forwarded: boolean
     leadType: ROLE_MAP[(input.who ?? "").toLowerCase()] || "Athlete",
     mainProblem: (input.challenge ?? "").trim(),
     goal: (input.goal ?? "").trim(),
-    source: "Coach Website",
+    source: LEAD_SOURCE,
     campaign: (input.magnet ?? "").trim(),
     landingPage: typeof window !== "undefined" ? window.location.href : "",
     dateAdded: new Date().toISOString().slice(0, 10),
