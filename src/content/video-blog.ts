@@ -17,10 +17,10 @@ import type { BlogPost } from "./blog";
  * are better for image search and social previews.
  */
 const IMAGE_POOL = [
-  { src: "/images/strong-mind.jpg", alt: "Athlete mental training, Chennai" },
-  { src: "/images/gesture.jpg", alt: "Kishore Kumar coaching in Chennai" },
-  { src: "/images/hero-wide.jpg", alt: "Martial arts and mindset training" },
-  { src: "/images/portrait.jpg", alt: "Kishore Kumar, sports psychologist, Chennai" },
+  { src: "/images/strong-mind.webp", alt: "Athlete mental training, Chennai" },
+  { src: "/images/gesture.webp", alt: "Kishore Kumar coaching in Chennai" },
+  { src: "/images/hero-wide.webp", alt: "Martial arts and mindset training" },
+  { src: "/images/portrait.webp", alt: "Kishore Kumar, sports psychologist, Chennai" },
 ];
 
 const img = (i: number) => IMAGE_POOL[i % IMAGE_POOL.length];

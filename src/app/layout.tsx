@@ -113,7 +113,7 @@ export const metadata: Metadata = {
     images: [
       {
         // Static OG image (dynamic next/og route can't run on static hosting)
-        url: "/images/strong-mind.jpg",
+        url: "/images/strong-mind.webp",
         width: 1200,
         height: 630,
         alt: "Kishore Kumar — Train Your Mind Like a Warrior. Perform Like a Champion.",
@@ -126,7 +126,7 @@ export const metadata: Metadata = {
     title: "Kishore Kumar | Sports Psychology & Martial Arts Coach",
     description:
       "Train Your Mind Like a Warrior. Perform Like a Champion. Athlete mindset + martial arts coaching in Chennai.",
-    images: ["/images/strong-mind.jpg"],
+    images: ["/images/strong-mind.webp"],
   },
 
   icons: {

@@ -29,13 +29,13 @@ export function whatsappLink(message?: string) {
 
 export const IMAGES = {
   /** Vertical studio portrait — arms crossed, kung-fu shadow (face-forward, clean) */
-  portrait: "/images/portrait.jpg",
+  portrait: "/images/portrait.webp",
   /** Wide branded shot — 心技体 + Mindset/Focus/Discipline, zen circle */
-  heroWide: "/images/hero-wide.jpg",
+  heroWide: "/images/hero-wide.webp",
   /** "Strong Mind. Stronger You." full banner */
-  strongMind: "/images/strong-mind.jpg",
+  strongMind: "/images/strong-mind.webp",
   /** Open-hand gesture wide shot with gold HUD accents */
-  gesture: "/images/gesture.jpg",
+  gesture: "/images/gesture.webp",
 };
 
 /**

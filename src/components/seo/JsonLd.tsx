@@ -32,7 +32,7 @@ export function JsonLd() {
       "Warrior Mind Method",
     ],
     url: SEO.siteUrl,
-    image: `${SEO.siteUrl}/images/portrait.jpg`,
+    image: `${SEO.siteUrl}/images/portrait.webp`,
     logo: `${SEO.siteUrl}/favicon.svg`,
     telephone: SEO.phoneE164,
     email: SEO.email,
@@ -82,7 +82,7 @@ export function JsonLd() {
     familyName: "Kumar",
     jobTitle: SEO.role,
     worksFor: { "@id": `${SEO.siteUrl}/#organization` },
-    image: `${SEO.siteUrl}/images/portrait.jpg`,
+    image: `${SEO.siteUrl}/images/portrait.webp`,
     url: SEO.siteUrl,
     sameAs: SEO.sameAs,
     address: {
@@ -243,7 +243,7 @@ export function JsonLd() {
       audienceType: "Athletes, students, parents, coaches, schools and academies",
     },
     inLanguage: "en-IN",
-    image: `${SEO.siteUrl}/images/strong-mind.jpg`,
+    image: `${SEO.siteUrl}/images/strong-mind.webp`,
     url: `${SEO.siteUrl}/#workshop`,
   };
 

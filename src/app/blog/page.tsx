@@ -39,7 +39,7 @@ export const metadata: Metadata = {
     description:
       "Practical articles on focus, confidence, pressure handling and martial arts training from Chennai sports psychologist Kishore Kumar.",
     url,
-    images: [{ url: "/images/strong-mind.jpg", width: 1200, height: 630 }],
+    images: [{ url: "/images/strong-mind.webp", width: 1200, height: 630 }],
   },
 };
 

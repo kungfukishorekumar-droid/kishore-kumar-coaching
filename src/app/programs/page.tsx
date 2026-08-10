@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     description:
       "Sports psychology + martial arts programs for athletes, students, parents, schools and academies in Chennai.",
     url,
-    images: [{ url: "/images/strong-mind.jpg", width: 1200, height: 630 }],
+    images: [{ url: "/images/strong-mind.webp", width: 1200, height: 630 }],
   },
 };
 

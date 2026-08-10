@@ -40,7 +40,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
       title: `${p.name} | Kishore Kumar — Chennai`,
       description: p.description,
       url,
-      images: [{ url: "/images/strong-mind.jpg", width: 1200, height: 630 }],
+      images: [{ url: "/images/strong-mind.webp", width: 1200, height: 630 }],
     },
   };
 }
@@ -66,6 +66,38 @@ export default async function ProgramPage({ params }: Params) {
         provider: { "@id": `${SEO.siteUrl}/#organization` },
         areaServed: SEO.areasServed.map((a) => ({ "@type": "City", name: a })),
         url: `${SEO.siteUrl}/programs/${program.slug}`,
+      },
+      // Course sits alongside Service deliberately: Service describes the
+      // coaching offer, Course is what education-intent searches and AI answer
+      // engines look for ("courses for athlete confidence in Chennai").
+      // hasCourseInstance is required for Course rich results to validate.
+      {
+        "@type": "Course",
+        "@id": `${SEO.siteUrl}/programs/${program.slug}/#course`,
+        name: program.name,
+        description: program.description,
+        url: `${SEO.siteUrl}/programs/${program.slug}`,
+        provider: { "@id": `${SEO.siteUrl}/#organization` },
+        educationalLevel: "Beginner to advanced",
+        teaches: program.focus,
+        inLanguage: "en-IN",
+        about: { "@type": "Thing", name: "Sports psychology and martial arts" },
+        audience: { "@type": "EducationalAudience", educationalRole: program.forWho },
+        hasCourseInstance: {
+          "@type": "CourseInstance",
+          courseMode: "Blended",
+          courseWorkload: program.badge,
+          location: {
+            "@type": "Place",
+            name: SEO.brand,
+            address: {
+              "@type": "PostalAddress",
+              addressLocality: SEO.address.locality,
+              addressRegion: SEO.address.region,
+              addressCountry: SEO.address.country,
+            },
+          },
+        },
       },
       {
         "@type": "BreadcrumbList",
