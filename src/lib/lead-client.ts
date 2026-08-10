@@ -16,8 +16,15 @@
  * WhatsApp fallback — the user is never left staring at a dead button.
  */
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+// Env vars win when set (Vercel → Settings → Environment Variables); the
+// committed fallbacks are the WarriorCRM project's PUBLISHABLE values, which are
+// safe in a shipped bundle by design (RLS lets this key INSERT into public_leads
+// and nothing else). This makes lead capture work the moment the site deploys,
+// with no manual env step required.
+const SUPABASE_URL =
+  process.env.NEXT_PUBLIC_SUPABASE_URL || "https://oqwbmtdrjxfbnitlzehe.supabase.co";
+const SUPABASE_ANON_KEY =
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "sb_publishable_Tqkzvziw-5C6I7Hib92B-g_AZQIJTRA";
 
 /**
  * Which website this lead came from. Both this site and the Spartacus site feed
