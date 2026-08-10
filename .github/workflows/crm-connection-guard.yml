@@ -1,0 +1,29 @@
+name: CRM connection guard
+
+# Fails if a site rebuild removes the WarriorCRM lead connection, so a wiped
+# integration is caught at push time (GitHub emails you on a failed run) instead
+# of silently losing leads. It does NOT stop an overwrite — it makes sure you
+# find out immediately. Re-apply from the merged "Connect leads to WarriorCRM" PR.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check leads still post to WarriorCRM public_leads
+        run: |
+          ex="--exclude-dir=.git --exclude-dir=node_modules --exclude-dir=.next --exclude-dir=dist --exclude-dir=out"
+          ok=1
+          grep -rqI $ex "public_leads" . || { echo "::error::Lead capture no longer posts to the WarriorCRM public_leads queue."; ok=0; }
+          grep -rqI $ex "oqwbmtdrjxfbnitlzehe" . || { echo "::error::The WarriorCRM Supabase project reference is missing."; ok=0; }
+          if [ "$ok" -ne 1 ]; then
+            echo "::error::A rebuild appears to have wiped the CRM connection. Re-apply it so form submissions reach your CRM again."
+            exit 1
+          fi
+          echo "CRM connection intact - leads still flow to WarriorCRM."
