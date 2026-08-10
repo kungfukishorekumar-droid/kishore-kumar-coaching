@@ -7,12 +7,14 @@ import { Reveal } from "@/components/ui/reveal";
 import { Button } from "@/components/ui/button";
 import { IMAGES, SITE, LEAD_FORM, whatsappLink } from "@/lib/site";
 import { submitLead } from "@/lib/lead-client";
+import { Turnstile, turnstileEnabled } from "@/components/ui/turnstile";
 import { cn } from "@/lib/utils";
 
 export function LeadForm() {
   const [status, setStatus] = useState<"idle" | "sending" | "done">("idle");
   const [who, setWho] = useState(LEAD_FORM.whoOptions[0]);
   const [challenge, setChallenge] = useState(LEAD_FORM.challengeOptions[0]);
+  const [token, setToken] = useState("");
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -21,17 +23,21 @@ export function LeadForm() {
     const form = e.currentTarget;
     const data = Object.fromEntries(new FormData(form).entries()) as Record<string, string>;
 
-    // Static build: post straight to WarriorCRM's Supabase queue. Failures are
-    // swallowed on purpose — the WhatsApp fallback in the success panel is the
-    // real safety net, so a CRM hiccup must never block the user.
+    // Post to WarriorCRM's Supabase queue (Edge Function when Turnstile is on).
+    // Failures are swallowed on purpose — the WhatsApp fallback in the success
+    // panel is the real safety net, so a CRM hiccup must never block the user.
     try {
-      await submitLead({ ...data, who, challenge, magnet: "focus-confidence-checklist" });
+      await submitLead(
+        { ...data, who, challenge, magnet: "focus-confidence-checklist" },
+        token
+      );
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error("lead submit failed", err);
     }
 
     setStatus("done");
+    setToken("");
     form.reset();
   }
 
@@ -134,7 +140,18 @@ export function LeadForm() {
                       onChange={setChallenge}
                     />
 
-                    <Button type="submit" size="lg" className="w-full" disabled={status === "sending"}>
+                    {/* Bot check — renders only when Turnstile is configured */}
+                    <Turnstile onVerify={setToken} onExpire={() => setToken("")} />
+
+                    <Button
+                      type="submit"
+                      size="lg"
+                      className="w-full"
+                      // Block submit until the challenge is solved — but only
+                      // when Turnstile is actually on, so the form isn't dead
+                      // before it's configured.
+                      disabled={status === "sending" || (turnstileEnabled && !token)}
+                    >
                       {status === "sending" ? (
                         <>
                           <Loader2 className="size-4 animate-spin" />

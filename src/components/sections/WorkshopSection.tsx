@@ -18,6 +18,7 @@ import { Button } from "@/components/ui/button";
 import { GlowRing } from "@/components/ui/floating-shapes";
 import { WORKSHOP, whatsappLink } from "@/lib/site";
 import { submitLead } from "@/lib/lead-client";
+import { Turnstile, turnstileEnabled } from "@/components/ui/turnstile";
 import { cn } from "@/lib/utils";
 
 type TimeLeft = {
@@ -61,28 +62,32 @@ function RegisterModal({ open, onClose }: { open: boolean; onClose: () => void }
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
+  const [token, setToken] = useState("");
   const [status, setStatus] = useState<"idle" | "sending" | "done" | "error">("idle");
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setStatus("sending");
-    // Static build: submit straight to the CRM's Supabase queue, same path as
-    // the main lead form. The WhatsApp fallback in the success panel is the
-    // safety net, so a CRM hiccup still shows a confirmation rather than an
-    // error the visitor can do nothing about.
+    // Same CRM path as the main lead form (Edge Function when Turnstile is on).
+    // The WhatsApp fallback in the success panel is the safety net, so a CRM
+    // hiccup still shows a confirmation rather than a dead-end error.
     try {
-      await submitLead({
-        name,
-        phone,
-        email,
-        who: "athlete / student",
-        magnet: `Workshop: ${WORKSHOP.title}`,
-        goal: `Workshop registration: ${WORKSHOP.title}`,
-      });
+      await submitLead(
+        {
+          name,
+          phone,
+          email,
+          who: "athlete / student",
+          magnet: `Workshop: ${WORKSHOP.title}`,
+          goal: `Workshop registration: ${WORKSHOP.title}`,
+        },
+        token
+      );
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error("workshop register failed", err);
     }
+    setToken("");
     setStatus("done");
   }
 
@@ -174,11 +179,14 @@ function RegisterModal({ open, onClose }: { open: boolean; onClose: () => void }
                     </p>
                   )}
 
+                  {/* Bot check — renders only when Turnstile is configured */}
+                  <Turnstile onVerify={setToken} onExpire={() => setToken("")} />
+
                   <Button
                     type="submit"
                     size="lg"
                     className="w-full"
-                    disabled={status === "sending"}
+                    disabled={status === "sending" || (turnstileEnabled && !token)}
                   >
                     {status === "sending" ? (
                       <>

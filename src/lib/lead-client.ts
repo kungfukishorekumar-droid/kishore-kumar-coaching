@@ -48,7 +48,21 @@ export type LeadInput = {
   magnet?: string;
 };
 
-export async function submitLead(input: LeadInput): Promise<{ forwarded: boolean }> {
+/**
+ * When a Turnstile token is present we send it to the `submit-lead` Edge
+ * Function, which verifies the token server-side and then inserts with the
+ * service key. That path is the only one that actually stops bots, and it lets
+ * the queue drop its open anon-insert policy. With no token (Turnstile not
+ * configured) we fall back to the direct REST insert — unchanged behaviour.
+ */
+const FUNCTION_URL = SUPABASE_URL
+  ? `${SUPABASE_URL}/functions/v1/submit-lead`
+  : "";
+
+export async function submitLead(
+  input: LeadInput,
+  turnstileToken?: string
+): Promise<{ forwarded: boolean }> {
   if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return { forwarded: false };
 
   // Shape to the CRM's field names so it lands as a complete lead, mirroring
@@ -71,6 +85,21 @@ export async function submitLead(input: LeadInput): Promise<{ forwarded: boolean
     status: "Active",
   };
 
+  // Verified path: Edge Function checks the Turnstile token, then inserts.
+  if (turnstileToken) {
+    const res = await fetch(FUNCTION_URL, {
+      method: "POST",
+      headers: {
+        apikey: SUPABASE_ANON_KEY,
+        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ payload: crmLead, turnstileToken }),
+    });
+    return { forwarded: res.ok };
+  }
+
+  // Fallback: direct insert (used until Turnstile is configured).
   const res = await fetch(`${SUPABASE_URL}/rest/v1/public_leads`, {
     method: "POST",
     headers: {
