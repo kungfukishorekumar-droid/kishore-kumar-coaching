@@ -53,7 +53,7 @@ export const NAV_LINKS: {
   { label: "Home", id: "top" },
   { label: "Method", id: "method" },
   { label: "Programs", id: "programs" },
-  { label: "Blog", href: "/blog" },
+  { label: "Blog", href: "/blog/" },
   { label: "Reviews", id: "reviews" },
   { label: "Workshops", id: "institutions" },
   { label: "FAQ", id: "faq" },

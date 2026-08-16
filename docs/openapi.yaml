@@ -1,0 +1,254 @@
+openapi: 3.1.0
+
+# Hand-maintained. The API is two endpoints, so generating this from code would
+# add a build step and a dependency to describe less than 200 lines of handler.
+# Revisit that trade if a third endpoint appears.
+#
+# Contract tests that keep this honest live in tests/integration/lead-route.test.ts.
+
+info:
+  title: kishorekumarcoach.com API
+  version: "1.0.0"
+  description: |
+    The public site's server-side API. Two endpoints: one write path for leads,
+    one readiness probe.
+
+    There is no authentication, because there are no user accounts anywhere in
+    this system — no login, no sessions, no roles. The lead endpoint is
+    deliberately public and is protected by origin checking, two-tier rate
+    limiting, a honeypot field, optional Cloudflare Turnstile, and strict
+    server-side validation instead.
+
+    **Every path requires a trailing slash.** `trailingSlash: true` in
+    next.config.mjs applies to route handlers, so `/api/lead` answers `308` to
+    `/api/lead/`.
+
+servers:
+  - url: https://kishorekumarcoach.com
+    description: Production
+  - url: http://localhost:3000
+    description: Local development
+
+paths:
+  /api/lead/:
+    post:
+      summary: Submit a lead
+      description: |
+        Validates a submission and writes it to the WarriorCRM intake queue.
+
+        Checks run cheapest-first so an abusive caller cannot make the server do
+        expensive work: content-type → origin → burst rate limit → body size →
+        parse → honeypot → validation → Turnstile → duplicate → submit rate
+        limit → store.
+
+        `source`, `dateAdded`, `stage` and `status` are set server-side and are
+        ignored if supplied. Unknown fields are dropped.
+      operationId: submitLead
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LeadSubmission"
+      responses:
+        "200":
+          description: |
+            Accepted. Also returned when the honeypot caught a bot, and when an
+            identical lead was already queued — neither tells the caller which,
+            deliberately.
+          headers:
+            x-request-id:
+              $ref: "#/components/headers/RequestId"
+            Cache-Control:
+              schema: { type: string, example: "no-store, no-cache, must-revalidate" }
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/LeadAccepted" }
+        "403":
+          description: Origin not allowed, or the bot check failed.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ApiError" }
+        "405":
+          description: Wrong method.
+          headers:
+            Allow:
+              schema: { type: string, example: POST }
+        "413":
+          description: Body exceeds the size cap (16 KB by default).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ApiError" }
+        "415":
+          description: Content-Type was not application/json.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ApiError" }
+        "422":
+          description: |
+            Failed validation. The message is deliberately generic; the specific
+            fields go to the server log under this response's request id.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ApiError" }
+        "429":
+          description: Rate limited.
+          headers:
+            Retry-After:
+              schema: { type: integer, example: 600 }
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ApiError" }
+        "502":
+          description: |
+            This server worked; the upstream store did not. The client shows its
+            WhatsApp fallback on any non-2xx, so the lead still has a route.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ApiError" }
+
+  /api/health/:
+    get:
+      summary: Configuration readiness probe
+      description: |
+        Reports whether this deployment is configured to capture leads, and names
+        the next hardening step.
+
+        Returns booleans and credential KINDS only — never a value, a partial
+        value, or a length. The endpoint is unauthenticated, so everything it
+        prints is public. It makes no call to Supabase.
+      operationId: health
+      security: []
+      responses:
+        "200":
+          description: Ready. `status` is `ok` when fully hardened, `degraded` otherwise.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Health" }
+        "503":
+          description: Not configured — no Supabase credential available.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Health" }
+
+components:
+  headers:
+    RequestId:
+      description: Correlates this response with the server logs. Quote it in support.
+      schema: { type: string, format: uuid }
+
+  schemas:
+    LeadSubmission:
+      type: object
+      required: [name]
+      additionalProperties: false
+      description: |
+        A lead needs a name plus at least one of phone or email. Any property not
+        listed here is silently dropped rather than rejected.
+      properties:
+        name:
+          type: string
+          minLength: 2
+          maxLength: 100
+          example: Arjun Kumar
+        phone:
+          type: string
+          maxLength: 24
+          description: 7–15 digits after non-digits are ignored. Permissive by design.
+          example: "+91 98845 99939"
+        email:
+          type: string
+          format: email
+          maxLength: 254
+          example: arjun@example.com
+        age:
+          type: string
+          description: Kept only when it parses to 3–100; a junk value is dropped, not rejected.
+          example: "16"
+        sport:
+          type: string
+          maxLength: 100
+          example: Wushu
+        who:
+          type: string
+          description: Mapped to a lead type. Anything unrecognised becomes `Athlete`.
+          enum: ["athlete / student", "parent", "coach / institution"]
+        challenge:
+          type: string
+          maxLength: 500
+          example: Competition nerves
+        goal:
+          type: string
+          maxLength: 500
+        magnet:
+          type: string
+          maxLength: 200
+          description: Which offer produced this lead.
+          example: focus-confidence-checklist
+        landingPage:
+          type: string
+          format: uri
+          description: Kept only if same-origin. Query and fragment are stripped.
+        turnstileToken:
+          type: string
+          maxLength: 2048
+          description: Required only once TURNSTILE_SECRET_KEY is configured.
+        company:
+          type: string
+          description: |
+            Honeypot. Hidden from people; a non-empty value marks the sender a
+            bot. The response is still 200 and nothing is stored.
+
+    LeadAccepted:
+      type: object
+      properties:
+        ok: { type: boolean, const: true }
+        forwarded: { type: boolean, const: true }
+        duplicate:
+          type: boolean
+          description: Present when an identical lead was already queued.
+
+    ApiError:
+      type: object
+      properties:
+        ok: { type: boolean, const: false }
+        error:
+          type: string
+          description: Stable machine-readable code.
+          enum:
+            - unsupported-media-type
+            - bad-origin
+            - bad-json
+            - bad-shape
+            - too-large
+            - invalid
+            - bot-check-failed
+            - rate-limited
+            - storage-unavailable
+        message:
+          type: string
+          description: |
+            Safe to show a visitor. Never contains stack traces, SQL, upstream
+            responses or table names.
+
+    Health:
+      type: object
+      properties:
+        ok: { type: boolean }
+        status:
+          type: string
+          enum: [ok, degraded, unconfigured]
+        leadCapture:
+          type: object
+          properties:
+            supabaseUrlSet: { type: boolean }
+            credential:
+              type: string
+              enum: [service_role, publishable, missing]
+            turnstileWidget: { type: boolean }
+            turnstileEnforced: { type: boolean }
+        nextStep:
+          type: [string, "null"]
+          description: The next hardening action, or null when fully hardened.
+        time: { type: string, format: date-time }

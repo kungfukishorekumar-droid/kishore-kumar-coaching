@@ -120,7 +120,7 @@ export function Programs() {
                   <div className="relative mt-7 space-y-3">
                     <ProgramCTA program={p} />
                     <Link
-                      href={`/programs/${p.slug}`}
+                      href={`/programs/${p.slug}/`}
                       className="flex items-center justify-center gap-1.5 text-xs font-semibold text-foreground/55 transition-colors hover:text-gold-200"
                     >
                       View program details

@@ -10,11 +10,28 @@ import { submitLead } from "@/lib/lead-client";
 import { Turnstile, turnstileEnabled } from "@/components/ui/turnstile";
 import { cn } from "@/lib/utils";
 
+const FALLBACK_WA_MESSAGE =
+  "Hi Kishore, I just requested the free Athlete Focus & Confidence Checklist.";
+
 export function LeadForm() {
   const [status, setStatus] = useState<"idle" | "sending" | "done">("idle");
   const [who, setWho] = useState(LEAD_FORM.whoOptions[0]);
   const [challenge, setChallenge] = useState(LEAD_FORM.challengeOptions[0]);
   const [token, setToken] = useState("");
+  /**
+   * Did the lead actually reach the CRM? Previously the result was discarded and
+   * every submission rendered "Your details are saved" — so a CRM outage told
+   * the visitor their details were captured when nothing had been written
+   * anywhere, and the lead was lost in silence. The panel still never shows a
+   * dead end; it just tells the truth about which path to trust.
+   */
+  const [forwarded, setForwarded] = useState(true);
+  /**
+   * Prefilled WhatsApp text. When the CRM hand-off fails this is the only route
+   * the lead has left, so it carries what the visitor already typed rather than
+   * asking them to type it a second time.
+   */
+  const [waMessage, setWaMessage] = useState(FALLBACK_WA_MESSAGE);
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -24,18 +41,35 @@ export function LeadForm() {
     const data = Object.fromEntries(new FormData(form).entries()) as Record<string, string>;
 
     // Post to WarriorCRM's Supabase queue (Edge Function when Turnstile is on).
-    // Failures are swallowed on purpose — the WhatsApp fallback in the success
-    // panel is the real safety net, so a CRM hiccup must never block the user.
+    // A failure never blocks the user — the WhatsApp fallback in the success
+    // panel is the real safety net — but it does change the copy.
+    let reached = false;
     try {
-      await submitLead(
+      const result = await submitLead(
         { ...data, who, challenge, magnet: "focus-confidence-checklist" },
         token
       );
+      reached = result.forwarded;
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error("lead submit failed", err);
     }
 
+    setForwarded(reached);
+    setWaMessage(
+      reached
+        ? FALLBACK_WA_MESSAGE
+        : [
+            FALLBACK_WA_MESSAGE,
+            data.name && `Name: ${data.name}`,
+            data.phone && `Phone: ${data.phone}`,
+            data.sport && `Sport: ${data.sport}`,
+            `I am a: ${who}`,
+            `Main challenge: ${challenge}`,
+          ]
+            .filter(Boolean)
+            .join("\n")
+    );
     setStatus("done");
     setToken("");
     form.reset();
@@ -84,23 +118,22 @@ export function LeadForm() {
                   >
                     <CheckCircle2 className="size-14 text-gold-300" />
                     <h3 className="mt-4 font-display text-2xl font-bold">
-                      You're in! 🥋
+                      {forwarded ? "You're in! 🥋" : "One quick step 🥋"}
                     </h3>
                     <p className="mt-2 max-w-sm text-sm text-foreground/70">
-                      Your details are saved. Tap below on WhatsApp and I'll send
-                      your free checklist straight to you.
+                      {forwarded
+                        ? "Your details are saved. Tap below on WhatsApp and I'll send your free checklist straight to you."
+                        : "I couldn't save your details just now. Tap below to send them on WhatsApp — that reaches me directly and I'll send your free checklist straight back."}
                     </p>
                     <div className="mt-6 flex flex-col gap-2 sm:flex-row">
                       <Button asChild>
                         <a
-                          href={whatsappLink(
-                            "Hi Kishore, I just requested the free Athlete Focus & Confidence Checklist."
-                          )}
+                          href={whatsappLink(waMessage)}
                           target="_blank"
                           rel="noreferrer"
                         >
                           <MessageCircle className="size-4" />
-                          Get it on WhatsApp
+                          {forwarded ? "Get it on WhatsApp" : "Send on WhatsApp"}
                         </a>
                       </Button>
                       <Button variant="outline" onClick={() => setStatus("idle")}>
@@ -139,6 +172,23 @@ export function LeadForm() {
                       value={challenge}
                       onChange={setChallenge}
                     />
+
+                    {/* Honeypot. Hidden from people, irresistible to form-filling
+                        bots — the server discards any submission that fills it.
+                        Deliberately not `display:none`: some bots skip those, so
+                        it is positioned off-screen instead, and taken out of the
+                        tab order and the accessibility tree so no real visitor
+                        can reach it by keyboard or screen reader. */}
+                    <div aria-hidden="true" className="absolute left-[-9999px] top-0 h-0 w-0 overflow-hidden">
+                      <label htmlFor="company">Company (leave blank)</label>
+                      <input
+                        id="company"
+                        name="company"
+                        type="text"
+                        tabIndex={-1}
+                        autoComplete="off"
+                      />
+                    </div>
 
                     {/* Bot check — renders only when Turnstile is configured */}
                     <Turnstile onVerify={setToken} onExpire={() => setToken("")} />

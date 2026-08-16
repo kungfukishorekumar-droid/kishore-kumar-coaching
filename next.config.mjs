@@ -32,10 +32,16 @@ const isProd = process.env.NODE_ENV === "production";
  *  • 'unsafe-inline' on script-src is required by Next's hydration bootstrap.
  *  • 'unsafe-eval' only in dev (React refresh / Turbopack need it); production
  *    omits it.
- *  • Supabase host is needed by the lead form; Cloudflare by Turnstile;
- *    youtube-nocookie by the blog video embeds.
+ *  • Cloudflare is needed by Turnstile; youtube-nocookie by the blog video
+ *    embeds.
+ *
+ * `connect-src` is now just 'self'. It used to allow a Supabase host because the
+ * lead form POSTed into Supabase straight from the browser; that path is gone —
+ * submissions go to /api/lead/ on this origin and the server does the writing
+ * (see src/lib/lead-client.ts). Removing the host is not cosmetic: it means a
+ * script injected into this page cannot reach the CRM's API at all, whatever
+ * credential it manages to find.
  */
-const SUPABASE_HOST = "https://oqwbmtdrjxfbnitlzehe.supabase.co";
 const TURNSTILE_HOST = "https://challenges.cloudflare.com";
 
 const csp = [
@@ -44,7 +50,7 @@ const csp = [
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https://i.ytimg.com",
   "font-src 'self' data:",
-  `connect-src 'self' ${SUPABASE_HOST} ${TURNSTILE_HOST}`,
+  `connect-src 'self' ${TURNSTILE_HOST}`,
   "worker-src 'self' blob:",
   `frame-src https://www.youtube-nocookie.com ${TURNSTILE_HOST}`,
   "object-src 'none'",

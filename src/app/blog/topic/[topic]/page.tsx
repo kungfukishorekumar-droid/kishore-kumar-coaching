@@ -45,7 +45,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const t = topics().get(topic);
   if (!t) return {};
 
-  const url = `${SEO.siteUrl}/blog/topic/${topic}`;
+  const url = `${SEO.siteUrl}/blog/topic/${topic}/`;
   return {
     title: `${t.name} Articles — Kishore Kumar, Chennai`,
     description: `${t.count} articles on ${t.name.toLowerCase()} by Kishore Kumar — National Wushu Medalist and sports psychologist in ${SEO.address.locality}.`,
@@ -67,14 +67,14 @@ export default async function TopicPage({ params }: Params) {
 
   const posts = SORTED_POSTS.filter((p) => toSlug(p.category) === topic);
   const others = [...topics().entries()].filter(([slug]) => slug !== topic);
-  const url = `${SEO.siteUrl}/blog/topic/${topic}`;
+  const url = `${SEO.siteUrl}/blog/topic/${topic}/`;
 
   const jsonLd = {
     "@context": "https://schema.org",
     "@graph": [
       {
         "@type": "CollectionPage",
-        "@id": `${url}/#collection`,
+        "@id": `${url}#collection`,
         name: `${t.name} — Articles by ${SEO.founder}`,
         url,
         inLanguage: "en-IN",
@@ -87,7 +87,7 @@ export default async function TopicPage({ params }: Params) {
             "@type": "ListItem",
             position: i + 1,
             name: p.title,
-            url: `${SEO.siteUrl}/blog/${p.slug}`,
+            url: `${SEO.siteUrl}/blog/${p.slug}/`,
           })),
         },
       },
@@ -95,7 +95,7 @@ export default async function TopicPage({ params }: Params) {
         "@type": "BreadcrumbList",
         itemListElement: [
           { "@type": "ListItem", position: 1, name: "Home", item: SEO.siteUrl },
-          { "@type": "ListItem", position: 2, name: "Blog", item: `${SEO.siteUrl}/blog` },
+          { "@type": "ListItem", position: 2, name: "Blog", item: `${SEO.siteUrl}/blog/` },
           { "@type": "ListItem", position: 3, name: t.name, item: url },
         ],
       },
@@ -117,7 +117,7 @@ export default async function TopicPage({ params }: Params) {
             <nav aria-label="Breadcrumb" className="flex justify-center gap-1.5 text-xs text-foreground/50">
               <Link href="/" className="transition-colors hover:text-gold-200">Home</Link>
               <span aria-hidden="true">/</span>
-              <Link href="/blog" className="transition-colors hover:text-gold-200">Blog</Link>
+              <Link href="/blog/" className="transition-colors hover:text-gold-200">Blog</Link>
               <span aria-hidden="true">/</span>
               <span className="text-foreground/80">{t.name}</span>
             </nav>
@@ -136,7 +136,7 @@ export default async function TopicPage({ params }: Params) {
               {posts.map((p) => (
                 <Reveal key={p.slug} className="h-full">
                   <Link
-                    href={`/blog/${p.slug}`}
+                    href={`/blog/${p.slug}/`}
                     className="glow-card group flex h-full flex-col rounded-2xl glass p-5 transition-colors hover:border-gold-400/25"
                   >
                     <span className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-gold-300">
@@ -167,7 +167,7 @@ export default async function TopicPage({ params }: Params) {
                 {others.map(([slug, o]) => (
                   <Link
                     key={slug}
-                    href={`/blog/topic/${slug}`}
+                    href={`/blog/topic/${slug}/`}
                     className="rounded-full border border-gold-400/25 bg-white/5 px-4 py-2 text-sm text-foreground/75 transition-colors hover:border-gold-400/60 hover:text-gold-100"
                   >
                     {o.name}
@@ -179,7 +179,7 @@ export default async function TopicPage({ params }: Params) {
 
             <div className="mt-10">
               <Link
-                href="/blog"
+                href="/blog/"
                 className="inline-flex items-center gap-2 text-sm text-foreground/55 transition-colors hover:text-gold-200"
               >
                 <ArrowLeft className="size-4" aria-hidden="true" />

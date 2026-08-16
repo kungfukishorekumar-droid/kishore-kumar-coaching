@@ -51,7 +51,15 @@ function loadScript(): Promise<void> {
     `script[src="${SCRIPT_SRC}"]`
   );
   if (existing) {
-    return new Promise((res) => existing.addEventListener("load", () => res()));
+    // Both a load and an error must settle this promise. Listening only for
+    // "load" left the second widget on the page waiting forever whenever the
+    // script request failed (adblock, offline), so its .catch() never ran.
+    return new Promise((res, rej) => {
+      existing.addEventListener("load", () => res());
+      existing.addEventListener("error", () =>
+        rej(new Error("Turnstile failed to load"))
+      );
+    });
   }
 
   return new Promise((res, rej) => {
@@ -77,6 +85,25 @@ export function Turnstile({
   const ref = useRef<HTMLDivElement>(null);
   const widgetId = useRef<string | null>(null);
 
+  /**
+   * Callbacks live in refs, and the effect below mounts the widget exactly once.
+   *
+   * Both call sites pass an inline arrow for onExpire (`() => setToken("")`), so
+   * putting the callbacks in the dependency array made the effect re-run on
+   * EVERY parent render: cleanup removed the widget, the effect rendered a fresh
+   * unsolved one. Two consequences, both only visible once a site key is set —
+   * which is why this survived: picking a chip in the form silently discarded a
+   * solved challenge, and a managed widget that auto-solves would fire its
+   * callback → setToken → render → remount → callback, i.e. an unbounded
+   * remount loop hammering Cloudflare.
+   *
+   * Refs keep the latest callback without making it an effect input.
+   */
+  const onVerifyRef = useRef(onVerify);
+  const onExpireRef = useRef(onExpire);
+  onVerifyRef.current = onVerify;
+  onExpireRef.current = onExpire;
+
   useEffect(() => {
     if (!SITE_KEY || !ref.current) return;
     let cancelled = false;
@@ -88,10 +115,10 @@ export function Turnstile({
           sitekey: SITE_KEY,
           theme: "dark",
           size: "flexible",
-          callback: onVerify,
-          "expired-callback": onExpire,
+          callback: (token) => onVerifyRef.current(token),
+          "expired-callback": () => onExpireRef.current?.(),
           // A failed challenge must not silently look "verified".
-          "error-callback": () => onExpire?.(),
+          "error-callback": () => onExpireRef.current?.(),
         });
       })
       .catch(() => {
@@ -109,7 +136,7 @@ export function Turnstile({
         }
       }
     };
-  }, [onVerify, onExpire]);
+  }, []);
 
   if (!SITE_KEY) return null;
   return <div ref={ref} className={className} />;

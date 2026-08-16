@@ -28,7 +28,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const post = getPost(slug);
   if (!post) return {};
 
-  const url = `${SEO.siteUrl}/blog/${post.slug}`;
+  const url = `${SEO.siteUrl}/blog/${post.slug}/`;
   return {
     title: post.title,
     description: post.description,
@@ -60,7 +60,7 @@ export default async function BlogPostPage({ params }: Params) {
   const post = getPost(slug);
   if (!post) notFound();
 
-  const url = `${SEO.siteUrl}/blog/${post.slug}`;
+  const url = `${SEO.siteUrl}/blog/${post.slug}/`;
   const related = SORTED_POSTS.filter((p) => p.slug !== post.slug).slice(0, 3);
 
   /**
@@ -76,7 +76,7 @@ export default async function BlogPostPage({ params }: Params) {
     "@graph": [
       {
         "@type": "BlogPosting",
-        "@id": `${url}/#article`,
+        "@id": `${url}#article`,
         headline: post.title,
         description: post.description,
         image: `${SEO.siteUrl}${post.image}`,
@@ -108,7 +108,7 @@ export default async function BlogPostPage({ params }: Params) {
       },
       {
         "@type": "FAQPage",
-        "@id": `${url}/#faq`,
+        "@id": `${url}#faq`,
         mainEntity: post.faqs.map((f) => ({
           "@type": "Question",
           name: f.q,
@@ -119,7 +119,7 @@ export default async function BlogPostPage({ params }: Params) {
         "@type": "BreadcrumbList",
         itemListElement: [
           { "@type": "ListItem", position: 1, name: "Home", item: SEO.siteUrl },
-          { "@type": "ListItem", position: 2, name: "Blog", item: `${SEO.siteUrl}/blog` },
+          { "@type": "ListItem", position: 2, name: "Blog", item: `${SEO.siteUrl}/blog/` },
           { "@type": "ListItem", position: 3, name: post.title, item: url },
         ],
       },
@@ -130,7 +130,7 @@ export default async function BlogPostPage({ params }: Params) {
         ? [
             {
               "@type": "VideoObject",
-              "@id": `${url}/#video`,
+              "@id": `${url}#video`,
               name: post.video.title,
               description: post.description,
               thumbnailUrl: `https://i.ytimg.com/vi/${post.video.id}/maxresdefault.jpg`,
@@ -173,7 +173,7 @@ export default async function BlogPostPage({ params }: Params) {
                   Home
                 </Link>
                 <span aria-hidden="true">/</span>
-                <Link href="/blog" className="transition-colors hover:text-gold-200">
+                <Link href="/blog/" className="transition-colors hover:text-gold-200">
                   Blog
                 </Link>
                 <span aria-hidden="true">/</span>
@@ -339,7 +339,7 @@ export default async function BlogPostPage({ params }: Params) {
                   </a>
                 </Button>
                 <Button asChild size="lg" variant="outline">
-                  <Link href="/programs">
+                  <Link href="/programs/">
                     See programs
                     <ArrowRight className="size-4" />
                   </Link>
@@ -357,7 +357,7 @@ export default async function BlogPostPage({ params }: Params) {
               {related.map((r) => (
                 <Link
                   key={r.slug}
-                  href={`/blog/${r.slug}`}
+                  href={`/blog/${r.slug}/`}
                   className="glow-card group flex h-full flex-col rounded-2xl glass p-5 transition-colors hover:border-gold-400/25"
                 >
                   <span className="text-[11px] font-semibold uppercase tracking-wider text-gold-300">
@@ -376,7 +376,7 @@ export default async function BlogPostPage({ params }: Params) {
 
             <div className="mt-10">
               <Link
-                href="/blog"
+                href="/blog/"
                 className="inline-flex items-center gap-2 text-sm text-foreground/55 transition-colors hover:text-gold-200"
               >
                 <ArrowLeft className="size-4" aria-hidden="true" />

@@ -1,0 +1,78 @@
+# Build check for every push and PR.
+#
+# ── Why this no longer deploys ───────────────────────────────────────────────
+# This file used to build a static export and FTP-upload ./out/ to Hostinger.
+# That stopped being true twice over:
+#
+#   1. The site is no longer a static export. next.config.mjs runs it as a real
+#      Next.js app (that is what restores the live security headers, next/image
+#      and the route handlers), so `next build` produces .next/, not ./out/.
+#   2. Hostinger deploys the app from Git itself. Its responses carry
+#      x-nextjs-cache / x-nextjs-prerender, i.e. a Node runtime is serving them.
+#
+# So the FTP step pointed at a directory that no longer exists. It ran on every
+# push to main and could only fail — or, worse, succeed at publishing nothing
+# over a working site. It has been removed rather than left to rot.
+#
+# What remains is the part that was actually earning its keep: proof that every
+# push still installs, type-checks and builds. If you ever go back to static
+# hosting, restore `output: "export"` in next.config.mjs first, then re-add an
+# upload step for ./out/ — not before.
+#
+# Optional secrets (used at build time; the Supabase anon/publishable key only,
+# never the service_role key):
+#   NEXT_PUBLIC_SUPABASE_URL
+#   NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+name: Build check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch: {}
+
+concurrency:
+  group: build-check-${{ github.ref }}
+  cancel-in-progress: true
+
+# The workflow only reads the repository; it publishes nothing.
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          # Matches .nvmrc / .node-version and the engines field in package.json.
+          node-version-file: ".nvmrc"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Runs before the build so a type error is reported as a type error rather
+      # than as a build failure ten steps later.
+      - name: Type check
+        run: npm run typecheck
+
+      # Covers the server-side lead pipeline: validation, rate limiting,
+      # honeypot, de-duplication, Turnstile and the route wiring. No network and
+      # no database — `fetch` is stubbed, so CI can never write to the live CRM.
+      - name: Test
+        run: npm run test
+
+      - name: Build
+        env:
+          # Baked into the client at build time. Absent → the committed
+          # publishable fallbacks in src/lib/lead-client.ts are used, which is
+          # the current production behaviour, not a build error.
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+        run: npm run build

@@ -13,7 +13,7 @@ import { SEO } from "@/lib/seo";
 import { jsonLdString } from "@/lib/utils";
 import { SORTED_POSTS } from "@/content/blog";
 
-const url = `${SEO.siteUrl}/blog`;
+const url = `${SEO.siteUrl}/blog/`;
 
 /** Topic hubs, derived from post categories so they can never drift apart. */
 const TOPICS = Object.values(
@@ -49,7 +49,7 @@ export default function BlogIndex() {
     "@graph": [
       {
         "@type": "Blog",
-        "@id": `${url}/#blog`,
+        "@id": `${url}#blog`,
         name: "Kishore Kumar — Sports Psychology & Martial Arts Blog",
         description:
           "Articles on sports psychology, athlete mindset and martial arts training in Chennai.",
@@ -60,7 +60,8 @@ export default function BlogIndex() {
         blogPost: SORTED_POSTS.map((p) => ({
           "@type": "BlogPosting",
           headline: p.title,
-          url: `${url}/${p.slug}`,
+          // `url` already ends in a slash (trailingSlash: true), so no separator.
+          url: `${url}${p.slug}/`,
           datePublished: p.publishedAt,
           author: { "@id": `${SEO.siteUrl}/#kishore` },
         })),
@@ -115,7 +116,7 @@ export default function BlogIndex() {
               {TOPICS.map((t) => (
                 <Link
                   key={t.slug}
-                  href={`/blog/topic/${t.slug}`}
+                  href={`/blog/topic/${t.slug}/`}
                   className="rounded-full border border-gold-400/25 bg-white/5 px-4 py-2 text-sm text-foreground/75 transition-colors hover:border-gold-400/60 hover:text-gold-100"
                 >
                   {t.name}
@@ -132,7 +133,7 @@ export default function BlogIndex() {
             {lead && (
               <Reveal>
                 <Link
-                  href={`/blog/${lead.slug}`}
+                  href={`/blog/${lead.slug}/`}
                   className="glow-card group mb-8 grid gap-6 overflow-hidden rounded-3xl glass-gold p-7 md:grid-cols-[1.1fr_1fr] md:p-9"
                 >
                   <div className="flex flex-col justify-center">
@@ -171,7 +172,7 @@ export default function BlogIndex() {
               {rest.map((p) => (
                 <Reveal key={p.slug} className="h-full">
                   <Link
-                    href={`/blog/${p.slug}`}
+                    href={`/blog/${p.slug}/`}
                     className="glow-card group flex h-full flex-col overflow-hidden rounded-3xl glass transition-colors hover:border-gold-400/25"
                   >
                     <div className="relative aspect-[16/9] overflow-hidden">

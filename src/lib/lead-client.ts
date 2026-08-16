@@ -1,49 +1,53 @@
 /**
- * Client-side lead submission for the static build.
+ * Client-side lead submission.
  *
- * With no server, the form posts straight into WarriorCRM's Supabase
- * `public_leads` queue from the browser. That is only safe with the Supabase
- * ANON / publishable key and a row-level-security policy that allows INSERT
- * (and nothing else) on that one table — never the service_role key, which
- * would be readable by anyone in the shipped bundle.
+ * ── What changed, and why it matters ─────────────────────────────────────────
+ * This file used to POST straight into Supabase's REST API from the browser,
+ * carrying a publishable key that was committed to the repo and shipped in the
+ * bundle. That design came from a period when the site was a static export with
+ * no server to put a secret behind. The site now runs as a real Next.js app, so
+ * the form posts to our own `/api/lead/` and the server does the writing.
  *
- * Both values are NEXT_PUBLIC_ because a static export bakes env vars in at
- * build time; there is no runtime to read them later. They are meant to be
- * public here, which is the whole design of a Supabase anon key.
+ * The consequences are the point:
+ *   • The browser holds NO Supabase credential. Reading the bundle no longer
+ *     grants anyone the ability to write to the CRM queue.
+ *   • Turnstile can finally be enforced — a token means nothing until a server
+ *     exchanges it with Cloudflare.
+ *   • Validation, rate limiting and duplicate suppression happen somewhere a
+ *     caller cannot skip by calling the API directly.
  *
- * If the env vars are absent (e.g. a local build without them), submit() is a
- * no-op that still resolves, so the form shows its success state and the
- * WhatsApp fallback — the user is never left staring at a dead button.
+ * Because no Supabase host is contacted from the page any more, the CSP
+ * `connect-src` in next.config.mjs no longer needs to allow one.
  */
-
-// Env vars win when set (Vercel → Settings → Environment Variables); the
-// committed fallbacks are the WarriorCRM project's PUBLISHABLE values, which are
-// safe in a shipped bundle by design (RLS lets this key INSERT into public_leads
-// and nothing else). This makes lead capture work the moment the site deploys,
-// with no manual env step required.
-const SUPABASE_URL =
-  process.env.NEXT_PUBLIC_SUPABASE_URL || "https://oqwbmtdrjxfbnitlzehe.supabase.co";
-const SUPABASE_ANON_KEY =
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "sb_publishable_Tqkzvziw-5C6I7Hib92B-g_AZQIJTRA";
 
 /**
- * Which website this lead came from. Both this site and the Spartacus site feed
- * the same Supabase `public_leads` queue, so the CRM needs a stable label to
- * tell them apart and route/report on each. The Spartacus site sends
- * "spartacusmartialarts.com" for the same field (see docs/connect-spartacus-to-crm.md).
+ * Trailing slash is required, not cosmetic. `trailingSlash: true` in
+ * next.config.mjs applies to route handlers, so `/api/lead` answers 308 to
+ * `/api/lead/`. The redirect works — 308 preserves the method and body — but it
+ * doubles the round trips on every submission.
  */
-const LEAD_SOURCE = "kishorekumarcoach.com";
+const LEAD_ENDPOINT = "/api/lead/";
 
-const ROLE_MAP: Record<string, string> = {
-  "athlete / student": "Athlete",
-  parent: "Parent",
-  "coach / institution": "Coach",
-};
+/**
+ * A stalled request would otherwise pin the button on "Sending…" forever, since
+ * fetch has no default timeout. Twelve seconds sits just past the server's own
+ * 8s upstream timeout, so a server-side failure gets to return a real error
+ * before the client gives up on it.
+ */
+const REQUEST_TIMEOUT_MS = 12_000;
+
+function timeoutSignal(): AbortSignal | undefined {
+  // AbortSignal.timeout is in every browser this site targets (see the
+  // browserslist in package.json); guarded anyway so an old bot UA can't throw.
+  return typeof AbortSignal !== "undefined" && "timeout" in AbortSignal
+    ? AbortSignal.timeout(REQUEST_TIMEOUT_MS)
+    : undefined;
+}
 
 export type LeadInput = {
   // All optional: the payload is assembled from a FormData bag, and the
   // form's own `required` attributes guarantee name + a contact method
-  // before submit ever runs.
+  // before submit ever runs. The server validates regardless.
   name?: string;
   phone?: string;
   email?: string;
@@ -53,70 +57,56 @@ export type LeadInput = {
   challenge?: string;
   goal?: string;
   magnet?: string;
+  /** Honeypot. Hidden from humans; a filled value marks the sender a bot. */
+  company?: string;
+};
+
+export type LeadResult = {
+  /** Did the lead reach the CRM queue? Drives the form's success copy. */
+  forwarded: boolean;
+  /** Server request id, echoed in `x-request-id` — quote it in support. */
+  requestId?: string;
 };
 
 /**
- * When a Turnstile token is present we send it to the `submit-lead` Edge
- * Function, which verifies the token server-side and then inserts with the
- * service key. That path is the only one that actually stops bots, and it lets
- * the queue drop its open anon-insert policy. With no token (Turnstile not
- * configured) we fall back to the direct REST insert — unchanged behaviour.
+ * Submit a lead.
+ *
+ * Never throws for an ordinary failure: a rejected or unreachable server
+ * resolves with `forwarded: false` so the caller can show its WhatsApp
+ * fallback. `source`, `stage`, `status` and the submission date are deliberately
+ * NOT sent — the server owns them, precisely so a client cannot choose them.
  */
-const FUNCTION_URL = SUPABASE_URL
-  ? `${SUPABASE_URL}/functions/v1/submit-lead`
-  : "";
-
 export async function submitLead(
   input: LeadInput,
   turnstileToken?: string
-): Promise<{ forwarded: boolean }> {
-  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return { forwarded: false };
-
-  // Shape to the CRM's field names so it lands as a complete lead, mirroring
-  // what the old server route did.
-  const crmLead = {
-    name: (input.name ?? "").trim(),
-    phone: (input.phone ?? "").trim(),
-    whatsapp: (input.phone ?? "").trim(),
-    email: (input.email ?? "").trim(),
-    athleteAge: (input.age ?? "").trim(),
-    sport: (input.sport ?? "").trim(),
-    leadType: ROLE_MAP[(input.who ?? "").toLowerCase()] || "Athlete",
-    mainProblem: (input.challenge ?? "").trim(),
-    goal: (input.goal ?? "").trim(),
-    source: LEAD_SOURCE,
-    campaign: (input.magnet ?? "").trim(),
-    landingPage: typeof window !== "undefined" ? window.location.href : "",
-    dateAdded: new Date().toISOString().slice(0, 10),
-    stage: "New Lead",
-    status: "Active",
-  };
-
-  // Verified path: Edge Function checks the Turnstile token, then inserts.
-  if (turnstileToken) {
-    const res = await fetch(FUNCTION_URL, {
+): Promise<LeadResult> {
+  try {
+    const res = await fetch(LEAD_ENDPOINT, {
       method: "POST",
-      headers: {
-        apikey: SUPABASE_ANON_KEY,
-        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ payload: crmLead, turnstileToken }),
+      headers: { "Content-Type": "application/json" },
+      // Same-origin only; no credentials are needed or wanted.
+      credentials: "omit",
+      body: JSON.stringify({
+        name: input.name ?? "",
+        phone: input.phone ?? "",
+        email: input.email ?? "",
+        age: input.age ?? "",
+        sport: input.sport ?? "",
+        who: input.who ?? "",
+        challenge: input.challenge ?? "",
+        goal: input.goal ?? "",
+        magnet: input.magnet ?? "",
+        company: input.company ?? "",
+        landingPage: typeof window !== "undefined" ? window.location.href : "",
+        turnstileToken: turnstileToken ?? "",
+      }),
+      signal: timeoutSignal(),
     });
-    return { forwarded: res.ok };
+
+    const requestId = res.headers.get("x-request-id") ?? undefined;
+    return { forwarded: res.ok, requestId };
+  } catch {
+    // Offline, timed out, or blocked. The form's WhatsApp fallback covers it.
+    return { forwarded: false };
   }
-
-  // Fallback: direct insert (used until Turnstile is configured).
-  const res = await fetch(`${SUPABASE_URL}/rest/v1/public_leads`, {
-    method: "POST",
-    headers: {
-      apikey: SUPABASE_ANON_KEY,
-      Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
-      "Content-Type": "application/json",
-      Prefer: "return=minimal",
-    },
-    body: JSON.stringify({ payload: crmLead }),
-  });
-
-  return { forwarded: res.ok };
 }

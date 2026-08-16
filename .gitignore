@@ -7,6 +7,9 @@
 /.next/
 /out/
 /build
+# Leftover from the pre-Next Vite setup; the build system is gone, so a dist/
+# reappearing means something regenerated stale output that must not be tracked.
+/dist
 
 # debug & logs
 *.log
@@ -15,9 +18,15 @@ yarn-debug.log*
 yarn-error.log*
 
 # env files (never commit secrets)
+#
+# `.env` and `.env*.local` alone left a real hole: `.env.production` and
+# `.env.staging` end in neither, so a file holding the production
+# SUPABASE_SERVICE_ROLE_KEY would have been committed without a warning. Ignore
+# every .env variant, then re-admit the one file that must be tracked.
 .env
-.env*.local
+.env.*
 *.local
+!.env.example
 
 # editor / os
 .DS_Store

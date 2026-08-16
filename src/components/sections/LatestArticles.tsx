@@ -37,7 +37,7 @@ export function LatestArticles() {
         {latest.map((p) => (
           <Reveal key={p.slug} className="h-full">
             <Link
-              href={`/blog/${p.slug}`}
+              href={`/blog/${p.slug}/`}
               className="glow-card group flex h-full flex-col rounded-2xl glass p-5 transition-colors hover:border-gold-400/25"
             >
               <span className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-gold-300">
@@ -61,7 +61,7 @@ export function LatestArticles() {
 
       <Reveal className="mt-9 text-center">
         <Link
-          href="/blog"
+          href="/blog/"
           className="link-underline inline-flex items-center gap-2 font-semibold text-gold-200"
         >
           Read all {SORTED_POSTS.length} articles

@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params;
   const p = getProgram(slug);
   if (!p) return {};
-  const url = `${SEO.siteUrl}/programs/${p.slug}`;
+  const url = `${SEO.siteUrl}/programs/${p.slug}/`;
   return {
     title: `${p.name} in Chennai`,
     description: p.description,
@@ -65,7 +65,7 @@ export default async function ProgramPage({ params }: Params) {
         serviceType: "Athlete mindset & martial arts coaching",
         provider: { "@id": `${SEO.siteUrl}/#organization` },
         areaServed: SEO.areasServed.map((a) => ({ "@type": "City", name: a })),
-        url: `${SEO.siteUrl}/programs/${program.slug}`,
+        url: `${SEO.siteUrl}/programs/${program.slug}/`,
       },
       // Course sits alongside Service deliberately: Service describes the
       // coaching offer, Course is what education-intent searches and AI answer
@@ -76,7 +76,7 @@ export default async function ProgramPage({ params }: Params) {
         "@id": `${SEO.siteUrl}/programs/${program.slug}/#course`,
         name: program.name,
         description: program.description,
-        url: `${SEO.siteUrl}/programs/${program.slug}`,
+        url: `${SEO.siteUrl}/programs/${program.slug}/`,
         provider: { "@id": `${SEO.siteUrl}/#organization` },
         educationalLevel: "Beginner to advanced",
         teaches: program.focus,
@@ -103,8 +103,8 @@ export default async function ProgramPage({ params }: Params) {
         "@type": "BreadcrumbList",
         itemListElement: [
           { "@type": "ListItem", position: 1, name: "Home", item: SEO.siteUrl },
-          { "@type": "ListItem", position: 2, name: "Programs", item: `${SEO.siteUrl}/programs` },
-          { "@type": "ListItem", position: 3, name: program.name, item: `${SEO.siteUrl}/programs/${program.slug}` },
+          { "@type": "ListItem", position: 2, name: "Programs", item: `${SEO.siteUrl}/programs/` },
+          { "@type": "ListItem", position: 3, name: program.name, item: `${SEO.siteUrl}/programs/${program.slug}/` },
         ],
       },
     ],
@@ -133,7 +133,7 @@ export default async function ProgramPage({ params }: Params) {
             <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-1.5 text-xs text-foreground/50">
               <Link href="/" className="transition-colors hover:text-gold-200">Home</Link>
               <span>/</span>
-              <Link href="/programs" className="transition-colors hover:text-gold-200">Programs</Link>
+              <Link href="/programs/" className="transition-colors hover:text-gold-200">Programs</Link>
               <span>/</span>
               <span className="text-foreground/80">{program.name}</span>
             </nav>
@@ -238,7 +238,7 @@ export default async function ProgramPage({ params }: Params) {
           <div className="container max-w-5xl">
             <div className="mb-6 flex items-center justify-between">
               <h2 className="font-display text-xl font-bold uppercase">More programs</h2>
-              <Link href="/programs" className="inline-flex items-center gap-1.5 text-sm font-semibold text-gold-200 hover:underline">
+              <Link href="/programs/" className="inline-flex items-center gap-1.5 text-sm font-semibold text-gold-200 hover:underline">
                 View all <ArrowRight className="size-4" />
               </Link>
             </div>
@@ -246,7 +246,7 @@ export default async function ProgramPage({ params }: Params) {
               {related.map((p) => (
                 <Link
                   key={p.slug}
-                  href={`/programs/${p.slug}`}
+                  href={`/programs/${p.slug}/`}
                   className="group flex h-full flex-col rounded-3xl glass p-6 transition-colors hover:border-gold-400/25"
                 >
                   <span className="inline-flex w-fit rounded-full border border-gold-400/30 bg-white/5 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-gold-200">

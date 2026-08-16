@@ -1,7 +1,8 @@
 import { SEO } from "@/lib/seo";
 import { SORTED_POSTS } from "@/content/blog";
 
-// Emitted as a static file at build time (required for output: "export").
+// Emitted as a static file at build time — the feed has no per-request input,
+// so there is nothing to gain from rendering it on demand.
 export const dynamic = "force-static";
 
 
@@ -30,8 +31,15 @@ export async function GET() {
   const site = SEO.siteUrl;
   const now = new Date().toUTCString();
 
+  /**
+   * Trailing slashes are not cosmetic here. next.config sets `trailingSlash:
+   * true`, so /blog/a-post 308s to /blog/a-post/. Without the slash the feed's
+   * <link> and <guid> named a redirect rather than the canonical URL — readers
+   * followed an extra hop, and the guid did not match the canonical tag on the
+   * page, which is what aggregators de-duplicate against.
+   */
   const items = SORTED_POSTS.map((p) => {
-    const url = `${site}/blog/${p.slug}`;
+    const url = `${site}/blog/${p.slug}/`;
     return `    <item>
       <title>${escapeXml(p.title)}</title>
       <link>${url}</link>
@@ -51,7 +59,7 @@ export async function GET() {
      xmlns:dc="http://purl.org/dc/elements/1.1/">
   <channel>
     <title>${escapeXml(`${SEO.founder} — Sports Psychology &amp; Martial Arts`)}</title>
-    <link>${site}/blog</link>
+    <link>${site}/blog/</link>
     <description>${escapeXml(
       "Practical articles on athlete mindset, focus, confidence and martial arts training from Chennai."
     )}</description>

@@ -1,6 +1,7 @@
-// ISR: re-render this page on the server at most once per 24 hours.
-// Content stays fresh without a full rebuild — ideal for a coaching site
-// where copy changes weekly but doesn't need millisecond freshness.
+// Fully prerendered at build time. The comment that used to sit here described
+// 24-hour ISR, but no `revalidate` was ever exported, so nothing on this page
+// refreshes between deploys — worth knowing before adding anything time-
+// sensitive here (see the workshop date handling in WorkshopSection).
 
 import { Navbar } from "@/components/shared/Navbar";
 import { Footer } from "@/components/shared/Footer";

@@ -11,11 +11,11 @@
  * The site's canonical origin — the single source of truth for canonical tags,
  * the sitemap, robots host, OG image URLs and every JSON-LD @id.
  *
- * This is a static export, so it is read at BUILD time and baked into every
- * page. Set NEXT_PUBLIC_SITE_URL to your real Hostinger domain before running
- * the build — otherwise canonical tags, the sitemap and OG URLs all fall back
- * to the placeholder below, which tells Google the real site lives elsewhere
- * and can stop the deployed site being indexed at all.
+ * Every page is prerendered, so this is read at BUILD time and baked in. The
+ * fallback below is the real production domain, so a normal build is already
+ * correct; set NEXT_PUBLIC_SITE_URL only when building for another origin
+ * (preview, staging). Getting it wrong points canonical tags, the sitemap and
+ * OG URLs at a different site, which can stop the deployed one being indexed.
  */
 const FALLBACK_SITE_URL = "https://kishorekumarcoach.com";
 

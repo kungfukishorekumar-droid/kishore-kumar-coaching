@@ -12,7 +12,7 @@ import { PROGRAMS } from "@/lib/site";
 import { SEO } from "@/lib/seo";
 import { jsonLdString } from "@/lib/utils";
 
-const url = `${SEO.siteUrl}/programs`;
+const url = `${SEO.siteUrl}/programs/`;
 
 export const metadata: Metadata = {
   title: "Athlete Mindset & Martial Arts Programs in Chennai",
@@ -48,7 +48,7 @@ export default function ProgramsIndex() {
           "@type": "ListItem",
           position: i + 1,
           name: p.name,
-          url: `${SEO.siteUrl}/programs/${p.slug}`,
+          url: `${SEO.siteUrl}/programs/${p.slug}/`,
         })),
       },
     ],
@@ -96,7 +96,7 @@ export default function ProgramsIndex() {
               {PROGRAMS.map((p) => (
                 <Link
                   key={p.slug}
-                  href={`/programs/${p.slug}`}
+                  href={`/programs/${p.slug}/`}
                   className="group flex h-full flex-col rounded-3xl glass p-7 transition-colors hover:border-gold-400/25"
                 >
                   <span className="inline-flex w-fit rounded-full border border-gold-400/30 bg-white/5 px-3 py-1 font-display text-xs font-semibold uppercase tracking-wide text-gold-200">

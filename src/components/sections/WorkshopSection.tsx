@@ -31,6 +31,13 @@ type TimeLeft = {
 
 const ZERO_TIME: TimeLeft = { days: 0, hours: 0, minutes: 0, seconds: 0, expired: false };
 
+/**
+ * How long a workshop stays "happening now" before the page stops advertising
+ * it. Past that, the date is treated as stale rather than live — see
+ * `phase` below.
+ */
+const LIVE_WINDOW_MS = 4 * 60 * 60 * 1000;
+
 function getTimeLeft(dateStr: string): TimeLeft {
   const diff = new Date(dateStr).getTime() - Date.now();
   if (diff <= 0) return { days: 0, hours: 0, minutes: 0, seconds: 0, expired: true };
@@ -42,6 +49,73 @@ function getTimeLeft(dateStr: string): TimeLeft {
     expired: false,
   };
 }
+
+/**
+ * Three states, not two.
+ *
+ * The old code had only "counting down" and "expired", and rendered expired as
+ * "Workshop is Live! Join via the link Kishore sent you." That claim is true for
+ * a few hours and false forever after — and because this page is prerendered at
+ * build time with no revalidate, a date that slips into the past keeps that
+ * banner up permanently next to a "Reserve Your Seat" button. The date in
+ * lib/site.ts had in fact already gone stale, so the live site was telling every
+ * visitor a workshop was in progress and their seat link was already sent.
+ *
+ * "stale" is the honest third state: the section stops promising a session and
+ * asks for interest in the next one instead.
+ */
+type Phase = "countdown" | "live" | "stale";
+
+function getPhase(dateStr: string): Phase {
+  const start = new Date(dateStr).getTime();
+  if (!Number.isFinite(start)) return "stale";
+  const now = Date.now();
+  if (now < start) return "countdown";
+  return now - start < LIVE_WINDOW_MS ? "live" : "stale";
+}
+
+/**
+ * Date/time labels are pinned to IST because the copy next to them says "IST".
+ *
+ * They were formatted in the runtime's own zone, so the prerender (UTC on CI and
+ * on the Hostinger Node runtime) emitted "04:30 am IST" for a 10:00 IST session
+ * while the visitor's browser re-rendered it as "10:00 am" — a wrong time in the
+ * HTML that search engines and no-JS visitors see, and a React hydration
+ * mismatch on every load.
+ */
+/**
+ * Shout during the build when the configured date has already passed.
+ *
+ * The section degrades honestly on its own (see `Phase`), but a stale date still
+ * means the site is running without a workshop to sell — that is a business
+ * problem, not a rendering one, and nothing surfaced it. Printing it at build
+ * time puts it in the CI log of every deploy until WORKSHOP.date is updated.
+ */
+if (typeof window === "undefined" && getPhase(WORKSHOP.date) === "stale") {
+  // eslint-disable-next-line no-console
+  console.warn(
+    `\n⚠️  WORKSHOP.date (${WORKSHOP.date}) is in the past.\n` +
+      `   The workshop section is rendering its "next date being announced" state.\n` +
+      `   Set a new date in src/lib/site.ts to advertise a session again.\n`
+  );
+}
+
+const IST = "Asia/Kolkata";
+
+const DATE_FMT = new Intl.DateTimeFormat("en-IN", {
+  timeZone: IST,
+  weekday: "long",
+  day: "numeric",
+  month: "long",
+  year: "numeric",
+});
+
+const TIME_FMT = new Intl.DateTimeFormat("en-IN", {
+  timeZone: IST,
+  hour: "2-digit",
+  minute: "2-digit",
+  hour12: true,
+});
 
 function CountUnit({ value, label }: { value: number; label: string }) {
   return (
@@ -58,41 +132,119 @@ function CountUnit({ value, label }: { value: number; label: string }) {
   );
 }
 
-function RegisterModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+function RegisterModal({
+  open,
+  onClose,
+  stale,
+}: {
+  open: boolean;
+  onClose: () => void;
+  /** No dated session on offer — the dialog collects interest instead. */
+  stale: boolean;
+}) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [token, setToken] = useState("");
-  const [status, setStatus] = useState<"idle" | "sending" | "done" | "error">("idle");
+  /** Honeypot value. Always "" for a human; anything else marks a bot. */
+  const [company, setCompany] = useState("");
+  // "error" was in this union but nothing ever set it, so its branch in the JSX
+  // was unreachable. Failure is now carried by `forwarded` instead.
+  const [status, setStatus] = useState<"idle" | "sending" | "done">("idle");
+  // Whether the registration actually reached the CRM — see the identical note
+  // in LeadForm. A dropped registration must not read as "you're registered".
+  const [forwarded, setForwarded] = useState(true);
+
+  /**
+   * RegisterModal stays mounted while `open` is false — only its contents
+   * unmount — so its state survived a close. After one registration the panel
+   * stayed on "done" permanently: reopening it showed someone else's
+   * confirmation instead of a form, and a household or a coach registering two
+   * athletes from the same browser simply could not. Reset on each open.
+   */
+  useEffect(() => {
+    if (!open) return;
+    setName("");
+    setPhone("");
+    setEmail("");
+    setToken("");
+    setCompany("");
+    setStatus("idle");
+    setForwarded(true);
+  }, [open]);
+
+  /**
+   * Keyboard and screen-reader handling for the dialog. It had none: the overlay
+   * was a plain div, so Escape did nothing, the page behind kept scrolling, and
+   * assistive tech announced no dialog boundary at all — a keyboard user who
+   * opened it could tab straight out into the page underneath with no way back.
+   *
+   * Escape + scroll lock + dialog semantics cover the common paths; the first
+   * field also takes focus so the caret starts inside the dialog.
+   */
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", onKey);
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [open, onClose]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setStatus("sending");
     // Same CRM path as the main lead form (Edge Function when Turnstile is on).
     // The WhatsApp fallback in the success panel is the safety net, so a CRM
-    // hiccup still shows a confirmation rather than a dead-end error.
+    // hiccup still shows a way forward rather than a dead-end error — but the
+    // copy tells the visitor which of the two actually happened.
+    let reached = false;
     try {
-      await submitLead(
+      const result = await submitLead(
         {
           name,
           phone,
           email,
+          company,
           who: "athlete / student",
           magnet: `Workshop: ${WORKSHOP.title}`,
-          goal: `Workshop registration: ${WORKSHOP.title}`,
+          // The two are different leads: one booked a dated seat, the other
+          // asked to hear about the next date. The CRM should not treat an
+          // interest signal as a confirmed registration.
+          goal: stale
+            ? `Workshop interest (awaiting next date): ${WORKSHOP.title}`
+            : `Workshop registration: ${WORKSHOP.title}`,
         },
         token
       );
+      reached = result.forwarded;
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error("workshop register failed", err);
     }
+    setForwarded(reached);
     setToken("");
     setStatus("done");
   }
 
+  // On the failure path the message carries the details the visitor typed, so
+  // the registration still reaches Kishore without them retyping anything.
   const waConfirm = whatsappLink(
-    `Hi Kishore, I just registered for the ${WORKSHOP.title}. Looking forward to it!`
+    forwarded
+      ? `Hi Kishore, I just registered for the ${WORKSHOP.title}. Looking forward to it!`
+      : [
+          `Hi Kishore, I'd like to register for the ${WORKSHOP.title}.`,
+          name && `Name: ${name}`,
+          phone && `Phone: ${phone}`,
+          email && `Email: ${email}`,
+        ]
+          .filter(Boolean)
+          .join("\n")
   );
 
   return (
@@ -114,6 +266,9 @@ function RegisterModal({ open, onClose }: { open: boolean; onClose: () => void }
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
             className="relative w-full max-w-md rounded-3xl glass-gold p-8"
             onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="workshop-register-title"
           >
             <button
               onClick={onClose}
@@ -126,32 +281,48 @@ function RegisterModal({ open, onClose }: { open: boolean; onClose: () => void }
             {status === "done" ? (
               <div className="flex flex-col items-center gap-4 py-4 text-center">
                 <CheckCircle2 className="size-14 text-gold-300" />
-                <h3 className="font-display text-2xl font-bold uppercase">
-                  You&apos;re registered!
+                <h3
+                  id="workshop-register-title"
+                  className="font-display text-2xl font-bold uppercase"
+                >
+                  {forwarded ? "You're registered!" : "One quick step"}
                 </h3>
                 <p className="max-w-xs text-sm text-foreground/70">
-                  Kishore will reach out on WhatsApp to confirm your seat and share
-                  the workshop link.
+                  {forwarded
+                    ? "Kishore will reach out on WhatsApp to confirm your seat and share the workshop link."
+                    : "Your details didn't save just now. Tap below to send them on WhatsApp — that reaches Kishore directly and secures your seat."}
                 </p>
                 <Button asChild className="mt-2">
                   <a href={waConfirm} target="_blank" rel="noreferrer">
                     <MessageCircle className="size-4" />
-                    Message Kishore
+                    {forwarded ? "Message Kishore" : "Send on WhatsApp"}
                   </a>
                 </Button>
               </div>
             ) : (
               <>
-                <h3 className="font-display text-xl font-bold uppercase">
-                  Reserve Your Seat
+                <h3
+                  id="workshop-register-title"
+                  className="font-display text-xl font-bold uppercase"
+                >
+                  {stale ? "Get the Next Date" : "Reserve Your Seat"}
                 </h3>
                 <p className="mt-1 text-sm text-foreground/50">
-                  {WORKSHOP.title} · {WORKSHOP.price}
+                  {stale
+                    ? `${WORKSHOP.title} · next session`
+                    : `${WORKSHOP.title} · ${WORKSHOP.price}`}
                 </p>
 
                 <form onSubmit={handleSubmit} className="mt-6 space-y-3">
+                  {/* aria-label on each field: these inputs carry only a
+                      placeholder, which vanishes on the first keystroke and is
+                      not an accessible name, so a screen-reader user had three
+                      unlabelled text boxes. autoComplete lets mobile fill them. */}
                   <input
                     required
+                    autoFocus
+                    aria-label="Your name"
+                    autoComplete="name"
                     placeholder="Your name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
@@ -160,6 +331,8 @@ function RegisterModal({ open, onClose }: { open: boolean; onClose: () => void }
                   <input
                     required
                     type="tel"
+                    aria-label="WhatsApp number"
+                    autoComplete="tel"
                     placeholder="WhatsApp number"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
@@ -167,17 +340,28 @@ function RegisterModal({ open, onClose }: { open: boolean; onClose: () => void }
                   />
                   <input
                     type="email"
+                    aria-label="Email (optional)"
+                    autoComplete="email"
                     placeholder="Email (optional)"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm placeholder:text-foreground/35 outline-none transition-all focus:border-gold-400/50 focus:bg-white/[0.06]"
                   />
 
-                  {status === "error" && (
-                    <p className="text-sm text-red-400">
-                      Something went wrong. Please try WhatsApp instead.
-                    </p>
-                  )}
+                  {/* Honeypot — see the identical field in LeadForm. Hidden from
+                      people, filled by bots, discarded server-side. */}
+                  <div aria-hidden="true" className="absolute left-[-9999px] top-0 h-0 w-0 overflow-hidden">
+                    <label htmlFor="workshop-company">Company (leave blank)</label>
+                    <input
+                      id="workshop-company"
+                      name="company"
+                      type="text"
+                      tabIndex={-1}
+                      autoComplete="off"
+                      value={company}
+                      onChange={(e) => setCompany(e.target.value)}
+                    />
+                  </div>
 
                   {/* Bot check — renders only when Turnstile is configured */}
                   <Turnstile onVerify={setToken} onExpire={() => setToken("")} />
@@ -195,7 +379,7 @@ function RegisterModal({ open, onClose }: { open: boolean; onClose: () => void }
                       </>
                     ) : (
                       <>
-                        Reserve My Seat
+                        {stale ? "Notify Me of the Next One" : "Reserve My Seat"}
                         <ArrowRight className="size-4" />
                       </>
                     )}
@@ -216,34 +400,43 @@ function RegisterModal({ open, onClose }: { open: boolean; onClose: () => void }
 }
 
 export function WorkshopSection() {
-  // null until mounted → server + first client render use a stable placeholder
-  // (avoids a hydration mismatch on this statically-rendered ISR page).
+  // The ticking digits stay null until mounted: they change every second, so
+  // rendering them on the server could only ever produce a mismatch.
   const [timeLeft, setTimeLeft] = useState<TimeLeft | null>(null);
+  /**
+   * The phase, by contrast, IS resolved during render — including on the server.
+   *
+   * Deferring it to a post-mount effect meant the prerendered HTML always
+   * advertised whatever `WORKSHOP.date` said, stale or not. That HTML is what a
+   * crawler that doesn't run JS indexes, and it is what the page shows for the
+   * moment before hydration, so a passed date was still being announced as an
+   * upcoming session there. Phase changes at most twice per workshop, so
+   * computing it in render costs nothing and makes the served markup honest.
+   */
+  const [phase, setPhase] = useState<Phase>(() => getPhase(WORKSHOP.date));
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
-    setTimeLeft(getTimeLeft(WORKSHOP.date));
-    const id = setInterval(() => setTimeLeft(getTimeLeft(WORKSHOP.date)), 1000);
+    const sync = () => {
+      setTimeLeft(getTimeLeft(WORKSHOP.date));
+      setPhase(getPhase(WORKSHOP.date));
+    };
+    sync();
+    const id = setInterval(sync, 1000);
     return () => clearInterval(id);
   }, []);
 
   const t = timeLeft ?? ZERO_TIME;
+  const isStale = phase === "stale";
 
   const seatsPercent = Math.round((WORKSHOP.spotsLeft / WORKSHOP.totalSeats) * 100);
 
   const workshopDate = new Date(WORKSHOP.date);
-  const dateLabel = workshopDate.toLocaleDateString("en-IN", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
-  const timeLabel = workshopDate.toLocaleTimeString("en-IN", {
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: true,
-  });
-  const waMsg = `Hi Kishore, I'd like to register for the ${WORKSHOP.title} on ${dateLabel}.`;
+  const dateLabel = DATE_FMT.format(workshopDate);
+  const timeLabel = TIME_FMT.format(workshopDate);
+  const waMsg = isStale
+    ? `Hi Kishore, I'd like to know when the next ${WORKSHOP.title} is happening.`
+    : `Hi Kishore, I'd like to register for the ${WORKSHOP.title} on ${dateLabel}.`;
 
   return (
     <section id="workshop" className="relative overflow-hidden py-20 md:py-28">
@@ -264,7 +457,11 @@ export function WorkshopSection() {
       />
       <GlowRing className="pointer-events-none absolute right-[-8%] top-1/2 size-[480px] -translate-y-1/2 opacity-25" />
 
-      <RegisterModal open={showModal} onClose={() => setShowModal(false)} />
+      <RegisterModal
+        open={showModal}
+        onClose={() => setShowModal(false)}
+        stale={isStale}
+      />
 
       <div className="container relative max-w-5xl">
         {/* Header */}
@@ -282,14 +479,17 @@ export function WorkshopSection() {
           </h2>
           <p className="mt-1.5 text-lg text-foreground/55">{WORKSHOP.subtitle}</p>
           <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-sm text-foreground/55">
+            {/* A past date must not be presented as the session's date. */}
             <span className="flex items-center gap-1.5">
               <Calendar className="size-4 text-gold-400" />
-              {dateLabel}
+              {isStale ? "New date coming soon" : dateLabel}
             </span>
-            <span className="flex items-center gap-1.5">
-              <Clock className="size-4 text-gold-400" />
-              {timeLabel} IST
-            </span>
+            {!isStale && (
+              <span className="flex items-center gap-1.5">
+                <Clock className="size-4 text-gold-400" />
+                {timeLabel} IST
+              </span>
+            )}
             <span className="flex items-center gap-1.5">
               <MapPin className="size-4 text-gold-400" />
               {WORKSHOP.mode}
@@ -309,7 +509,17 @@ export function WorkshopSection() {
           >
             {/* Countdown */}
             <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
-              {t.expired ? (
+              {isStale ? (
+                <div className="py-2 text-center">
+                  <p className="font-display text-xl font-bold uppercase text-gold-300">
+                    Next date being announced
+                  </p>
+                  <p className="mt-1 text-sm text-foreground/55">
+                    Register your interest and you&apos;ll be first to get the
+                    date and the early-bird seat.
+                  </p>
+                </div>
+              ) : t.expired ? (
                 <div className="py-2 text-center">
                   <p className="font-display text-xl font-bold uppercase text-gold-300">
                     Workshop is Live!
@@ -336,7 +546,9 @@ export function WorkshopSection() {
               )}
             </div>
 
-            {/* Seats */}
+            {/* Seats — a live seat count for a session with no date is not a
+                fact about anything, so the whole panel goes when stale. */}
+            {!isStale && (
             <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
               <div className="flex items-center justify-between">
                 <span className="flex items-center gap-1.5 text-sm font-semibold">
@@ -365,6 +577,7 @@ export function WorkshopSection() {
                 </p>
               )}
             </div>
+            )}
 
             {/* Price + what's included */}
             <div className="rounded-2xl glass-gold p-5">
@@ -372,7 +585,9 @@ export function WorkshopSection() {
                 <span className="font-display text-3xl font-bold text-gold-200">
                   {WORKSHOP.price}
                 </span>
-                <span className="text-sm text-foreground/45">{WORKSHOP.priceNote}</span>
+                <span className="text-sm text-foreground/45">
+                  {isStale ? "Price held for the next session" : WORKSHOP.priceNote}
+                </span>
               </div>
               <ul className="mt-4 space-y-2.5">
                 {WORKSHOP.includes.map((item) => (
@@ -387,7 +602,7 @@ export function WorkshopSection() {
             {/* CTAs */}
             <div className="flex flex-col gap-3 sm:flex-row">
               <Button size="lg" className="flex-1" onClick={() => setShowModal(true)}>
-                Reserve Your Seat
+                {isStale ? "Get the Next Date" : "Reserve Your Seat"}
                 <ArrowRight className="size-4" />
               </Button>
               <Button size="lg" variant="outline" className="flex-1" asChild>
@@ -437,13 +652,16 @@ export function WorkshopSection() {
 
             <div className="mt-6 border-t border-white/10 pt-5">
               <p className="text-sm text-foreground/50">
-                Seats are filling fast. Lock yours in before they're gone.
+                {isStale
+                  ? "Dates are announced to the list first. Add your name and you'll hear before anyone else."
+                  : "Seats are filling fast. Lock yours in before they're gone."}
               </p>
               <button
                 onClick={() => setShowModal(true)}
                 className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-gold-200 transition-colors hover:text-gold-100"
               >
-                Register now <ArrowRight className="size-4" />
+                {isStale ? "Tell me the next date" : "Register now"}{" "}
+                <ArrowRight className="size-4" />
               </button>
             </div>
           </motion.div>

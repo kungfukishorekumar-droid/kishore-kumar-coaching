@@ -10,17 +10,34 @@ export function FloatingCTA() {
   const [show, setShow] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => {
-      const past = window.scrollY > window.innerHeight * 0.7;
-      const lead = document.getElementById("lead");
-      const inLead = lead
-        ? lead.getBoundingClientRect().top < window.innerHeight &&
-          lead.getBoundingClientRect().bottom > 0
-        : false;
+    /**
+     * Measured once per animation frame, not once per scroll event.
+     *
+     * The old handler ran on every scroll event and called
+     * getBoundingClientRect() twice, so a single flick on a phone forced dozens
+     * of synchronous layouts — the one thing you must not do in a scroll
+     * listener. Reading the rect once and coalescing into rAF keeps the work
+     * bounded to one measurement per painted frame.
+     */
+    let queued = false;
+
+    const measure = () => {
+      queued = false;
+      const viewport = window.innerHeight;
+      const past = window.scrollY > viewport * 0.7;
+      const rect = document.getElementById("lead")?.getBoundingClientRect();
+      const inLead = rect ? rect.top < viewport && rect.bottom > 0 : false;
       setShow(past && !inLead);
     };
+
+    const onScroll = () => {
+      if (queued) return;
+      queued = true;
+      requestAnimationFrame(measure);
+    };
+
     window.addEventListener("scroll", onScroll, { passive: true });
-    onScroll();
+    measure();
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 

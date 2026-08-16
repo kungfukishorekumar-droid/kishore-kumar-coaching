@@ -202,7 +202,22 @@ export function JsonLd() {
     ],
   };
 
-  // ── Event — next Warrior Mind Workshop ────────────────────────────────────
+  /**
+   * ── Event — next Warrior Mind Workshop ──────────────────────────────────
+   *
+   * Emitted ONLY while the date is still ahead. This block used to be
+   * unconditional, so once WORKSHOP.date slipped into the past the home page was
+   * publishing an Event marked `EventScheduled` with `availability: InStock` and
+   * a `validFrom` of today — telling Google a workshop that had already happened
+   * was open for booking right now. Search Console reports past events as
+   * errors, and markup that contradicts the visible page is exactly what earns a
+   * structured-data manual action.
+   *
+   * The visible section degrades to its "next date being announced" state at the
+   * same moment (see WorkshopSection), so page and markup stay in agreement.
+   */
+  const workshopUpcoming = new Date(WORKSHOP.date).getTime() > Date.now();
+
   const workshopEvent = {
     "@type": "Event",
     "@id": `${SEO.siteUrl}/#workshop-event`,
@@ -315,7 +330,7 @@ export function JsonLd() {
       ...services,
       warriorMindMethod,
       howTo,
-      workshopEvent,
+      ...(workshopUpcoming ? [workshopEvent] : []),
       faqPage,
       breadcrumb,
     ],

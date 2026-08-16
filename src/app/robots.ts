@@ -14,9 +14,12 @@ export default function robots(): MetadataRoute.Robots {
         // reports it as "Page indexed without content" or mobile-usability
         // failures. Google's own guidance is to allow CSS and JS.
         //
-        // There is nothing else to hide: this is a static export, so /api/
-        // doesn't exist and /_next/ contains only build assets.
+        // /_next/ contains only build assets, so it stays crawlable.
         allow: "/",
+        // The API is not content. /api/lead/ only answers POST and /api/health/
+        // is an operator probe — neither belongs in an index, and crawling them
+        // just burns crawl budget on 405s.
+        disallow: "/api/",
       },
     ],
     sitemap: `${SEO.siteUrl}/sitemap.xml`,
