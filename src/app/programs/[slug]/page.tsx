@@ -9,7 +9,8 @@ import { FloatingCTA } from "@/components/shared/FloatingCTA";
 import { BackToTop } from "@/components/shared/BackToTop";
 import { Button } from "@/components/ui/button";
 import { FloatingShapes, GlowRing } from "@/components/ui/floating-shapes";
-import { PROGRAMS, getProgram, whatsappLink, SITE } from "@/lib/site";
+import { LeadCta } from "@/components/shared/lead-gate";
+import { PROGRAMS, getProgram, SITE } from "@/lib/site";
 import { SEO } from "@/lib/seo";
 import { jsonLdString } from "@/lib/utils";
 
@@ -52,8 +53,9 @@ export default async function ProgramPage({ params }: Params) {
 
   const related = PROGRAMS.filter((p) => p.slug !== program.slug).slice(0, 3);
 
-  const primaryHref =
-    program.cta.type === "wa" ? whatsappLink(program.cta.message) : "/#lead";
+  // A `wa` CTA is no longer a link — it opens the lead gate — so this is only
+  // the destination for the scroll-type CTA that remains.
+  const primaryHref = "/#lead";
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -154,18 +156,34 @@ export default async function ProgramPage({ params }: Params) {
             </p>
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Button asChild size="lg">
-                <a href={primaryHref} target={program.cta.type === "wa" ? "_blank" : undefined} rel="noreferrer">
+              {program.cta.type === "wa" ? (
+                <LeadCta
+                  size="lg"
+                  intent={program.cta.message.replace(/^Hi Kishore,\s*/i, "")}
+                  campaign={`program-page-${program.slug}`}
+                  title={program.name}
+                >
                   {program.cta.label}
                   <ArrowRight className="size-4" />
-                </a>
-              </Button>
-              <Button asChild size="lg" variant="outline">
-                <a href={whatsappLink(`Hi Kishore, I'd like to know more about the ${program.name}.`)} target="_blank" rel="noreferrer">
-                  <MessageCircle className="size-4" />
-                  Ask on WhatsApp
-                </a>
-              </Button>
+                </LeadCta>
+              ) : (
+                <Button asChild size="lg">
+                  <a href={primaryHref}>
+                    {program.cta.label}
+                    <ArrowRight className="size-4" />
+                  </a>
+                </Button>
+              )}
+              <LeadCta
+                size="lg"
+                variant="outline"
+                intent={`I'd like to know more about the ${program.name}.`}
+                campaign={`program-page-ask-${program.slug}`}
+                title={program.name}
+              >
+                <MessageCircle className="size-4" />
+                Ask on WhatsApp
+              </LeadCta>
             </div>
           </div>
         </section>
@@ -218,12 +236,15 @@ export default async function ProgramPage({ params }: Params) {
                   <span className="text-gradient-gold">{program.name}?</span>
                 </h2>
                 <div className="mt-7 flex flex-col items-center justify-center gap-3 sm:flex-row">
-                  <Button asChild size="lg">
-                    <a href={whatsappLink(`Hi Kishore, I'd like to start the ${program.name}.`)} target="_blank" rel="noreferrer">
-                      <MessageCircle className="size-4" />
-                      Book on WhatsApp
-                    </a>
-                  </Button>
+                  <LeadCta
+                    size="lg"
+                    intent={`I'd like to start the ${program.name}.`}
+                    campaign={`program-page-book-${program.slug}`}
+                    title={`Start ${program.name}`}
+                  >
+                    <MessageCircle className="size-4" />
+                    Book on WhatsApp
+                  </LeadCta>
                   <Button asChild size="lg" variant="outline">
                     <Link href="/#lead">Get the free checklist</Link>
                   </Button>

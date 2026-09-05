@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Spotlight } from "@/components/ui/spotlight";
 import { Button } from "@/components/ui/button";
 import { WarriorEmblem } from "@/components/ui/warrior-emblem";
-import { whatsappLink } from "@/lib/site";
+import { LeadCta } from "@/components/shared/lead-gate";
 
 /**
  * Premium "Warrior Mind" 3D-style showcase block.
@@ -42,16 +42,14 @@ export function SplineHeroBlock() {
                 Kishore Kumar, Spartacus Martial Arts Chennai.
               </p>
               <div className="mt-7">
-                <Button asChild size="lg">
-                  <a
-                    href={whatsappLink("Hi Kishore, I'd like to book a free athlete mindset call.")}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    Book Free Call
-                    <ArrowRight className="size-4" />
-                  </a>
-                </Button>
+                <LeadCta
+                  size="lg"
+                  intent="I'd like to book a free athlete mindset call."
+                  campaign="warrior-block-book-call"
+                >
+                  Book Free Call
+                  <ArrowRight className="size-4" />
+                </LeadCta>
               </div>
             </div>
 

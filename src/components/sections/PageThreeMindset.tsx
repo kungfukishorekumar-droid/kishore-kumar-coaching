@@ -18,7 +18,8 @@ import {
 import { Reveal, RevealGroup } from "@/components/ui/reveal";
 import { Button } from "@/components/ui/button";
 import { FloatingShapes, GlowRing } from "@/components/ui/floating-shapes";
-import { IMAGES, whatsappLink } from "@/lib/site";
+import { LeadCta } from "@/components/shared/lead-gate";
+import { IMAGES } from "@/lib/site";
 import { scrollToId } from "@/lib/utils";
 
 const badges = [
@@ -165,26 +166,24 @@ export function PageThreeMindset() {
 
                 {/* CTAs */}
                 <div className="flex flex-col gap-3 sm:flex-row">
-                  <Button asChild size="lg">
-                    <a
-                      href={whatsappLink("Hi Kishore, I'd like to book a free call.")}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      <CalendarCheck className="size-4" />
-                      Book Free Call
-                    </a>
-                  </Button>
-                  <Button asChild size="lg" variant="outline">
-                    <a
-                      href={whatsappLink("Hi Kishore, I have a quick question.")}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      <MessageCircle className="size-4" />
-                      Chat on WhatsApp
-                    </a>
-                  </Button>
+                  <LeadCta
+                    size="lg"
+                    intent="I'd like to book a free call."
+                    campaign="mindset-book-call"
+                  >
+                    <CalendarCheck className="size-4" />
+                    Book Free Call
+                  </LeadCta>
+                  <LeadCta
+                    size="lg"
+                    variant="outline"
+                    intent="I have a quick question."
+                    campaign="mindset-chat"
+                    title="Ask Coach Kishore"
+                  >
+                    <MessageCircle className="size-4" />
+                    Chat on WhatsApp
+                  </LeadCta>
                 </div>
               </div>
             </div>

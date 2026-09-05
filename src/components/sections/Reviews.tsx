@@ -15,12 +15,12 @@ import { Reveal, RevealGroup } from "@/components/ui/reveal";
 import { TiltCard } from "@/components/ui/tilt-card";
 import { FloatingShapes } from "@/components/ui/floating-shapes";
 import { Button } from "@/components/ui/button";
+import { LeadCta } from "@/components/shared/lead-gate";
 import {
   REVIEW_SOURCES,
   REVIEW_SUMMARY,
   ACADEMY,
   SITE,
-  whatsappLink,
 } from "@/lib/site";
 import { cn, scrollToId } from "@/lib/utils";
 
@@ -267,18 +267,23 @@ export function Reviews() {
               <span className="text-gradient-gold">Warrior Mind</span> Training?
             </h3>
             <div className="relative mt-7 flex flex-col flex-wrap items-stretch justify-center gap-3 sm:flex-row sm:items-center">
-              <Button asChild size="lg">
-                <a href={whatsappLink("Hi Kishore, I saw the reviews and I'd like to start training.")} target="_blank" rel="noreferrer">
-                  <MessageCircle className="size-4" />
-                  Message on WhatsApp
-                </a>
-              </Button>
-              <Button asChild size="lg" variant="outline">
-                <a href={whatsappLink("Hi Kishore, I'd like to book a free call.")} target="_blank" rel="noreferrer">
-                  <CalendarCheck className="size-4" />
-                  Book Free Call
-                </a>
-              </Button>
+              <LeadCta
+                size="lg"
+                intent="I saw the reviews and I'd like to start training."
+                campaign="reviews-start-training"
+              >
+                <MessageCircle className="size-4" />
+                Message on WhatsApp
+              </LeadCta>
+              <LeadCta
+                size="lg"
+                variant="outline"
+                intent="I'd like to book a free call."
+                campaign="reviews-book-call"
+              >
+                <CalendarCheck className="size-4" />
+                Book Free Call
+              </LeadCta>
               <Button size="lg" variant="ghost" onClick={() => scrollToId("programs")}>
                 View Programs
                 <ArrowRight className="size-4" />

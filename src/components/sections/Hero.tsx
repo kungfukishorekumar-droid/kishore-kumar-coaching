@@ -16,7 +16,8 @@ import { Button } from "@/components/ui/button";
 import { FloatingShapes, GlowRing } from "@/components/ui/floating-shapes";
 import { AuthorityBadge } from "@/components/ui/authority-badge";
 import { Sparkles } from "@/components/ui/sparkles";
-import { IMAGES, HERO, SITE, whatsappLink } from "@/lib/site";
+import { LeadCta } from "@/components/shared/lead-gate";
+import { IMAGES, HERO, SITE } from "@/lib/site";
 import { scrollToId } from "@/lib/utils";
 
 /**
@@ -161,16 +162,14 @@ export function Hero() {
             className="anim-rise mt-8 flex flex-col items-stretch gap-3 sm:flex-row sm:flex-wrap sm:items-center lg:justify-start"
             style={{ "--d": "280ms" } as React.CSSProperties}
           >
-            <Button asChild size="lg">
-              <a
-                href={whatsappLink("Hi Kishore, I'd like to book a free athlete mindset call.")}
-                target="_blank"
-                rel="noreferrer"
-              >
-                Book Free Athlete Mindset Call
-                <ArrowRight className="size-4" />
-              </a>
-            </Button>
+            <LeadCta
+              size="lg"
+              intent="I'd like to book a free athlete mindset call."
+              campaign="hero-book-call"
+            >
+              Book Free Athlete Mindset Call
+              <ArrowRight className="size-4" />
+            </LeadCta>
             <Button asChild size="lg" variant="electric">
               <a href={SITE.customGpt} target="_blank" rel="noreferrer">
                 <Bot className="size-4" />
@@ -183,16 +182,16 @@ export function Hero() {
             className="anim-rise mt-3 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center lg:justify-start"
             style={{ "--d": "340ms" } as React.CSSProperties}
           >
-            <Button asChild size="md" variant="outline">
-              <a
-                href={whatsappLink("Hi Kishore, I have a quick question.")}
-                target="_blank"
-                rel="noreferrer"
-              >
-                <MessageCircle className="size-4" />
-                Chat on WhatsApp
-              </a>
-            </Button>
+            <LeadCta
+              size="md"
+              variant="outline"
+              intent="I have a quick question."
+              campaign="hero-chat"
+              title="Ask Coach Kishore"
+            >
+              <MessageCircle className="size-4" />
+              Chat on WhatsApp
+            </LeadCta>
             <Button size="md" variant="ghost" onClick={() => scrollToId("programs")}>
               Explore Programs →
             </Button>

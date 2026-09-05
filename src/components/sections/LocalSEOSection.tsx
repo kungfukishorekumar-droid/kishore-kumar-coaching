@@ -16,7 +16,8 @@ import {
 import { Reveal, RevealGroup } from "@/components/ui/reveal";
 import { FloatingShapes } from "@/components/ui/floating-shapes";
 import { SEO } from "@/lib/seo";
-import { SITE, whatsappLink } from "@/lib/site";
+import { LeadLink } from "@/components/shared/lead-gate";
+import { SITE } from "@/lib/site";
 
 const localServices = [
   { icon: Swords, title: "Martial Arts Classes in Chennai" },
@@ -91,15 +92,14 @@ export function LocalSEOSection() {
                   <MapPin className="size-4 text-gold-300" />
                   {SEO.address.locality}, {SEO.address.region}
                 </span>
-                <a
-                  href={whatsappLink()}
-                  target="_blank"
-                  rel="noreferrer"
+                <LeadLink
+                  intent="I'm in Chennai and I'd like to know more about your coaching."
+                  campaign="local-seo-phone"
                   className="inline-flex items-center gap-1.5 transition-colors hover:text-gold-200"
                 >
                   <Phone className="size-4 text-gold-300" />
                   {SITE.phone}
-                </a>
+                </LeadLink>
               </div>
             </div>
 

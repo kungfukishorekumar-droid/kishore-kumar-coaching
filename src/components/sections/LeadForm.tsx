@@ -5,13 +5,28 @@ import { motion, AnimatePresence } from "framer-motion";
 import { CheckCircle2, Loader2, ShieldCheck, Download, MessageCircle } from "lucide-react";
 import { Reveal } from "@/components/ui/reveal";
 import { Button } from "@/components/ui/button";
-import { IMAGES, SITE, LEAD_FORM, whatsappLink } from "@/lib/site";
+import { IMAGES, LEAD_FORM, whatsappLink } from "@/lib/site";
 import { submitLead } from "@/lib/lead-client";
 import { Turnstile, turnstileEnabled } from "@/components/ui/turnstile";
 import { cn } from "@/lib/utils";
 
+/**
+ * Shown in the success panel before a submission has produced a real message —
+ * i.e. if the panel is ever reached without form data. Kept as a constant so
+ * the fallback link is never an empty WhatsApp draft.
+ */
 const FALLBACK_WA_MESSAGE =
-  "Hi Kishore, I just requested the free Athlete Focus & Confidence Checklist.";
+  "Hi Kishore, I'd like the free Athlete Focus & Confidence Checklist.";
+
+function buildWaMessage(data: Record<string, string>, who: string, challenge: string) {
+  const parts = [FALLBACK_WA_MESSAGE];
+  if (data.name) parts.push(`Name: ${data.name}`);
+  if (data.phone) parts.push(`Phone/WhatsApp: ${data.phone}`);
+  if (data.sport) parts.push(`Sport: ${data.sport}`);
+  parts.push(`I am a: ${who}`);
+  parts.push(`My main challenge: ${challenge}`);
+  return parts.join("\n");
+}
 
 export function LeadForm() {
   const [status, setStatus] = useState<"idle" | "sending" | "done">("idle");
@@ -40,9 +55,13 @@ export function LeadForm() {
     const form = e.currentTarget;
     const data = Object.fromEntries(new FormData(form).entries()) as Record<string, string>;
 
-    // Post to WarriorCRM's Supabase queue (Edge Function when Turnstile is on).
-    // A failure never blocks the user — the WhatsApp fallback in the success
-    // panel is the real safety net — but it does change the copy.
+    // Build the WhatsApp message from the form data immediately so it
+    // is ready to open the moment the CRM call resolves (or fails).
+    const msg = buildWaMessage(data, who, challenge);
+    const waUrl = whatsappLink(msg);
+
+    // Post to WarriorCRM in the background. A failure never blocks the
+    // visitor — WhatsApp is the guaranteed path; CRM is the bonus.
     let reached = false;
     try {
       const result = await submitLead(
@@ -56,23 +75,15 @@ export function LeadForm() {
     }
 
     setForwarded(reached);
-    setWaMessage(
-      reached
-        ? FALLBACK_WA_MESSAGE
-        : [
-            FALLBACK_WA_MESSAGE,
-            data.name && `Name: ${data.name}`,
-            data.phone && `Phone: ${data.phone}`,
-            data.sport && `Sport: ${data.sport}`,
-            `I am a: ${who}`,
-            `Main challenge: ${challenge}`,
-          ]
-            .filter(Boolean)
-            .join("\n")
-    );
+    setWaMessage(msg);
     setStatus("done");
     setToken("");
     form.reset();
+
+    // Open WhatsApp immediately — the primary action after form fill.
+    // window.open may be blocked by a pop-up blocker; the button in the
+    // success panel is the fallback for that case.
+    window.open(waUrl, "_blank", "noopener,noreferrer");
   }
 
   return (
@@ -118,12 +129,12 @@ export function LeadForm() {
                   >
                     <CheckCircle2 className="size-14 text-gold-300" />
                     <h3 className="mt-4 font-display text-2xl font-bold">
-                      {forwarded ? "You're in! 🥋" : "One quick step 🥋"}
+                      {forwarded ? "Opening WhatsApp… 🥋" : "Almost there 🥋"}
                     </h3>
                     <p className="mt-2 max-w-sm text-sm text-foreground/70">
                       {forwarded
-                        ? "Your details are saved. Tap below on WhatsApp and I'll send your free checklist straight to you."
-                        : "I couldn't save your details just now. Tap below to send them on WhatsApp — that reaches me directly and I'll send your free checklist straight back."}
+                        ? "Your details are saved. WhatsApp should have opened — if not, tap the button below and I'll send your free checklist straight to you."
+                        : "WhatsApp should have opened. If it didn't, tap below — your details will come through directly and I'll send the checklist straight back."}
                     </p>
                     <div className="mt-6 flex flex-col gap-2 sm:flex-row">
                       <Button asChild>
@@ -133,7 +144,7 @@ export function LeadForm() {
                           rel="noreferrer"
                         >
                           <MessageCircle className="size-4" />
-                          {forwarded ? "Get it on WhatsApp" : "Send on WhatsApp"}
+                          Open WhatsApp
                         </a>
                       </Button>
                       <Button variant="outline" onClick={() => setStatus("idle")}>
@@ -205,28 +216,24 @@ export function LeadForm() {
                       {status === "sending" ? (
                         <>
                           <Loader2 className="size-4 animate-spin" />
-                          Sending…
+                          Saving & Opening WhatsApp…
                         </>
                       ) : (
                         <>
-                          Get Free Checklist
-                          <Download className="size-4" />
+                          Get Checklist + Connect on WhatsApp
+                          <MessageCircle className="size-4" />
                         </>
                       )}
                     </Button>
 
+                    {/* The "or just WhatsApp me" escape hatch that used to sit
+                        here was the one remaining way to reach WhatsApp without
+                        leaving any details — the exact gap this form exists to
+                        close. WhatsApp opens the moment this is submitted, so
+                        nothing is lost by removing it. */}
                     <p className="flex flex-wrap items-center justify-center gap-1.5 text-center text-xs text-foreground/45">
                       <ShieldCheck className="size-3.5" />
-                      No spam, ever. Prefer to message?{" "}
-                      <a
-                        href={SITE.whatsapp}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="text-gold-200 hover:underline"
-                      >
-                        WhatsApp me
-                      </a>
-                      .
+                      No spam, ever. WhatsApp opens as soon as you submit.
                     </p>
                   </motion.form>
                 )}

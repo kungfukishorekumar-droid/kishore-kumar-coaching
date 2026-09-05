@@ -5,7 +5,8 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { NAV_LINKS, whatsappLink } from "@/lib/site";
+import { LeadCta, LeadLink } from "@/components/shared/lead-gate";
+import { NAV_LINKS } from "@/lib/site";
 import { cn, scrollToId } from "@/lib/utils";
 
 export function Navbar() {
@@ -75,20 +76,22 @@ export function Navbar() {
           </nav>
 
           <div className="flex items-center gap-2">
-            <a
-              href={whatsappLink("Hi Kishore, I'd like to know more about your coaching.")}
-              target="_blank"
-              rel="noreferrer"
-              aria-label="WhatsApp"
+            <LeadLink
+              intent="I'd like to know more about your coaching."
+              campaign="navbar-whatsapp"
+              ariaLabel="WhatsApp"
               className="hidden size-10 place-items-center rounded-full glass text-gold-200 transition-colors hover:text-gold-100 sm:grid"
             >
               <MessageCircle className="size-5" />
-            </a>
-            <Button asChild size="sm" className="hidden sm:inline-flex">
-              <a href={whatsappLink("Hi Kishore, I'd like to book a free athlete mindset call.")} target="_blank" rel="noreferrer">
-                Book Free Call
-              </a>
-            </Button>
+            </LeadLink>
+            <LeadCta
+              size="sm"
+              className="hidden sm:inline-flex"
+              intent="I'd like to book a free athlete mindset call."
+              campaign="navbar-book-call"
+            >
+              Book Free Call
+            </LeadCta>
             <button
               onClick={() => setOpen((v) => !v)}
               className="grid size-10 place-items-center rounded-full glass text-foreground lg:hidden"
@@ -129,11 +132,13 @@ export function Navbar() {
                   </button>
                 )
               )}
-              <Button asChild className="mt-1 w-full">
-                <a href={whatsappLink("Hi Kishore, I'd like to book a free athlete mindset call.")} target="_blank" rel="noreferrer">
-                  Book Free Call
-                </a>
-              </Button>
+              <LeadCta
+                className="mt-1 w-full"
+                intent="I'd like to book a free athlete mindset call."
+                campaign="navbar-mobile-book-call"
+              >
+                Book Free Call
+              </LeadCta>
             </motion.nav>
           )}
         </AnimatePresence>

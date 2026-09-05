@@ -16,7 +16,8 @@ import { Reveal, RevealGroup } from "@/components/ui/reveal";
 import { Icon } from "@/components/ui/icon";
 import { Button } from "@/components/ui/button";
 import { FloatingShapes, GlowRing } from "@/components/ui/floating-shapes";
-import { CREDENTIALS, IMAGES, whatsappLink } from "@/lib/site";
+import { LeadCta } from "@/components/shared/lead-gate";
+import { CREDENTIALS, IMAGES } from "@/lib/site";
 import { scrollToId } from "@/lib/utils";
 
 const trustCards = [
@@ -102,16 +103,14 @@ export function PageSixAuthority() {
 
             {/* CTAs */}
             <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-              <Button asChild size="lg">
-                <a
-                  href={whatsappLink("Hi Kishore, I'd like to book a free call.")}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  <CalendarCheck className="size-4" />
-                  Book Free Call
-                </a>
-              </Button>
+              <LeadCta
+                size="lg"
+                intent="I'd like to book a free call."
+                campaign="authority-book-call"
+              >
+                <CalendarCheck className="size-4" />
+                Book Free Call
+              </LeadCta>
               <Button size="lg" variant="outline" onClick={() => scrollToId("institutions")}>
                 Invite for Workshop
                 <ArrowRight className="size-4" />

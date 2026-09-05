@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { Instagram, MessageCircle, Bot, Mail, MapPin, Phone, Youtube, ExternalLink } from "lucide-react";
-import { NAV_LINKS, SITE, whatsappLink } from "@/lib/site";
+import { LeadLink } from "@/components/shared/lead-gate";
+import { NAV_LINKS, SITE } from "@/lib/site";
 import { SEO } from "@/lib/seo";
 import { scrollToId } from "@/lib/utils";
 
@@ -34,7 +35,6 @@ export function Footer() {
               {[
                 { icon: Instagram, href: SITE.socials.instagram, label: "Instagram" },
                 { icon: Youtube, href: SEO.youtube.url, label: "YouTube channel" },
-                { icon: MessageCircle, href: whatsappLink(), label: "WhatsApp" },
                 { icon: Bot, href: SITE.customGpt, label: "AI Mindset Coach" },
               ].map((s) => (
                 <a
@@ -48,6 +48,16 @@ export function Footer() {
                   <s.icon className="size-5" />
                 </a>
               ))}
+              {/* WhatsApp is not a link here — like every other WhatsApp entry
+                  point on the site, it collects the visitor first. */}
+              <LeadLink
+                intent="I found you through the site and I'd like to know more."
+                campaign="footer-social-whatsapp"
+                ariaLabel="WhatsApp"
+                className="grid size-10 place-items-center rounded-full glass text-foreground/70 transition-colors hover:text-gold-200"
+              >
+                <MessageCircle className="size-5" />
+              </LeadLink>
             </div>
           </div>
 
@@ -100,10 +110,14 @@ export function Footer() {
             </h3>
             <ul className="mt-4 space-y-3 text-sm text-foreground/55">
               <li>
-                <a href={whatsappLink()} target="_blank" rel="noreferrer" className="flex items-center gap-2 transition-colors hover:text-gold-200">
+                <LeadLink
+                  intent="I'd like to talk about coaching."
+                  campaign="footer-phone"
+                  className="flex items-center gap-2 transition-colors hover:text-gold-200"
+                >
                   <Phone className="size-4 text-gold-300" />
                   {SITE.phone}
-                </a>
+                </LeadLink>
               </li>
               <li>
                 <a href={`mailto:${SITE.email}`} className="flex items-center gap-2 transition-colors hover:text-gold-200">

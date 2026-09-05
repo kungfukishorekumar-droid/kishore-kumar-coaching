@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { GlowRing } from "@/components/ui/floating-shapes";
+import { LeadCta } from "@/components/shared/lead-gate";
 import { WORKSHOP, whatsappLink } from "@/lib/site";
 import { submitLead } from "@/lib/lead-client";
 import { Turnstile, turnstileEnabled } from "@/components/ui/turnstile";
@@ -199,10 +200,20 @@ function RegisterModal({
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setStatus("sending");
+
+    // Build the WhatsApp message now so it is ready to open immediately
+    // after the CRM call resolves — win or lose.
+    const waMsgParts = [
+      stale
+        ? `Hi Kishore, I'd like to know about the next ${WORKSHOP.title}.`
+        : `Hi Kishore, I'd like to register for the ${WORKSHOP.title}.`,
+    ];
+    if (name) waMsgParts.push(`Name: ${name}`);
+    if (phone) waMsgParts.push(`Phone/WhatsApp: ${phone}`);
+    if (email) waMsgParts.push(`Email: ${email}`);
+    const waUrl = whatsappLink(waMsgParts.join("\n"));
+
     // Same CRM path as the main lead form (Edge Function when Turnstile is on).
-    // The WhatsApp fallback in the success panel is the safety net, so a CRM
-    // hiccup still shows a way forward rather than a dead-end error — but the
-    // copy tells the visitor which of the two actually happened.
     let reached = false;
     try {
       const result = await submitLead(
@@ -213,9 +224,6 @@ function RegisterModal({
           company,
           who: "athlete / student",
           magnet: `Workshop: ${WORKSHOP.title}`,
-          // The two are different leads: one booked a dated seat, the other
-          // asked to hear about the next date. The CRM should not treat an
-          // interest signal as a confirmed registration.
           goal: stale
             ? `Workshop interest (awaiting next date): ${WORKSHOP.title}`
             : `Workshop registration: ${WORKSHOP.title}`,
@@ -230,21 +238,27 @@ function RegisterModal({
     setForwarded(reached);
     setToken("");
     setStatus("done");
+
+    // Open WhatsApp immediately. The button in the success panel is
+    // the fallback for browsers that block the popup.
+    window.open(waUrl, "_blank", "noopener,noreferrer");
   }
 
-  // On the failure path the message carries the details the visitor typed, so
-  // the registration still reaches Kishore without them retyping anything.
+  // Build the WhatsApp confirmation link from current field state.
+  // This is used as the fallback button in the success panel.
   const waConfirm = whatsappLink(
-    forwarded
-      ? `Hi Kishore, I just registered for the ${WORKSHOP.title}. Looking forward to it!`
-      : [
-          `Hi Kishore, I'd like to register for the ${WORKSHOP.title}.`,
-          name && `Name: ${name}`,
-          phone && `Phone: ${phone}`,
-          email && `Email: ${email}`,
-        ]
-          .filter(Boolean)
-          .join("\n")
+    [
+      forwarded
+        ? `Hi Kishore, I just ${stale ? "expressed interest in" : "registered for"} the ${WORKSHOP.title}.`
+        : stale
+        ? `Hi Kishore, I'd like to know about the next ${WORKSHOP.title}.`
+        : `Hi Kishore, I'd like to register for the ${WORKSHOP.title}.`,
+      name && `Name: ${name}`,
+      phone && `Phone/WhatsApp: ${phone}`,
+      email && `Email: ${email}`,
+    ]
+      .filter(Boolean)
+      .join("\n")
   );
 
   return (
@@ -285,17 +299,17 @@ function RegisterModal({
                   id="workshop-register-title"
                   className="font-display text-2xl font-bold uppercase"
                 >
-                  {forwarded ? "You're registered!" : "One quick step"}
+                  {forwarded ? "Opening WhatsApp…" : "Almost there"}
                 </h3>
                 <p className="max-w-xs text-sm text-foreground/70">
                   {forwarded
-                    ? "Kishore will reach out on WhatsApp to confirm your seat and share the workshop link."
-                    : "Your details didn't save just now. Tap below to send them on WhatsApp — that reaches Kishore directly and secures your seat."}
+                    ? "Your details are saved. WhatsApp should have opened — if not, tap the button below."
+                    : "WhatsApp should have opened. If it didn't, tap below to send your details directly to Kishore."}
                 </p>
                 <Button asChild className="mt-2">
                   <a href={waConfirm} target="_blank" rel="noreferrer">
                     <MessageCircle className="size-4" />
-                    {forwarded ? "Message Kishore" : "Send on WhatsApp"}
+                    Open WhatsApp
                   </a>
                 </Button>
               </div>
@@ -375,12 +389,12 @@ function RegisterModal({
                     {status === "sending" ? (
                       <>
                         <Loader2 className="size-4 animate-spin" />
-                        Submitting…
+                        Saving & Opening WhatsApp…
                       </>
                     ) : (
                       <>
-                        {stale ? "Notify Me of the Next One" : "Reserve My Seat"}
-                        <ArrowRight className="size-4" />
+                        {stale ? "Notify Me + Connect on WhatsApp" : "Reserve My Seat + Connect on WhatsApp"}
+                        <MessageCircle className="size-4" />
                       </>
                     )}
                   </Button>
@@ -605,12 +619,17 @@ export function WorkshopSection() {
                 {isStale ? "Get the Next Date" : "Reserve Your Seat"}
                 <ArrowRight className="size-4" />
               </Button>
-              <Button size="lg" variant="outline" className="flex-1" asChild>
-                <a href={whatsappLink(waMsg)} target="_blank" rel="noreferrer">
-                  <MessageCircle className="size-4" />
-                  Ask on WhatsApp
-                </a>
-              </Button>
+              <LeadCta
+                size="lg"
+                variant="outline"
+                className="flex-1"
+                intent={waMsg.replace(/^Hi Kishore,\s*/i, "")}
+                campaign={isStale ? "workshop-next-date" : "workshop-ask"}
+                title={WORKSHOP.title}
+              >
+                <MessageCircle className="size-4" />
+                Ask on WhatsApp
+              </LeadCta>
             </div>
           </motion.div>
 

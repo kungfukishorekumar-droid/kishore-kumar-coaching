@@ -7,7 +7,8 @@ import { TiltCard } from "@/components/ui/tilt-card";
 import { Icon } from "@/components/ui/icon";
 import { Button } from "@/components/ui/button";
 import { FloatingShapes } from "@/components/ui/floating-shapes";
-import { INSTITUTIONS, whatsappLink } from "@/lib/site";
+import { LeadCta } from "@/components/shared/lead-gate";
+import { INSTITUTIONS } from "@/lib/site";
 
 const audiences = ["Schools", "Colleges", "Sports Academies", "Martial Arts Centers", "Gyms", "Coaches"];
 
@@ -87,18 +88,17 @@ export function Institutions() {
                   ))}
                 </ul>
               </div>
-              <Button asChild variant="electric" size="lg" className="w-full lg:w-auto">
-                <a
-                  href={whatsappLink(
-                    "Hi Kishore, we'd like to invite you for an athlete mindset workshop at our institution."
-                  )}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Invite Kishore for Workshop
-                  <ArrowRight className="size-4" />
-                </a>
-              </Button>
+              <LeadCta
+                variant="electric"
+                size="lg"
+                className="w-full lg:w-auto"
+                intent="we'd like to invite you for an athlete mindset workshop at our institution."
+                campaign="institutions-invite-workshop"
+                title="Invite Kishore for a Workshop"
+              >
+                Invite Kishore for Workshop
+                <ArrowRight className="size-4" />
+              </LeadCta>
             </div>
           </div>
         </Reveal>

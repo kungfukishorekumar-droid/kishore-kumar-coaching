@@ -10,8 +10,8 @@ import { BackToTop } from "@/components/shared/BackToTop";
 import { AmbientBackground } from "@/components/ui/ambient-background";
 import { SectionDivider } from "@/components/ui/section-divider";
 import { Button } from "@/components/ui/button";
+import { LeadCta } from "@/components/shared/lead-gate";
 import { SEO } from "@/lib/seo";
-import { whatsappLink } from "@/lib/site";
 import { jsonLdString } from "@/lib/utils";
 import { POSTS, SORTED_POSTS, getPost } from "@/content/blog";
 
@@ -326,18 +326,15 @@ export default async function BlogPostPage({ params }: Params) {
                 {SEO.address.locality} — and online across India.
               </p>
               <div className="mt-6 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center">
-                <Button asChild size="lg">
-                  <a
-                    href={whatsappLink(
-                      `Hi Kishore, I read your article "${post.title}" and I'd like to know more.`
-                    )}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    <MessageCircle className="size-4" />
-                    Talk on WhatsApp
-                  </a>
-                </Button>
+                <LeadCta
+                  size="lg"
+                  intent={`I read your article "${post.title}" and I'd like to know more.`}
+                  campaign={`blog-${post.slug}`}
+                  title={`Work with ${SEO.founder}`}
+                >
+                  <MessageCircle className="size-4" />
+                  Talk on WhatsApp
+                </LeadCta>
                 <Button asChild size="lg" variant="outline">
                   <Link href="/programs/">
                     See programs

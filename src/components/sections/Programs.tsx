@@ -6,19 +6,27 @@ import { Check, Sparkles, ArrowRight } from "lucide-react";
 import { Reveal, RevealGroup } from "@/components/ui/reveal";
 import { TiltCard } from "@/components/ui/tilt-card";
 import { Button } from "@/components/ui/button";
-import { PROGRAMS, whatsappLink, type Program } from "@/lib/site";
+import { LeadCta } from "@/components/shared/lead-gate";
+import { PROGRAMS, type Program } from "@/lib/site";
 import { cn, scrollToId } from "@/lib/utils";
 
 function ProgramCTA({ program }: { program: Program }) {
   const variant = program.featured ? "primary" : "outline";
   if (program.cta.type === "wa") {
     return (
-      <Button asChild variant={variant} size="lg" className="relative w-full">
-        <a href={whatsappLink(program.cta.message)} target="_blank" rel="noreferrer">
-          {program.cta.label}
-          <ArrowRight className="size-4" />
-        </a>
-      </Button>
+      <LeadCta
+        variant={variant}
+        size="lg"
+        className="relative w-full"
+        // The programme's own WhatsApp line, so the chat still opens on the
+        // right subject — and `campaign` records which programme sold it.
+        intent={program.cta.message.replace(/^Hi Kishore,\s*/i, "")}
+        campaign={`program-${program.slug}`}
+        title={program.name}
+      >
+        {program.cta.label}
+        <ArrowRight className="size-4" />
+      </LeadCta>
     );
   }
   const target = program.cta.target;

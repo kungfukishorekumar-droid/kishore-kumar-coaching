@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Bebas_Neue, Inter } from "next/font/google";
 import { SEO } from "@/lib/seo";
+import { LeadGateProvider } from "@/components/shared/lead-gate";
 import "./globals.css";
 
 /**
@@ -181,7 +182,10 @@ export default function RootLayout({
         >
           Skip to content
         </a>
-        {children}
+        {/* Holds the single lead-capture modal every WhatsApp CTA opens. It
+            wraps the whole tree so a CTA on any page — including the
+            server-rendered blog and programme pages — can reach it. */}
+        <LeadGateProvider>{children}</LeadGateProvider>
       </body>
     </html>
   );

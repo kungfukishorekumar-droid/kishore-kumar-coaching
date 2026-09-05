@@ -5,7 +5,8 @@ import { ArrowRight, MessageCircle, Bot, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { GlowRing } from "@/components/ui/floating-shapes";
 import { Sparkles } from "@/components/ui/sparkles";
-import { SITE, whatsappLink } from "@/lib/site";
+import { LeadCta } from "@/components/shared/lead-gate";
+import { SITE } from "@/lib/site";
 import { scrollToId } from "@/lib/utils";
 
 export function FinalCTA() {
@@ -45,22 +46,25 @@ export function FinalCTA() {
             <div className="mt-9 flex flex-col flex-wrap items-stretch justify-center gap-3 sm:flex-row sm:items-center">
               {/* The one action the whole page builds toward — the only button
                   on the site that gets the pulsing halo. */}
-              <Button asChild size="lg" className="btn-halo">
-                <a
-                  href={whatsappLink("Hi Kishore, I'd like to book a free call.")}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Book Free Call
-                  <ArrowRight className="size-4" />
-                </a>
-              </Button>
-              <Button asChild size="lg" variant="outline">
-                <a href={SITE.whatsapp} target="_blank" rel="noreferrer">
-                  <MessageCircle className="size-4" />
-                  Message on WhatsApp
-                </a>
-              </Button>
+              <LeadCta
+                size="lg"
+                className="btn-halo"
+                intent="I'd like to book a free call."
+                campaign="final-cta-book-call"
+              >
+                Book Free Call
+                <ArrowRight className="size-4" />
+              </LeadCta>
+              <LeadCta
+                size="lg"
+                variant="outline"
+                intent="I'd like to talk about coaching."
+                campaign="final-cta-message"
+                title="Message Coach Kishore"
+              >
+                <MessageCircle className="size-4" />
+                Message on WhatsApp
+              </LeadCta>
               <Button asChild size="lg" variant="electric">
                 <a href={SITE.customGpt} target="_blank" rel="noreferrer">
                   <Bot className="size-4" />

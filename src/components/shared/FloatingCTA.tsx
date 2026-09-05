@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MessageCircle, Bot, CalendarCheck } from "lucide-react";
-import { SITE, whatsappLink } from "@/lib/site";
+import { LeadLink } from "@/components/shared/lead-gate";
+import { SITE } from "@/lib/site";
 import { scrollToId } from "@/lib/utils";
 
 export function FloatingCTA() {
@@ -53,17 +54,15 @@ export function FloatingCTA() {
             transition={{ type: "spring", stiffness: 260, damping: 24 }}
             className="fixed bottom-6 right-5 z-40 hidden flex-col gap-3 lg:flex"
           >
-            <a
-              href={whatsappLink("Hi Kishore, I'd like to know more about your coaching.")}
-              target="_blank"
-              rel="noreferrer"
-              aria-label="Chat on WhatsApp"
-              title="Chat on WhatsApp"
-              className="group grid size-14 place-items-center rounded-full bg-gold-gradient text-ink shadow-glow-lg transition-transform hover:-translate-y-1"
+            <LeadLink
+              intent="I'd like to know more about your coaching."
+              campaign="floating-desktop-whatsapp"
+              ariaLabel="Chat on WhatsApp"
+              className="group relative grid size-14 place-items-center rounded-full bg-gold-gradient text-ink shadow-glow-lg transition-transform hover:-translate-y-1"
             >
               <MessageCircle className="size-6" />
               <span className="absolute inset-0 -z-10 animate-ping rounded-full bg-gold-400/40" />
-            </a>
+            </LeadLink>
             <a
               href={SITE.customGpt}
               target="_blank"
@@ -96,15 +95,14 @@ export function FloatingCTA() {
                 <CalendarCheck className="size-4" />
                 Book Free Call
               </button>
-              <a
-                href={whatsappLink("Hi Kishore, I'd like to know more.")}
-                target="_blank"
-                rel="noreferrer"
-                aria-label="WhatsApp"
+              <LeadLink
+                intent="I'd like to know more."
+                campaign="floating-mobile-whatsapp"
+                ariaLabel="WhatsApp"
                 className="grid size-11 place-items-center rounded-full bg-gold-400/15 text-gold-200"
               >
                 <MessageCircle className="size-5" />
-              </a>
+              </LeadLink>
               <a
                 href={SITE.customGpt}
                 target="_blank"
