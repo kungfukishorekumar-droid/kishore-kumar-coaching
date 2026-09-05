@@ -25,8 +25,11 @@ export const dynamic = "force-dynamic";
 export async function GET(): Promise<Response> {
   const config = configReport();
 
-  const ready = config.supabaseKey !== "missing";
-  const hardened = config.supabaseKey === "service_role" && config.turnstileEnforced;
+  // A lead needs somewhere to go: either destination on its own is enough for
+  // the route to accept one, so readiness is an OR, not an AND.
+  const ready = config.supabaseKey !== "missing" || config.crmWebhook;
+  const hardened =
+    config.supabaseKey === "service_role" && config.crmWebhook && config.turnstileEnforced;
 
   return Response.json(
     {
@@ -37,16 +40,22 @@ export async function GET(): Promise<Response> {
         credential: config.supabaseKey,
         turnstileWidget: config.turnstileWidget,
         turnstileEnforced: config.turnstileEnforced,
+        // Direct delivery to the CRM ingest webhook. False means leads reach
+        // the CRM only via the Supabase queue drain.
+        crmWebhook: config.crmWebhook,
+        crmSite: config.crmSite,
       },
       // Names the next hardening step, so the probe is actionable rather than
       // merely descriptive.
       nextStep: !ready
-        ? "Set SUPABASE_SERVICE_ROLE_KEY (or SUPABASE_ANON_KEY)."
-        : config.supabaseKey !== "service_role"
-          ? "Set SUPABASE_SERVICE_ROLE_KEY, then revoke the anon INSERT policy on public_leads."
-          : !config.turnstileEnforced
-            ? "Set TURNSTILE_SECRET_KEY and NEXT_PUBLIC_TURNSTILE_SITE_KEY to enforce the bot check."
-            : null,
+        ? "Set CRM_WEBHOOK_URL + CRM_API_KEY, or SUPABASE_SERVICE_ROLE_KEY (or SUPABASE_ANON_KEY)."
+        : !config.crmWebhook
+          ? "Set CRM_WEBHOOK_URL and CRM_API_KEY to deliver leads straight into WarriorCRM."
+          : config.supabaseKey !== "service_role"
+            ? "Set SUPABASE_SERVICE_ROLE_KEY, then revoke the anon INSERT policy on public_leads."
+            : !config.turnstileEnforced
+              ? "Set TURNSTILE_SECRET_KEY and NEXT_PUBLIC_TURNSTILE_SITE_KEY to enforce the bot check."
+              : null,
       time: new Date().toISOString(),
     },
     {

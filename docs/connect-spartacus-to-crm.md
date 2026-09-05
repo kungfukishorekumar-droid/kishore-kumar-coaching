@@ -1,5 +1,17 @@
 # Connect the Spartacus site to the same CRM
 
+> **There is now a better route than the one below.** The CRM exposes a
+> site-scoped ingest webhook — `POST https://crm.spartacusmartialarts.com/api/ingest/<slug>`
+> with an `x-api-key` header — and this site uses it (`src/lib/server/warrior-crm.ts`).
+> It delivers into the CRM immediately instead of waiting for a queue drain, and
+> the key never touches the browser.
+>
+> The snippet below puts a Supabase key **in the browser**, which is exactly the
+> exposure `/api/lead/` was built to remove. Use it only if the Spartacus site is
+> still a static page with no server of its own; if it can run server code at
+> all, copy the webhook approach instead. Either way the API key must be issued
+> per site and read from the environment, never committed.
+
 Both websites feed **one** Supabase queue — the `public_leads` table the
 WarriorCRM drains. This site (`kishorekumarcoach.com`) already does; this file
 is the drop-in for the **Spartacus** site so its leads land in the same place,

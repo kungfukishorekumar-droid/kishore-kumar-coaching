@@ -48,6 +48,14 @@ beforeEach(() => {
   vi.stubEnv("SUPABASE_SERVICE_ROLE_KEY", "test-service-key");
   vi.stubEnv("TURNSTILE_SECRET_KEY", "");
 
+  // Direct CRM delivery OFF by default, stubbed rather than assumed: Vitest
+  // loads .env.local into process.env, so a developer with a real CRM_API_KEY
+  // on their machine would otherwise see a second upstream call here and fail
+  // tests that pass in CI. The webhook has its own block below, which turns it
+  // on deliberately.
+  vi.stubEnv("CRM_WEBHOOK_URL", "");
+  vi.stubEnv("CRM_API_KEY", "");
+
   // Silence structured logs so test output stays readable.
   vi.spyOn(console, "log").mockImplementation(() => {});
   vi.spyOn(console, "warn").mockImplementation(() => {});
@@ -273,5 +281,105 @@ describe("POST /api/lead/ — upstream failure", () => {
     });
     const res = await POST(leadRequest(validLead));
     expect(res.status).toBe(502);
+  });
+});
+
+/**
+ * Direct delivery to the WarriorCRM ingest webhook.
+ *
+ * The point of these is the failure matrix, not the happy path: a lead must
+ * survive either destination being down, because losing one is the expensive
+ * outcome and each path breaks independently.
+ */
+describe("POST /api/lead/ — WarriorCRM webhook", () => {
+  const INGEST_URL = "https://crm.test.example/api/ingest/spartacus";
+
+  const queueCalls = () => upstream.filter((c) => c.url.includes("/rest/v1/public_leads"));
+  const crmCalls = () => upstream.filter((c) => c.url === INGEST_URL);
+
+  beforeEach(() => {
+    vi.stubEnv("CRM_WEBHOOK_URL", INGEST_URL);
+    vi.stubEnv("CRM_API_KEY", "wcrm_test_key");
+    vi.stubEnv("CRM_SITE_SLUG", "spartacus");
+  });
+
+  it("posts the lead to the ingest endpoint with the api key header", async () => {
+    const res = await POST(leadRequest(validLead));
+
+    expect(res.status).toBe(200);
+    expect(crmCalls()).toHaveLength(1);
+    expect(crmCalls()[0].headers["x-api-key"]).toBe("wcrm_test_key");
+  });
+
+  it("sends the same server-owned fields the queue gets, plus the site slug", async () => {
+    await POST(leadRequest({ ...validLead, magnet: "checklist", source: "attacker.example" }));
+
+    const body = crmCalls()[0].body as Record<string, unknown>;
+    expect(body.name).toBe("Arjun Kumar");
+    expect(body.site).toBe("spartacus");
+    // Server-owned, so a client cannot forge which site a lead is attributed to.
+    expect(body.source).toBe("kishorekumarcoach.com");
+    expect(body.stage).toBe("New Lead");
+    expect(body).not.toHaveProperty("secretField");
+  });
+
+  it("writes to both destinations, not one instead of the other", async () => {
+    await POST(leadRequest(validLead));
+    expect(queueCalls()).toHaveLength(1);
+    expect(crmCalls()).toHaveLength(1);
+  });
+
+  it("still accepts the lead when the webhook is down but the queue works", async () => {
+    vi.stubGlobal("fetch", async (input: RequestInfo | URL, init?: RequestInit) => {
+      const url = String(input);
+      if (url === INGEST_URL) throw new Error("crm unreachable");
+      upstream.push({ url, body: JSON.parse(String(init?.body ?? "{}")), headers: {} });
+      return new Response("", { status: 201 });
+    });
+
+    const res = await POST(leadRequest(validLead));
+    expect(res.status).toBe(200);
+    expect(queueCalls()).toHaveLength(1);
+  });
+
+  it("still accepts the lead when the queue fails but the webhook works", async () => {
+    vi.stubGlobal("fetch", async (input: RequestInfo | URL, init?: RequestInit) => {
+      const url = String(input);
+      upstream.push({ url, body: JSON.parse(String(init?.body ?? "{}")), headers: {} });
+      return new Response("", { status: url === INGEST_URL ? 200 : 500 });
+    });
+
+    const res = await POST(leadRequest(validLead));
+    expect(res.status).toBe(200);
+    await expect(res.json()).resolves.toMatchObject({ ok: true, forwarded: true });
+    expect(crmCalls()).toHaveLength(1);
+  });
+
+  it("answers 502 only when both destinations fail", async () => {
+    upstreamStatus = 500;
+    const res = await POST(leadRequest(validLead));
+    expect(res.status).toBe(502);
+  });
+
+  it("never calls the webhook when no api key is configured", async () => {
+    vi.stubEnv("CRM_API_KEY", "");
+    const res = await POST(leadRequest(validLead));
+
+    // Queue-only is a supported mode, not a failure — an unconfigured deploy
+    // must keep capturing leads.
+    expect(res.status).toBe(200);
+    expect(crmCalls()).toHaveLength(0);
+    expect(queueCalls()).toHaveLength(1);
+  });
+
+  it("treats a blank CRM_WEBHOOK_URL as the kill switch", async () => {
+    // Clearing the URL is how you turn direct delivery off during a CRM
+    // migration without touching code or dropping a single lead.
+    vi.stubEnv("CRM_WEBHOOK_URL", "   ");
+    const res = await POST(leadRequest(validLead));
+
+    expect(res.status).toBe(200);
+    expect(crmCalls()).toHaveLength(0);
+    expect(queueCalls()).toHaveLength(1);
   });
 });

@@ -76,6 +76,41 @@ export function supabaseCredential(): SupabaseCredential | null {
   return { key: publishable, kind: "publishable" };
 }
 
+/**
+ * The WarriorCRM ingest endpoint leads are delivered to directly.
+ *
+ * ── Names match the Warrior Mind backend on purpose ──────────────────────────
+ * CRM_WEBHOOK_URL / CRM_API_KEY / CRM_SITE_SLUG are the same three names that
+ * repository uses, so one CRM connection is configured identically wherever it
+ * appears and a value can be copied between hPanel environments without
+ * translation.
+ *
+ * ── Blank URL means OFF ──────────────────────────────────────────────────────
+ * There is deliberately no committed fallback URL. Direct delivery needs both
+ * the endpoint and the key, so clearing either one disables it — which is what
+ * makes CRM_WEBHOOK_URL a usable kill switch when the CRM is down or being
+ * migrated. Disabled is not broken: leads still go into the Supabase queue the
+ * CRM drains, which is how this site worked before the webhook existed.
+ */
+const CRM_SITE_SLUG = "spartacus";
+
+export type CrmWebhookConfig = {
+  url: string;
+  /** Sent as `x-api-key`. Server-only — never expose this to the browser. */
+  apiKey: string;
+  /** Which site in the CRM the key files leads under. */
+  siteSlug: string;
+};
+
+/** Null when either CRM_WEBHOOK_URL or CRM_API_KEY is unset or blank. */
+export function warriorCrmConfig(): CrmWebhookConfig | null {
+  const url = read("CRM_WEBHOOK_URL");
+  const apiKey = read("CRM_API_KEY");
+  if (!url || !apiKey) return null;
+
+  return { url, apiKey, siteSlug: read("CRM_SITE_SLUG") ?? CRM_SITE_SLUG };
+}
+
 /** Cloudflare Turnstile secret. Absent → the challenge is not enforced. */
 export function turnstileSecret(): string | undefined {
   return read("TURNSTILE_SECRET_KEY");
@@ -92,7 +127,11 @@ export function turnstileConfigured(): boolean {
  * same queue.
  */
 export function allowedOrigins(): string[] {
-  const extra = read("LEAD_ALLOWED_ORIGINS");
+  // ALLOWED_ORIGINS is the name the Warrior Mind backend uses for the same
+  // list. Reading both means a value copied between the two repos works as
+  // written instead of silently doing nothing; the LEAD_-prefixed name wins,
+  // because it is the one that sits with the other LEAD_* knobs here.
+  const extra = read("LEAD_ALLOWED_ORIGINS") ?? read("ALLOWED_ORIGINS");
   const configured = extra
     ? extra.split(",").map((o) => o.trim()).filter(Boolean)
     : [];
@@ -133,10 +172,15 @@ export const limits = {
 /** Non-secret readiness summary for the health endpoint. */
 export function configReport() {
   const credential = supabaseCredential();
+  const crm = warriorCrmConfig();
   return {
     supabaseUrlSet: Boolean(read("SUPABASE_URL") ?? read("NEXT_PUBLIC_SUPABASE_URL")),
     supabaseKey: credential ? credential.kind : "missing",
     turnstileEnforced: Boolean(turnstileSecret()),
     turnstileWidget: turnstileConfigured(),
+    // Boolean and slug only. The slug is already public (it is in the ingest
+    // URL); the key never appears here, not even as a length.
+    crmWebhook: Boolean(crm),
+    crmSite: crm ? crm.siteSlug : null,
   };
 }

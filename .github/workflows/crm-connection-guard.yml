@@ -16,12 +16,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Check leads still post to WarriorCRM public_leads
+      - name: Check leads still reach WarriorCRM by both routes
         run: |
           ex="--exclude-dir=.git --exclude-dir=node_modules --exclude-dir=.next --exclude-dir=dist --exclude-dir=out"
           ok=1
           grep -rqI $ex "public_leads" . || { echo "::error::Lead capture no longer posts to the WarriorCRM public_leads queue."; ok=0; }
           grep -rqI $ex "oqwbmtdrjxfbnitlzehe" . || { echo "::error::The WarriorCRM Supabase project reference is missing."; ok=0; }
+          # Route two: the direct ingest webhook. Only the URL and the env var
+          # name are checked — the API key lives in the host environment and is
+          # never in the repository, so it cannot be grepped for here.
+          grep -rqI $ex "crm.spartacusmartialarts.com/api/ingest" . || { echo "::error::The WarriorCRM ingest webhook URL is missing."; ok=0; }
+          grep -rqI $ex "CRM_API_KEY" . || { echo "::error::The WarriorCRM ingest webhook is no longer wired up."; ok=0; }
           if [ "$ok" -ne 1 ]; then
             echo "::error::A rebuild appears to have wiped the CRM connection. Re-apply it so form submissions reach your CRM again."
             exit 1

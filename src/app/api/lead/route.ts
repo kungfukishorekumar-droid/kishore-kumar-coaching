@@ -20,7 +20,10 @@
  * ── Order of checks, and why ─────────────────────────────────────────────────
  * Cheapest and most abusable first, so an attacker cannot make us do expensive
  * work: method → content-type → origin → rate limit → body size → parse →
- * honeypot → validate → Turnstile (a network call) → insert.
+ * honeypot → validate → Turnstile (a network call) → store.
+ *
+ * "Store" is two writes in parallel: the Supabase queue the CRM drains, and a
+ * direct POST to the CRM's ingest webhook. Either succeeding is enough.
  */
 
 import { allowedOrigins, limits } from "@/lib/server/env";
@@ -36,6 +39,7 @@ import { describeLead, log, newRequestId } from "@/lib/server/log";
 import { checkRate, isDuplicate } from "@/lib/server/rate-limit";
 import { verifyTurnstile } from "@/lib/server/turnstile";
 import { insertLead } from "@/lib/server/leads";
+import { deliverToWarriorCrm } from "@/lib/server/warrior-crm";
 import { leadFingerprint, validateLead } from "@/lib/server/validate";
 
 /**
@@ -173,10 +177,29 @@ export async function POST(req: Request): Promise<Response> {
     return tooManyRequests(requestId, ip, submit.retryAfterSeconds, "submit");
   }
 
-  const stored = await insertLead(lead, requestId);
+  /**
+   * Two destinations, in parallel, and either one is enough.
+   *
+   *   queue     — the Supabase `public_leads` row the CRM drains. Durable, and
+   *               unaffected by the CRM being down or mid-deploy.
+   *   delivered — a direct POST to the CRM's ingest webhook, so the lead is
+   *               visible in the CRM immediately rather than at the next drain.
+   *
+   * Sequentially would mean the slower one adds to the other's latency for a
+   * visitor waiting on a form; `Promise.all` is safe because neither call
+   * throws — both resolve to an outcome object.
+   *
+   * The request only fails if BOTH fail. One path being down while the other
+   * works is a logged degradation, not a lost lead, and losing a lead is the
+   * expensive failure here.
+   */
+  const [queued, delivered] = await Promise.all([
+    insertLead(lead, requestId),
+    deliverToWarriorCrm(lead, requestId),
+  ]);
 
-  if (!stored.ok) {
-    // 502, not 500: this server worked; the upstream store did not. The client
+  if (!queued.ok && !delivered.ok) {
+    // 502, not 500: this server worked; the upstream stores did not. The client
     // shows its WhatsApp fallback on any non-2xx, so the lead still has a route
     // to Kishore.
     return fail(
@@ -184,8 +207,22 @@ export async function POST(req: Request): Promise<Response> {
       502,
       "storage-unavailable",
       "We couldn't save that just now — please send it on WhatsApp.",
-      { ip, reason: stored.reason, ms: Date.now() - started }
+      {
+        ip,
+        reason: queued.ok ? "ok" : queued.reason,
+        crmReason: delivered.ok ? "ok" : delivered.reason,
+        ms: Date.now() - started,
+      }
     );
+  }
+
+  // Half-delivered is worth noticing even though the visitor was served: it is
+  // the state where leads are arriving by one route only, which looks perfectly
+  // healthy from the outside right up until the surviving route also breaks.
+  if (!queued.ok) {
+    log("warn", "lead.queue_failed_crm_ok", { requestId, reason: queued.reason });
+  } else if (!delivered.ok && delivered.reason !== "not-configured") {
+    log("warn", "lead.crm_failed_queued", { requestId, reason: delivered.reason });
   }
 
   log("info", "lead.accepted", {
@@ -194,6 +231,8 @@ export async function POST(req: Request): Promise<Response> {
     campaign: lead.campaign,
     leadType: lead.leadType,
     turnstileEnforced: turnstile.ok ? turnstile.enforced : false,
+    queued: queued.ok,
+    crmDelivered: delivered.ok,
     ms: Date.now() - started,
   });
 

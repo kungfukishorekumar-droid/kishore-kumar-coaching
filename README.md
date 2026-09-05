@@ -73,6 +73,7 @@ src/
       rate-limit.ts     # two-tier sliding window + duplicate suppression
       turnstile.ts      # server-side bot-token verification
       leads.ts          # the Supabase write
+      warrior-crm.ts    # the direct CRM ingest webhook (x-api-key)
       log.ts            # structured logs with PII redaction
 supabase/
   functions/submit-lead # Edge Function — still used by the Spartacus site
@@ -107,15 +108,24 @@ launch. Keep the same shape (`quote`, `name`, `category`, `rating`, `source`).
 ## Connect the CRM (WarriorCRM)
 
 Lead capture runs **server-side**. The form posts to this app's own API, and the
-server writes to the CRM's Supabase intake queue:
+server sends each lead to the CRM by **two independent routes**:
 
 ```
 LeadForm / WorkshopSection
-  → POST /api/lead/            (src/app/api/lead/route.ts)
+  → POST /api/lead/                  (src/app/api/lead/route.ts)
      → validate + rate-limit + Turnstile + de-duplicate
-     → Supabase public_leads   (src/lib/server/leads.ts)
-        → WarriorCRM drains it
+     → in parallel:
+        ├─ Supabase public_leads     (src/lib/server/leads.ts)
+        │     → WarriorCRM drains it            — durable, indirect
+        └─ POST /api/ingest/spartacus (src/lib/server/warrior-crm.ts)
+              → WarriorCRM, immediately         — direct, x-api-key
 ```
+
+**Either one succeeding is enough.** The request only fails (`502`) if both do,
+so a CRM deploy, an expired key or a Supabase outage degrades the pipeline
+instead of losing the lead. A half-delivered lead is logged as
+`lead.queue_failed_crm_ok` or `lead.crm_failed_queued` — worth watching for,
+because from the outside one working route looks perfectly healthy.
 
 **The browser holds no Supabase credential.** It used to: the form POSTed
 straight into Supabase with a publishable key shipped in the bundle, which meant
@@ -129,13 +139,24 @@ Everything has a safe fallback, so the site works unconfigured. Copy
 `.env.example` → `.env.local` (or set these in hPanel for production):
 
 ```bash
+# Route 1 — the Supabase intake queue
 SUPABASE_URL=https://YOUR-PROJECT.supabase.co
 SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+
+# Route 2 — direct delivery into WarriorCRM (Sites → Spartacus → API key)
+CRM_WEBHOOK_URL=https://crm.spartacusmartialarts.com/api/ingest/spartacus
+CRM_API_KEY=wcrm_live_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+CRM_SITE_SLUG=spartacus
 ```
 
 Note the **missing `NEXT_PUBLIC_` prefix** — that prefix is what would inline a
 value into the browser bundle, so leaving it off is what keeps the key on the
-server. Never add it to these two.
+server. Never add it to any of these.
+
+The `CRM_*` names deliberately match the Warrior Mind backend repo, so one CRM
+connection is configured identically wherever it appears. **Clearing
+`CRM_WEBHOOK_URL` is the kill switch** — direct delivery stops and leads reach
+the CRM through the Supabase queue only, which is how the site worked before.
 
 With a service-role key set, this server is the only writer to `public_leads`,
 so you can **revoke the anon INSERT policy** and close the queue to the public.
@@ -149,8 +170,9 @@ curl https://kishorekumarcoach.com/api/health/
 ```
 
 Reports whether lead capture is configured and what the next hardening step is,
-without disclosing any secret. `"status": "degraded"` means leads are being
-captured but the queue is not locked down yet.
+without disclosing any secret. `leadCapture.crmWebhook: true` means direct
+delivery is live; `"status": "degraded"` means leads are being captured but at
+least one of the two routes, or the bot check, is not set up yet.
 
 ### Bot protection
 
@@ -176,7 +198,7 @@ it when chasing down a specific submission.
 ## Tests
 
 ```bash
-npm test            # 103 tests, ~0.7s
+npm test            # 111 tests, ~0.7s
 npm run test:watch  # during development
 npm run verify      # typecheck + tests + build (what CI runs)
 ```
