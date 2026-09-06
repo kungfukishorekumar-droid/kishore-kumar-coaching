@@ -26,6 +26,7 @@
 import { VIDEO_POSTS } from "./video-blog";
 import { LOCAL_POSTS } from "./local-blog";
 import { METHOD_POSTS } from "./method-blog";
+import { MARTIAL_ARTS_POSTS } from "./martial-arts-blog";
 
 export type BlogSection = {
   heading: string;
@@ -803,6 +804,10 @@ POSTS.push(...LOCAL_POSTS);
 
 // One article per pillar of the Warrior Mind Method™ — the framework cluster.
 POSTS.push(...METHOD_POSTS);
+
+// Discipline-level articles — each is also a GBP service, so they carry the
+// highest commercial intent on the blog.
+POSTS.push(...MARTIAL_ARTS_POSTS);
 
 /** Newest first — the order the blog index and sitemap use. */
 export const SORTED_POSTS = [...POSTS].sort(
