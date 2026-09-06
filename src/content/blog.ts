@@ -25,6 +25,7 @@
 
 import { VIDEO_POSTS } from "./video-blog";
 import { LOCAL_POSTS } from "./local-blog";
+import { METHOD_POSTS } from "./method-blog";
 
 export type BlogSection = {
   heading: string;
@@ -799,6 +800,9 @@ POSTS.push(...VIDEO_POSTS);
 // Local-intent cluster (Chennai / Perambur). Same reason as above: kept in its
 // own file so this one stays readable.
 POSTS.push(...LOCAL_POSTS);
+
+// One article per pillar of the Warrior Mind Method™ — the framework cluster.
+POSTS.push(...METHOD_POSTS);
 
 /** Newest first — the order the blog index and sitemap use. */
 export const SORTED_POSTS = [...POSTS].sort(
