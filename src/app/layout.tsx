@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import { Bebas_Neue, Inter } from "next/font/google";
 import { SEO } from "@/lib/seo";
 import { LeadGateProvider } from "@/components/shared/lead-gate";
@@ -186,6 +187,22 @@ export default function RootLayout({
             wraps the whole tree so a CTA on any page — including the
             server-rendered blog and programme pages — can reach it. */}
         <LeadGateProvider>{children}</LeadGateProvider>
+
+        {/* WarriorCRM — anonymous visitor analytics + lead backup.
+            Analytics: page views with traffic source, campaign and device, so
+            the CRM can show how many people looked vs. how many registered. No
+            cookies, no personal data, no cross-site tracking, Do Not Track
+            honoured — nothing here needs a consent banner.
+            Backup: it also watches the lead-gate form. Leads already go server
+            side via /api/lead; this is the fallback for when that path breaks,
+            and the CRM drops duplicates by phone number so it cannot double
+            count. afterInteractive keeps it off the critical render path.
+            Setup notes live in the CRM repo: CONNECT-WEBSITES.md */}
+        <Script
+          src="https://crm.spartacusmartialarts.com/warriorcrm.js"
+          data-site="kishorekumarcoach.com"
+          strategy="afterInteractive"
+        />
       </body>
     </html>
   );
