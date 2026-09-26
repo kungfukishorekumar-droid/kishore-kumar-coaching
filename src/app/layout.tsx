@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import Script from "next/script";
 import { Bebas_Neue, Inter } from "next/font/google";
 import { SEO } from "@/lib/seo";
+import { buildCsp } from "@/lib/csp.mjs";
 import { LeadGateProvider } from "@/components/shared/lead-gate";
 import "./globals.css";
 
@@ -175,6 +176,17 @@ export default function RootLayout({
       lang="en-IN"
       className={`dark ${bebasNeue.variable} ${inter.variable}`}
     >
+      <head>
+        {/* CSP in the document itself. Hostinger's Force-HTTPS layer replaces
+            our Content-Security-Policy response header on every request, so
+            this copy is the one that actually reaches visitors. See
+            src/lib/csp.mjs. First in <head> on purpose: a meta policy only
+            governs what is parsed after it. */}
+        <meta
+          httpEquiv="Content-Security-Policy"
+          content={buildCsp({ isProd: process.env.NODE_ENV === "production", forMeta: true })}
+        />
+      </head>
       <body>
         {/* Keyboard users land here first — lets them jump the navbar entirely */}
         <a
