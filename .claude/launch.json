@@ -22,20 +22,6 @@
         "3100"
       ],
       "port": 3100
-    },
-    {
-      "name": "prod-before",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "--prefix",
-        "/private/tmp/claude-501/-Users-kishorekumar-Documents-kishore-website/735ebe10-6960-40ea-843d-334a263929e2/scratchpad/before-wt",
-        "run",
-        "start",
-        "--",
-        "-p",
-        "3200"
-      ],
-      "port": 3200
     }
   ]
 }
