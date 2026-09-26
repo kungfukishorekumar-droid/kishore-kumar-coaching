@@ -1,11 +1,12 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { Bot, Sparkles, ArrowUpRight, Send } from "lucide-react";
 import { Reveal } from "@/components/ui/reveal";
 import { Button } from "@/components/ui/button";
 import { GlowRing, FloatingShapes } from "@/components/ui/floating-shapes";
-import { IMAGES, SITE } from "@/lib/site";
+import { PORTRAIT } from "@/lib/portrait";
+import { SITE } from "@/lib/site";
 
 const topics = ["Focus", "Nerves", "Routine", "Confidence", "Beginner tips"];
 
@@ -82,7 +83,9 @@ export function CustomGPT() {
                 {/* Photo banner — Kishore as the coach behind the AI */}
                 <div className="relative h-56 sm:h-60">
                   <img
-                    src={IMAGES.portrait}
+                    src={PORTRAIT.src}
+                    srcSet={PORTRAIT.srcSet}
+                    sizes="(min-width: 1024px) 560px, calc(100vw - 32px)"
                     alt="Kishore Kumar — the coach behind the Athlete Mindset GPT"
                     className="size-full object-cover object-[center_18%]"
                     width={1122}
@@ -98,7 +101,7 @@ export function CustomGPT() {
                   <div className="absolute bottom-3 left-4 right-4 flex items-center gap-3">
                     <span className="grid size-11 place-items-center overflow-hidden rounded-full ring-2 ring-electric-400/50">
                       <img
-                        src={IMAGES.portrait}
+                        src={PORTRAIT.small}
                         alt=""
                         aria-hidden
                         className="size-full object-cover object-top"
@@ -124,30 +127,30 @@ export function CustomGPT() {
 
                 {/* Chat */}
                 <div className="space-y-3 p-5">
-                  {chat.map((m, i) => (
-                    <motion.div
+                  {chat.map((msg, i) => (
+                    <m.div
                       key={i}
                       initial={{ opacity: 0, y: 8 }}
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: true }}
                       transition={{ delay: 0.15 + i * 0.2 }}
-                      className={`flex items-end gap-2 ${m.from === "user" ? "justify-end" : "justify-start"}`}
+                      className={`flex items-end gap-2 ${msg.from === "user" ? "justify-end" : "justify-start"}`}
                     >
-                      {m.from === "bot" && (
+                      {msg.from === "bot" && (
                         <span className="size-6 shrink-0 overflow-hidden rounded-full ring-1 ring-electric-400/40">
-                          <img src={IMAGES.portrait} alt="" aria-hidden className="size-full object-cover object-top" width={24} height={24} loading="lazy" decoding="async" />
+                          <img src={PORTRAIT.small} alt="" aria-hidden className="size-full object-cover object-top" width={24} height={24} loading="lazy" decoding="async" />
                         </span>
                       )}
                       <div
                         className={`max-w-[80%] rounded-2xl px-3.5 py-2 text-sm ${
-                          m.from === "user"
+                          msg.from === "user"
                             ? "bg-gold-gradient text-ink"
                             : "glass text-foreground/85"
                         }`}
                       >
-                        {m.text}
+                        {msg.text}
                       </div>
-                    </motion.div>
+                    </m.div>
                   ))}
 
                   {/* input */}

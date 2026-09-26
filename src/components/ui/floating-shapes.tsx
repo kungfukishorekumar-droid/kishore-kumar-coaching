@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 type Shape = {
@@ -32,7 +32,7 @@ export function FloatingShapes({
       aria-hidden
     >
       {shapes.map((s, i) => (
-        <motion.div
+        <m.div
           key={i}
           className={cn("absolute rounded-full blur-2xl", s.className)}
           style={{
@@ -59,7 +59,7 @@ export function FloatingShapes({
 /** A rotating glow ring (focus-ring motif used around the hero image). */
 export function GlowRing({ className }: { className?: string }) {
   return (
-    <motion.div
+    <m.div
       aria-hidden
       className={cn(
         "pointer-events-none absolute rounded-full border border-gold-400/20",

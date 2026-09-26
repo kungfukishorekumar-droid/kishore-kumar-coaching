@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import { ArrowUp } from "lucide-react";
 import { scrollToId } from "@/lib/utils";
 
@@ -18,7 +18,7 @@ export function BackToTop() {
   return (
     <AnimatePresence>
       {show && (
-        <motion.button
+        <m.button
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.8 }}
@@ -27,7 +27,7 @@ export function BackToTop() {
           className="fixed bottom-24 right-5 z-40 hidden size-11 place-items-center rounded-full glass text-foreground/70 transition-colors hover:text-gold-200 lg:grid"
         >
           <ArrowUp className="size-5" />
-        </motion.button>
+        </m.button>
       )}
     </AnimatePresence>
   );

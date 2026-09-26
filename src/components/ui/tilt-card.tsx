@@ -1,14 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type CSSProperties, type PointerEvent, type ReactNode } from "react";
-import {
-  motion,
-  useMotionTemplate,
-  useMotionValue,
-  useReducedMotion,
-  useSpring,
-  useTransform,
-} from "framer-motion";
+import { m, useMotionTemplate, useMotionValue, useReducedMotion, useSpring, useTransform } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 /**
@@ -100,20 +93,20 @@ export function TiltCard({
       className={cn("relative", className)}
       style={{ perspective: `${perspective}px` }}
     >
-      <motion.div
+      <m.div
         className="relative h-full w-full [transform-style:preserve-3d]"
         style={active ? { rotateX, rotateY, z } : undefined}
       >
         {children}
         {glare && active && (
-          <motion.div
+          <m.div
             aria-hidden
             className={cn("pointer-events-none absolute inset-0 z-10", radiusClassName)}
             // 1px of Z keeps the glare above the face instead of z-fighting it.
             style={{ background: glareBg, opacity: glareOpacity, z: 1 }}
           />
         )}
-      </motion.div>
+      </m.div>
     </div>
   );
 }

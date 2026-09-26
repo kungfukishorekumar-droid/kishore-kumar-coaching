@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { ArrowRight, MessageCircle, Bot, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { GlowRing } from "@/components/ui/floating-shapes";
@@ -28,7 +28,7 @@ export function FinalCTA() {
             fallback={<Sparkles density={0.00028} maxParticles={110} />}
           />
 
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -84,7 +84,7 @@ export function FinalCTA() {
                 Invite for Workshop
               </Button>
             </div>
-          </motion.div>
+          </m.div>
         </div>
       </div>
     </section>

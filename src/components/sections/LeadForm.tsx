@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import { CheckCircle2, Loader2, ShieldCheck, Download, MessageCircle } from "lucide-react";
 import { Reveal } from "@/components/ui/reveal";
 import { Button } from "@/components/ui/button";
@@ -124,7 +124,7 @@ export function LeadForm() {
 
               <AnimatePresence mode="wait">
                 {status === "done" ? (
-                  <motion.div
+                  <m.div
                     key="success"
                     initial={{ opacity: 0, scale: 0.96 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -154,9 +154,9 @@ export function LeadForm() {
                         Submit another
                       </Button>
                     </div>
-                  </motion.div>
+                  </m.div>
                 ) : (
-                  <motion.form
+                  <m.form
                     key="form"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
@@ -238,7 +238,7 @@ export function LeadForm() {
                       <ShieldCheck className="size-3.5" />
                       No spam, ever. WhatsApp opens as soon as you submit.
                     </p>
-                  </motion.form>
+                  </m.form>
                 )}
               </AnimatePresence>
             </div>

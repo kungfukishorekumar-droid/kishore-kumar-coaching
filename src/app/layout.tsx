@@ -2,8 +2,9 @@ import type { Metadata, Viewport } from "next";
 import Script from "next/script";
 import { Bebas_Neue, Inter } from "next/font/google";
 import { SEO } from "@/lib/seo";
-import { buildCsp } from "@/lib/csp.mjs";
+import { buildCsp, CRM_INBOX_HOST } from "@/lib/csp.mjs";
 import { LeadGateProvider } from "@/components/shared/lead-gate";
+import { MotionProvider } from "@/components/providers/motion-provider";
 import "./globals.css";
 
 /**
@@ -186,6 +187,11 @@ export default function RootLayout({
           httpEquiv="Content-Security-Policy"
           content={buildCsp({ isProd: process.env.NODE_ENV === "production", forMeta: true })}
         />
+        {/* Warm the connection warriorcrm.js posts page views into. Lighthouse
+            measured ~170ms of DNS + TCP + TLS on first contact otherwise.
+            crossOrigin because those requests are CORS fetches — a preconnect
+            without it opens a connection the fetch cannot reuse. */}
+        <link rel="preconnect" href={CRM_INBOX_HOST} crossOrigin="anonymous" />
       </head>
       <body>
         {/* Keyboard users land here first — lets them jump the navbar entirely */}
@@ -198,7 +204,9 @@ export default function RootLayout({
         {/* Holds the single lead-capture modal every WhatsApp CTA opens. It
             wraps the whole tree so a CTA on any page — including the
             server-rendered blog and programme pages — can reach it. */}
-        <LeadGateProvider>{children}</LeadGateProvider>
+        <MotionProvider>
+          <LeadGateProvider>{children}</LeadGateProvider>
+        </MotionProvider>
 
         {/* WarriorCRM — anonymous visitor analytics + lead backup.
             Analytics: page views with traffic source, campaign and device, so

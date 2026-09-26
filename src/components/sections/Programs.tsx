@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { Check, Sparkles, ArrowRight } from "lucide-react";
 import { Reveal, RevealGroup } from "@/components/ui/reveal";
 import { TiltCard } from "@/components/ui/tilt-card";
@@ -66,7 +66,7 @@ export function Programs() {
           {PROGRAMS.map((p) => (
             <Reveal key={p.name} className="h-full">
               <TiltCard className="h-full" max={5}>
-                <motion.div
+                <m.div
                   whileHover={{ y: -6 }}
                   transition={{ type: "spring", stiffness: 300, damping: 22 }}
                   className={cn(
@@ -135,7 +135,7 @@ export function Programs() {
                       <ArrowRight className="size-3.5" />
                     </Link>
                   </div>
-                </motion.div>
+                </m.div>
               </TiltCard>
             </Reveal>
           ))}

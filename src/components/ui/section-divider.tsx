@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import { m, useReducedMotion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { ease, duration, viewportOnce } from "@/lib/motion";
 
@@ -50,7 +50,7 @@ export function SectionDivider({
           style={{ boxShadow: tint === "gold" ? "0 0 12px 2px rgba(240,207,133,0.55)" : "0 0 12px 2px rgba(125,174,255,0.55)" }}
         />
       </span>
-      <motion.span
+      <m.span
         className={cn("h-px flex-1 origin-right bg-gradient-to-r", line)}
         initial={reduce ? false : { scaleX: 0, opacity: 0 }}
         whileInView={{ scaleX: 1, opacity: 1 }}
@@ -58,7 +58,7 @@ export function SectionDivider({
         transition={{ duration: duration.slow, ease: ease.out }}
       />
 
-      <motion.span
+      <m.span
         className="relative grid size-3 place-items-center"
         initial={reduce ? false : { scale: 0, opacity: 0 }}
         whileInView={{ scale: 1, opacity: 1 }}
@@ -73,9 +73,9 @@ export function SectionDivider({
             !reduce && "motion-safe:animate-spin-slow"
           )}
         />
-      </motion.span>
+      </m.span>
 
-      <motion.span
+      <m.span
         className={cn("h-px flex-1 origin-left bg-gradient-to-r", line)}
         initial={reduce ? false : { scaleX: 0, opacity: 0 }}
         whileInView={{ scaleX: 1, opacity: 1 }}

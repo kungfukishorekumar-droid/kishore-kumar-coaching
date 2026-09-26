@@ -35,7 +35,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, m } from "framer-motion";
 import { CheckCircle2, Loader2, MessageCircle, ShieldCheck, X } from "lucide-react";
 import { Button, type ButtonProps } from "@/components/ui/button";
 import { Turnstile, turnstileEnabled } from "@/components/ui/turnstile";
@@ -285,7 +285,7 @@ function LeadGateModal({ intent, onClose }: { intent: LeadIntent | null; onClose
   return (
     <AnimatePresence>
       {open && (
-        <motion.div
+        <m.div
           key="lead-gate-overlay"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -293,7 +293,7 @@ function LeadGateModal({ intent, onClose }: { intent: LeadIntent | null; onClose
           className="fixed inset-0 z-[80] flex items-start justify-center overflow-y-auto bg-ink/85 p-4 backdrop-blur-sm sm:items-center"
           onClick={onClose}
         >
-          <motion.div
+          <m.div
             key="lead-gate-modal"
             initial={{ opacity: 0, scale: 0.94, y: 12 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -316,7 +316,7 @@ function LeadGateModal({ intent, onClose }: { intent: LeadIntent | null; onClose
 
             <AnimatePresence mode="wait">
               {status === "done" ? (
-                <motion.div
+                <m.div
                   key="done"
                   initial={{ opacity: 0, scale: 0.96 }}
                   animate={{ opacity: 1, scale: 1 }}
@@ -368,9 +368,9 @@ function LeadGateModal({ intent, onClose }: { intent: LeadIntent | null; onClose
                   >
                     Close
                   </button>
-                </motion.div>
+                </m.div>
               ) : (
-                <motion.div key="form" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                <m.div key="form" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                   <h3
                     id="lead-gate-title"
                     className="pr-8 font-display text-2xl font-bold uppercase"
@@ -514,11 +514,11 @@ function LeadGateModal({ intent, onClose }: { intent: LeadIntent | null; onClose
                       No spam, ever. Only Kishore sees this.
                     </p>
                   </form>
-                </motion.div>
+                </m.div>
               )}
             </AnimatePresence>
-          </motion.div>
-        </motion.div>
+          </m.div>
+        </m.div>
       )}
     </AnimatePresence>
   );

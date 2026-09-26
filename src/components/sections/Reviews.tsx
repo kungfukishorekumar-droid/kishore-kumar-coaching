@@ -1,9 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import {
-  Star,
   ArrowUpRight,
   ShieldCheck,
   MessageCircle,
@@ -63,20 +62,20 @@ function matches(
 }
 
 function Stars({ n = 5 }: { n?: number }) {
+  // One element instead of sixteen (see .star-row in globals.css). The stars
+  // light up left to right as a single clip-path sweep on view, in place of
+  // five separately observed pop-ins.
   return (
-    <div className="flex gap-0.5">
-      {Array.from({ length: n }).map((_, i) => (
-        <motion.span
-          key={i}
-          initial={{ opacity: 0, scale: 0.6 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
-          transition={{ delay: i * 0.06, type: "spring", stiffness: 300, damping: 18 }}
-        >
-          <Star className="size-4 fill-gold-400 text-gold-400" />
-        </motion.span>
-      ))}
-    </div>
+    <m.span
+      role="img"
+      aria-label={`${n} out of 5 stars`}
+      className="star-row"
+      style={{ "--stars": n } as React.CSSProperties}
+      initial={{ clipPath: "inset(0 100% 0 0)" }}
+      whileInView={{ clipPath: "inset(0 0% 0 0)" }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5, ease: [0.22, 0.61, 0.36, 1] }}
+    />
   );
 }
 
@@ -210,10 +209,10 @@ export function Reviews() {
         </Reveal>
 
         {/* Review cards */}
-        <motion.div layout className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+        <m.div layout className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
           <AnimatePresence mode="popLayout">
             {filtered.map((r) => (
-              <motion.div
+              <m.div
                 key={`${r.platform}-${r.name}-${r.text.slice(0, 12)}`}
                 layout
                 initial={{ opacity: 0, y: 18, scale: 0.97 }}
@@ -253,10 +252,10 @@ export function Reviews() {
                     </figcaption>
                   </figure>
                 </TiltCard>
-              </motion.div>
+              </m.div>
             ))}
           </AnimatePresence>
-        </motion.div>
+        </m.div>
 
         {/* CTA */}
         <Reveal delay={0.1}>

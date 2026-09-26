@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import {
   ArrowRight,
   MessageCircle,
@@ -19,7 +19,8 @@ import { Sparkles } from "@/components/ui/sparkles";
 import { ThreeScene } from "@/components/three/scene-host";
 import { heroGalaxy } from "@/components/three/particle-field";
 import { LeadCta } from "@/components/shared/lead-gate";
-import { IMAGES, HERO, SITE } from "@/lib/site";
+import { HERO, SITE } from "@/lib/site";
+import { PORTRAIT } from "@/lib/portrait";
 import { scrollToId } from "@/lib/utils";
 
 /**
@@ -109,7 +110,9 @@ export function Hero() {
                 pull this ahead of the fonts and decorative assets; width/height
                 reserve the box so it never shifts layout (CLS). */}
             <img
-              src={IMAGES.portrait}
+              src={PORTRAIT.src}
+              srcSet={PORTRAIT.srcSet}
+              sizes={PORTRAIT.sizes}
               alt="Kishore Kumar — Sports Psychology & Martial Arts Coach, Chennai"
               className="aspect-[4/5] w-full object-cover object-top lg:aspect-[5/6]"
               width={800}
@@ -231,7 +234,7 @@ export function Hero() {
       </div>
 
       {/* Scroll indicator */}
-      <motion.button
+      <m.button
         onClick={() => scrollToId("problems")}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -240,13 +243,13 @@ export function Hero() {
         aria-label="Scroll down"
       >
         <span className="text-[10px] uppercase tracking-[0.2em]">Scroll</span>
-        <motion.span
+        <m.span
           animate={{ y: [0, 6, 0] }}
           transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
         >
           <ChevronDown className="size-5" />
-        </motion.span>
-      </motion.button>
+        </m.span>
+      </m.button>
     </section>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import {
   MapPin,
   Swords,
@@ -65,7 +65,7 @@ export function LocalSEOSection() {
         <RevealGroup className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3" stagger={0.05}>
           {localServices.map((s) => (
             <Reveal key={s.title} className="h-full">
-              <motion.div
+              <m.div
                 whileHover={{ y: -4 }}
                 className="flex h-full items-center gap-3 rounded-2xl glass p-4"
               >
@@ -75,7 +75,7 @@ export function LocalSEOSection() {
                 <span className="text-sm font-semibold text-foreground/85">
                   {s.title}
                 </span>
-              </motion.div>
+              </m.div>
             </Reveal>
           ))}
         </RevealGroup>

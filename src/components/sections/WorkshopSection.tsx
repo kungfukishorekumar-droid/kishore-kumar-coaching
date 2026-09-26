@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import {
   ArrowRight,
   Calendar,
@@ -264,7 +264,7 @@ function RegisterModal({
   return (
     <AnimatePresence>
       {open && (
-        <motion.div
+        <m.div
           key="overlay"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -272,7 +272,7 @@ function RegisterModal({
           className="fixed inset-0 z-50 flex items-center justify-center bg-ink/85 p-4 backdrop-blur-sm"
           onClick={onClose}
         >
-          <motion.div
+          <m.div
             key="modal"
             initial={{ opacity: 0, scale: 0.94, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -406,8 +406,8 @@ function RegisterModal({
                 </form>
               </>
             )}
-          </motion.div>
-        </motion.div>
+          </m.div>
+        </m.div>
       )}
     </AnimatePresence>
   );
@@ -479,7 +479,7 @@ export function WorkshopSection() {
 
       <div className="container relative max-w-5xl">
         {/* Header */}
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: 14 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -509,12 +509,12 @@ export function WorkshopSection() {
               {WORKSHOP.mode}
             </span>
           </div>
-        </motion.div>
+        </m.div>
 
         {/* Main two-column grid */}
         <div className="mt-10 grid gap-8 lg:grid-cols-[1fr_1.1fr]">
           {/* LEFT: countdown + seats + price + CTAs */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0, x: -16 }}
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.06 }}
@@ -574,7 +574,7 @@ export function WorkshopSection() {
                 </span>
               </div>
               <div className="mt-3 h-2 overflow-hidden rounded-full bg-white/10">
-                <motion.div
+                <m.div
                   initial={{ width: 0 }}
                   whileInView={{ width: `${seatsPercent}%` }}
                   transition={{ duration: 1.2, delay: 0.3, ease: "easeOut" }}
@@ -631,10 +631,10 @@ export function WorkshopSection() {
                 Ask on WhatsApp
               </LeadCta>
             </div>
-          </motion.div>
+          </m.div>
 
           {/* RIGHT: agenda */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0, x: 16 }}
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.1 }}
@@ -683,7 +683,7 @@ export function WorkshopSection() {
                 <ArrowRight className="size-4" />
               </button>
             </div>
-          </motion.div>
+          </m.div>
         </div>
       </div>
     </section>

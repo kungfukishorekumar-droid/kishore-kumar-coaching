@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import { MessageCircle, Bot, CalendarCheck } from "lucide-react";
 import { LeadLink } from "@/components/shared/lead-gate";
 import { SITE } from "@/lib/site";
@@ -47,7 +47,7 @@ export function FloatingCTA() {
       {/* Desktop: floating side buttons */}
       <AnimatePresence>
         {show && (
-          <motion.div
+          <m.div
             initial={{ opacity: 0, x: 40 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 40 }}
@@ -73,14 +73,14 @@ export function FloatingCTA() {
             >
               <Bot className="size-6" />
             </a>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
 
       {/* Mobile: sticky bottom CTA bar */}
       <AnimatePresence>
         {show && (
-          <motion.div
+          <m.div
             initial={{ y: 90, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 90, opacity: 0 }}
@@ -113,7 +113,7 @@ export function FloatingCTA() {
                 <Bot className="size-5" />
               </a>
             </div>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
     </>

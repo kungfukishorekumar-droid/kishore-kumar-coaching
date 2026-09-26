@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import {
   Dumbbell,
   Brain,
@@ -57,7 +57,7 @@ export function Solution() {
         >
           {features.map((f, i) => (
             <Reveal key={f.label}>
-              <motion.div
+              <m.div
                 whileHover={{ y: -4 }}
                 transition={{ type: "spring", stiffness: 300, damping: 20 }}
                 className="flex h-full flex-col items-center gap-2.5 rounded-2xl glass p-4 text-center"
@@ -74,7 +74,7 @@ export function Solution() {
                 <span className="text-xs font-semibold leading-tight text-foreground/85">
                   {f.label}
                 </span>
-              </motion.div>
+              </m.div>
             </Reveal>
           ))}
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useReducedMotion, type Variants } from "framer-motion";
+import { m, useReducedMotion, type Variants } from "framer-motion";
 import { type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import {
@@ -36,7 +36,7 @@ export function Reveal({
   as = "div",
 }: RevealProps) {
   const reduce = useReducedMotion();
-  const MotionTag = motion[as];
+  const MotionTag = m[as];
   const variants: Variants = reduce ? reducedVariants : PRESETS[variant];
 
   return (
@@ -68,7 +68,7 @@ export function RevealGroup({
   as?: "div" | "ul" | "section";
 }) {
   const reduce = useReducedMotion();
-  const MotionTag = motion[as];
+  const MotionTag = m[as];
 
   return (
     <MotionTag

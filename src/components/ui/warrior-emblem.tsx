@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { GlowRing } from "@/components/ui/floating-shapes";
 import { cn } from "@/lib/utils";
 
@@ -29,7 +29,7 @@ export function WarriorEmblem({ className }: { className?: string }) {
       <GlowRing className="size-[86%]" />
 
       {/* dashed gold ring — slow clockwise */}
-      <motion.svg
+      <m.svg
         viewBox="0 0 200 200"
         className="absolute size-[80%]"
         animate={{ rotate: 360 }}
@@ -37,10 +37,10 @@ export function WarriorEmblem({ className }: { className?: string }) {
         aria-hidden
       >
         <circle cx="100" cy="100" r="94" fill="none" stroke="rgba(207,156,58,0.32)" strokeWidth="1" strokeDasharray="5 11" />
-      </motion.svg>
+      </m.svg>
 
       {/* electric arc ring — counter-clockwise */}
-      <motion.svg
+      <m.svg
         viewBox="0 0 200 200"
         className="absolute size-[64%]"
         animate={{ rotate: -360 }}
@@ -48,10 +48,10 @@ export function WarriorEmblem({ className }: { className?: string }) {
         aria-hidden
       >
         <circle cx="100" cy="100" r="84" fill="none" stroke="rgba(59,130,246,0.32)" strokeWidth="1.5" strokeDasharray="50 170" strokeLinecap="round" />
-      </motion.svg>
+      </m.svg>
 
       {/* orbiting energy nodes */}
-      <motion.div
+      <m.div
         className="absolute size-[74%]"
         animate={{ rotate: 360 }}
         transition={{ duration: 26, repeat: Infinity, ease: "linear" }}
@@ -73,12 +73,12 @@ export function WarriorEmblem({ className }: { className?: string }) {
             />
           </div>
         ))}
-      </motion.div>
+      </m.div>
 
       {/* energy streaks */}
       <div className="pointer-events-none absolute inset-0">
         {[35, 65].map((top, i) => (
-          <motion.div
+          <m.div
             key={top}
             className="absolute h-px w-full"
             style={{
@@ -93,7 +93,7 @@ export function WarriorEmblem({ className }: { className?: string }) {
       </div>
 
       {/* central mind emblem */}
-      <motion.div
+      <m.div
         animate={{ y: [0, -8, 0] }}
         transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
         className="relative z-10 flex flex-col items-center"
@@ -107,7 +107,7 @@ export function WarriorEmblem({ className }: { className?: string }) {
         <span className="mt-3 rounded-full glass px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-gold-200">
           Warrior Mind
         </span>
-      </motion.div>
+      </m.div>
     </div>
   );
 }

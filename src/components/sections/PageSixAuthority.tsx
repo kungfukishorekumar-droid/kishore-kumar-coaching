@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import {
   Medal,
   Brain,
@@ -86,7 +86,7 @@ export function PageSixAuthority() {
             <RevealGroup className="mt-4 grid grid-cols-2 gap-3" stagger={0.05}>
               {trustCards.map((t) => (
                 <Reveal key={t.title}>
-                  <motion.div
+                  <m.div
                     whileHover={{ y: -3 }}
                     className="flex h-full items-start gap-3 rounded-2xl glass-gold p-4"
                   >
@@ -96,7 +96,7 @@ export function PageSixAuthority() {
                     <span className="text-sm font-semibold leading-tight text-foreground/90">
                       {t.title}
                     </span>
-                  </motion.div>
+                  </m.div>
                 </Reveal>
               ))}
             </RevealGroup>
@@ -140,7 +140,7 @@ export function PageSixAuthority() {
 
               {/* floating badges — around the image, clear of the face */}
               {floatingBadges.map((b, i) => (
-                <motion.div
+                <m.div
                   key={b.label}
                   animate={{ y: [0, i % 2 ? 9 : -9, 0] }}
                   transition={{ duration: 6 + i, repeat: Infinity, ease: "easeInOut" }}
@@ -154,7 +154,7 @@ export function PageSixAuthority() {
                   <span className="text-xs font-semibold text-foreground/90">
                     {b.label}
                   </span>
-                </motion.div>
+                </m.div>
               ))}
             </div>
           </Reveal>

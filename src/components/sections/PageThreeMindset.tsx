@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import {
   Medal,
   Brain,
@@ -72,7 +72,7 @@ export function PageThreeMindset() {
                 <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-ink to-transparent lg:hidden" />
 
                 {/* floating chip straddling the seam — connects the two zones */}
-                <motion.div
+                <m.div
                   animate={{ y: [0, -9, 0] }}
                   transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
                   className="absolute right-[-1.75rem] top-16 z-10 hidden items-center gap-2 rounded-2xl glass-gold px-4 py-2.5 shadow-glow lg:flex"
@@ -85,7 +85,7 @@ export function PageThreeMindset() {
                     <br />
                     Spirit
                   </span>
-                </motion.div>
+                </m.div>
               </div>
 
               {/* CONTENT — wraps the surrounding space, breathable */}
@@ -133,7 +133,7 @@ export function PageThreeMindset() {
                   >
                     {benefits.map((bn) => (
                       <Reveal key={bn.label}>
-                        <motion.div
+                        <m.div
                           whileHover={{ y: -4 }}
                           transition={{ type: "spring", stiffness: 300, damping: 20 }}
                           className="flex h-full flex-col items-center gap-2 rounded-2xl glass px-2 py-4 text-center"
@@ -144,7 +144,7 @@ export function PageThreeMindset() {
                           <span className="text-[11px] font-semibold leading-tight text-foreground/85">
                             {bn.label}
                           </span>
-                        </motion.div>
+                        </m.div>
                       </Reveal>
                     ))}
                   </RevealGroup>

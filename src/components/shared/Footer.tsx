@@ -162,7 +162,7 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-6 text-xs text-foreground/40 sm:flex-row">
+        <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-6 text-xs text-foreground/60 sm:flex-row">
           <p>© {new Date().getFullYear()} {SITE.name}. All rights reserved.</p>
           <p className="flex items-center gap-1">
             Train the mind. <span className="text-gold-300">Perform like a champion.</span>

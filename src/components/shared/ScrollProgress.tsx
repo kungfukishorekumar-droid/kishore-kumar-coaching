@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useScroll, useSpring, useReducedMotion } from "framer-motion";
+import { m, useScroll, useSpring, useReducedMotion } from "framer-motion";
 
 /**
  * Reading-progress bar pinned to the top of the viewport.
@@ -24,7 +24,7 @@ export function ScrollProgress() {
   });
 
   return (
-    <motion.div
+    <m.div
       aria-hidden="true"
       style={{ scaleX: reduce ? scrollYProgress : scaleX }}
       className="fixed inset-x-0 top-0 z-[60] h-[3px] origin-left bg-gradient-to-r from-gold-600 via-gold-300 to-electric-400 shadow-[0_0_12px_rgba(224,169,60,0.55)]"

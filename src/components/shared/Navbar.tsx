@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import { Menu, X, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LeadCta, LeadLink } from "@/components/shared/lead-gate";
@@ -26,7 +26,7 @@ export function Navbar() {
   };
 
   return (
-    <motion.header
+    <m.header
       initial={{ y: -100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
@@ -43,7 +43,11 @@ export function Navbar() {
             scrolled ? "glass bg-ink/75 shadow-card" : "border border-transparent bg-transparent"
           )}
         >
-          <button onClick={() => scrollToId("top")} className="flex items-center gap-3" aria-label="Back to top">
+          {/* No aria-label: it replaced the visible "KISHORE KUMAR" with "Back to
+              top", so speech-input users saying what they see could not
+              target the button (WCAG 2.5.3). The purpose is appended as
+              screen-reader-only text instead, after whatever is visible. */}
+          <button onClick={() => scrollToId("top")} className="flex items-center gap-3">
             <span className="grid size-9 place-items-center rounded-full bg-gold-gradient font-display text-lg font-bold text-ink shadow-glow">
               KK
             </span>
@@ -55,6 +59,7 @@ export function Navbar() {
                 Mindset · Martial Arts
               </span>
             </span>
+            <span className="sr-only">— back to top</span>
           </button>
 
           <nav className="hidden items-center gap-1 lg:flex">
@@ -109,7 +114,7 @@ export function Navbar() {
 
         <AnimatePresence>
           {open && (
-            <motion.nav
+            <m.nav
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
@@ -143,10 +148,10 @@ export function Navbar() {
               >
                 Book Free Call
               </LeadCta>
-            </motion.nav>
+            </m.nav>
           )}
         </AnimatePresence>
       </div>
-    </motion.header>
+    </m.header>
   );
 }

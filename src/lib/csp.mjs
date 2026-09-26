@@ -45,7 +45,7 @@ const TURNSTILE_HOST = "https://challenges.cloudflare.com";
 const CRM_HOST = "https://crm.spartacusmartialarts.com";
 /** The queue warriorcrm.js posts into. NOT this site's own Supabase project —
  *  it is the CRM's shared inbox, and the value is baked into that script. */
-const CRM_INBOX_HOST = "https://oqwbmtdrjxfbnitlzehe.supabase.co";
+export const CRM_INBOX_HOST = "https://oqwbmtdrjxfbnitlzehe.supabase.co";
 
 /**
  * Build the policy string.
