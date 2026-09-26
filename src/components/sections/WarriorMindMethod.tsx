@@ -59,7 +59,7 @@ export function WarriorMindMethod() {
                       collapsed this face to its 2px border. */}
                   <div className="!absolute inset-0 overflow-hidden rounded-3xl glass shine-border">
                     <div className="pointer-events-none absolute -right-12 -top-12 size-40 rounded-full bg-gold-400/0 blur-2xl transition-all duration-500 group-hover:bg-gold-400/25" />
-                    <span className="pointer-events-none absolute right-4 top-2 font-display text-7xl text-white/[0.04] transition-colors group-hover:text-gold-400/10">
+                    <span className="ink-in pointer-events-none absolute right-4 top-2 origin-top-right font-display text-7xl text-white/[0.04] transition-colors group-hover:text-gold-400/10">
                       {kanji[step.tag]}
                     </span>
                   </div>

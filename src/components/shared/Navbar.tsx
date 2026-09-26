@@ -36,7 +36,11 @@ export function Navbar() {
         <div
           className={cn(
             "flex items-center justify-between rounded-full px-4 py-2.5 transition-all duration-300 md:px-5",
-            scrolled ? "glass shadow-card" : "border border-transparent bg-transparent"
+            // bg-ink/75 under the glass gradient: blur alone lets bright
+            // content (gold buttons, headlines) read through the bar as it
+            // scrolls beneath. The tint keeps the bar legible on its own, and
+            // is the whole defence in any browser without backdrop-filter.
+            scrolled ? "glass bg-ink/75 shadow-card" : "border border-transparent bg-transparent"
           )}
         >
           <button onClick={() => scrollToId("top")} className="flex items-center gap-3" aria-label="Back to top">

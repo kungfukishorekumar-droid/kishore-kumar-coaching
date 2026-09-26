@@ -92,12 +92,15 @@ export function LeadForm() {
       <div className="container relative">
         <div className="overflow-hidden rounded-[2.5rem] border border-gold-400/15 glass shadow-glow-lg">
           <div className="grid lg:grid-cols-2">
-            {/* Visual side */}
-            <div className="relative hidden lg:block">
+            {/* Visual side. overflow-hidden because the photo drifts at 112%
+                scale (.parallax-img) and would otherwise spill ~40px into the
+                form column. globals.css turns this into overflow: clip where
+                the drift runs, so it cannot trap the scroll timeline. */}
+            <div className="relative hidden overflow-hidden lg:block">
               <img
                 src={IMAGES.strongMind}
                 alt="Strong Mind. Stronger You. — Athlete focus & confidence"
-                className="absolute inset-0 size-full object-cover object-left"
+                className="parallax-img absolute inset-0 size-full object-cover object-left"
                 width={1672}
                 height={941}
                 loading="lazy"

@@ -214,7 +214,13 @@
     @apply bg-silver-text bg-clip-text text-transparent;
   }
 
-  /* Glassmorphism */
+  /* Glassmorphism
+     Only the standard `backdrop-filter` is written here, on purpose. With the
+     hand-written `-webkit-` line alongside it, the build's CSS minifier merged
+     the pair and kept ONLY the prefixed one — which Chrome does not read. Every
+     glass surface on the site rendered with no blur at all in Chrome and on
+     Android, the navbar included, so text scrolling under it showed straight
+     through. Autoprefixer adds the Safari prefix from this single line. */
   .glass {
     background: linear-gradient(
       160deg,
@@ -222,7 +228,6 @@
       rgba(255, 255, 255, 0.012) 100%
     );
     backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
     border: 1px solid rgba(255, 255, 255, 0.06);
   }
 
@@ -233,7 +238,6 @@
       rgba(207, 156, 58, 0.015) 100%
     );
     backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
     border: 1px solid rgba(207, 156, 58, 0.16);
   }
 
@@ -244,7 +248,6 @@
       rgba(59, 130, 246, 0.015) 100%
     );
     backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
     border: 1px solid rgba(59, 130, 246, 0.18);
   }
 
@@ -594,6 +597,136 @@
     .floor-3d__plane,
     .spin-3d {
       animation: none;
+    }
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Scroll-driven signature animations — no JavaScript at all.
+
+   Each runs on the scroll position itself (animation-timeline: view()), so it
+   costs no listener, no observer and no main-thread work, and it plays in step
+   with the reader's own scrolling — slow scroll, slow reveal.
+
+   Both gates are deliberate:
+   • @supports — a browser without scroll timelines (Firefox, older Safari)
+     would otherwise run these as ordinary one-shot animations on page load,
+     firing long before the element is on screen. Without support, every
+     element simply sits in its finished state.
+   • prefers-reduced-motion — none of this is essential, so none of it runs.
+   ═══════════════════════════════════════════════════════════════════════════ */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    /* ── The scroller trap ──────────────────────────────────────────────────
+       view() tracks the element's NEAREST SCROLL CONTAINER — and
+       `overflow: hidden` makes an element a scroll container even though it
+       never scrolls. Every one of these animations sits inside a section or
+       frame with overflow-hidden, so each tracked a box that never moves and
+       sat frozen at 100% progress. `overflow: clip` clips exactly the same
+       (rounded corners included) without being a scroll container, so the
+       timeline falls through to the page. Scoped with :has() to the ancestors
+       that actually contain one of these animations; every browser with
+       scroll timelines supports both :has() and overflow: clip. */
+    .overflow-hidden:has(:is(.ink-in, .divider-slash, .parallax-img, .text-gradient-gold)) {
+      overflow: clip;
+    }
+
+    /* ── Blade glint ────────────────────────────────────────────────────────
+       A band of light crosses the gold words of each section heading as it
+       scrolls into view, like light running down a polished blade. It is a
+       second background layer clipped to the glyphs along with the gold, so
+       only the letters catch it. */
+    :is(h1, h2).font-display .text-gradient-gold {
+      background-image:
+        linear-gradient(105deg, transparent 38%, rgba(255, 248, 228, 0.95) 50%, transparent 62%),
+        linear-gradient(180deg, #e3ce9c 0%, #c5963a 60%, #7e5614 100%);
+      background-size: 250% 100%, 100% 100%;
+      background-repeat: no-repeat;
+      animation: blade-glint linear both;
+      animation-timeline: view();
+      animation-range: entry 40% cover 55%;
+    }
+    @keyframes blade-glint {
+      from {
+        background-position: 130% 0, 0 0;
+      }
+      to {
+        background-position: -30% 0, 0 0;
+      }
+    }
+
+    /* ── Divider slash ──────────────────────────────────────────────────────
+       A streak of light cuts across the chapter divider as it passes through
+       the middle of the screen — a strike marking the change of chapter. */
+    .divider-slash {
+      animation: divider-slash linear both;
+      animation-timeline: view();
+      animation-range: cover 25% cover 60%;
+    }
+    @keyframes divider-slash {
+      0% {
+        transform: translateX(-120%) scaleX(0.4);
+        opacity: 0;
+      }
+      25% {
+        opacity: 1;
+      }
+      75% {
+        opacity: 1;
+      }
+      100% {
+        transform: translateX(120%) scaleX(1);
+        opacity: 0;
+      }
+    }
+
+    /* ── Ink-in kanji ───────────────────────────────────────────────────────
+       The watermark characters on the Method cards soak in like ink on rice
+       paper: they bloom in wet and gold, oversized and diffuse, then dry down
+       to the faint watermark they rest as. The gold midpoint is what makes it
+       visible at all — the resting colour is 4% white, so a plain fade to it
+       showed almost nothing. The last keyframe sets no colour, so the kanji
+       settles on whatever its classes say, hover state included. */
+    .ink-in {
+      animation: ink-in linear both;
+      animation-timeline: view();
+      animation-range: entry 10% cover 45%;
+    }
+    @keyframes ink-in {
+      0% {
+        opacity: 0;
+        transform: scale(1.45);
+        filter: blur(8px);
+        color: rgba(232, 187, 92, 0.5);
+      }
+      45% {
+        opacity: 1;
+        transform: scale(1.04);
+        filter: blur(1.5px);
+        color: rgba(232, 187, 92, 0.32);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1);
+        filter: blur(0);
+      }
+    }
+
+    /* ── Photo depth ────────────────────────────────────────────────────────
+       Large photographs travel a little slower than the page, as if set back
+       behind their frames. Scaled up 12% so the drift never exposes an edge;
+       the frame's own overflow clipping hides the extra. */
+    .parallax-img {
+      animation: parallax-img linear both;
+      animation-timeline: view();
+    }
+    @keyframes parallax-img {
+      from {
+        transform: translateY(-5%) scale(1.12);
+      }
+      to {
+        transform: translateY(5%) scale(1.12);
+      }
     }
   }
 }
