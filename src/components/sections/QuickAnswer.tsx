@@ -1,5 +1,3 @@
-"use client";
-
 import { Trophy, Users, GraduationCap, Swords } from "lucide-react";
 import { Reveal, RevealGroup } from "@/components/ui/reveal";
 

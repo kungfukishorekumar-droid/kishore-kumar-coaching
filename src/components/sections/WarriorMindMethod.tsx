@@ -1,12 +1,9 @@
-"use client";
-
 import { Reveal, RevealGroup } from "@/components/ui/reveal";
 import { Depth, TiltCard } from "@/components/ui/tilt-card";
 import { Icon } from "@/components/ui/icon";
 import { Button } from "@/components/ui/button";
 import { FloatingShapes } from "@/components/ui/floating-shapes";
 import { METHOD } from "@/lib/site";
-import { scrollToId } from "@/lib/utils";
 
 const kanji: Record<string, string> = {
   Focus: "集中",
@@ -99,12 +96,8 @@ export function WarriorMindMethod() {
                   individual performers and young students.
                 </p>
               </div>
-              <Button
-                className="mt-6 w-full"
-                size="lg"
-                onClick={() => scrollToId("programs")}
-              >
-                See the Programs
+              <Button asChild className="mt-6 w-full" size="lg">
+                <a href="#programs">See the Programs</a>
               </Button>
             </div>
           </Reveal>

@@ -1,84 +1,86 @@
-"use client";
-
-import { m, useReducedMotion, type Variants } from "framer-motion";
-import { type ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { cn } from "@/lib/utils";
-import {
-  reducedVariants,
-  revealUp,
-  swingIn,
-  popIn,
-  fadeIn,
-  staggerContainer,
-  viewportOnce,
-} from "@/lib/motion";
-
-const PRESETS = { up: revealUp, swing: swingIn, pop: popIn, fade: fadeIn } as const;
-
-interface RevealProps {
-  children: ReactNode;
-  className?: string;
-  delay?: number;
-  /** Motion character: stand up in 3D (default), swing in, scale in from depth, or plain fade. */
-  variant?: keyof typeof PRESETS;
-  as?: "div" | "li" | "span" | "p" | "section";
-}
 
 /**
- * Scroll-triggered entrance. Honours prefers-reduced-motion — content still
- * fades in so nothing is hidden, it just stops moving.
+ * Scroll-triggered entrances — without shipping a component per element.
+ *
+ * These used to be framer-motion components, which made every section that
+ * wanted an entrance a client component, so the homepage shipped (and
+ * hydrated) the code for fifteen sections that are otherwise static HTML.
+ * Now <Reveal> is a server component that only writes attributes; one small
+ * observer (RevealObserver, mounted once in the root layout) adds `.is-in`
+ * when an element scrolls into view, and CSS in globals.css does the motion.
+ *
+ * The motion itself is unchanged — the 3D "stand up" entrance and the rest —
+ * see [data-reveal] in globals.css.
+ *
+ * Nothing is hidden unless JavaScript is running: the hidden start state is
+ * scoped to `html.reveal-on`, which an inline script in the layout sets before
+ * first paint and takes away again if the observer never arrives. With JS off
+ * or broken, every section simply renders in place.
  */
+
+type Variant = "up" | "swing" | "pop" | "fade" | "draw" | "rise";
+
 export function Reveal({
   children,
   className,
   delay = 0,
   variant = "up",
-  as = "div",
-}: RevealProps) {
-  const reduce = useReducedMotion();
-  const MotionTag = m[as];
-  const variants: Variants = reduce ? reducedVariants : PRESETS[variant];
-
+  as: Tag = "div",
+}: {
+  children?: ReactNode;
+  className?: string;
+  /** Seconds, added on top of any group stagger. */
+  delay?: number;
+  /** Stand up in 3D (default), swing in, scale in from depth, plain fade, or draw a line out. */
+  variant?: Variant;
+  as?: "div" | "li" | "span" | "p" | "section";
+}) {
   return (
-    <MotionTag
+    <Tag
+      data-reveal={variant}
       className={cn(className)}
-      variants={variants}
-      initial="hidden"
-      whileInView="show"
-      viewport={viewportOnce}
-      transition={{ delay: reduce ? 0 : delay }}
+      style={delay ? ({ "--reveal-delay": `${delay}s` } as CSSProperties) : undefined}
     >
       {children}
-    </MotionTag>
+    </Tag>
   );
 }
 
-/** Staggered container — pair with <Reveal> children. */
+/**
+ * Staggered group. Its direct <Reveal> children each enter as they scroll
+ * into view, and children that arrive together cascade one after another
+ * (see RevealObserver). The group only carries the stagger timing.
+ */
 export function RevealGroup({
   children,
   className,
   stagger = 0.045,
   delayChildren = 0,
-  as = "div",
+  as: Tag = "div",
+  "aria-hidden": ariaHidden,
 }: {
   children: ReactNode;
   className?: string;
   stagger?: number;
   delayChildren?: number;
   as?: "div" | "ul" | "section";
+  "aria-hidden"?: boolean;
 }) {
-  const reduce = useReducedMotion();
-  const MotionTag = m[as];
-
   return (
-    <MotionTag
+    <Tag
+      data-reveal-group=""
+      aria-hidden={ariaHidden}
       className={cn(className)}
-      initial="hidden"
-      whileInView="show"
-      viewport={viewportOnce}
-      variants={staggerContainer(reduce ? 0 : stagger, reduce ? 0 : delayChildren)}
+      style={
+        {
+          "--stagger": `${stagger}s`,
+          "--reveal-base": `${delayChildren}s`,
+        } as CSSProperties
+      }
     >
       {children}
-    </MotionTag>
+    </Tag>
   );
 }

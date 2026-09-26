@@ -1,14 +1,11 @@
-"use client";
-
 import Link from "next/link";
-import { m } from "framer-motion";
 import { Check, Sparkles, ArrowRight } from "lucide-react";
 import { Reveal, RevealGroup } from "@/components/ui/reveal";
 import { TiltCard } from "@/components/ui/tilt-card";
 import { Button } from "@/components/ui/button";
 import { LeadCta } from "@/components/shared/lead-gate";
 import { PROGRAMS, type Program } from "@/lib/site";
-import { cn, scrollToId } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 
 function ProgramCTA({ program }: { program: Program }) {
   const variant = program.featured ? "primary" : "outline";
@@ -29,16 +26,14 @@ function ProgramCTA({ program }: { program: Program }) {
       </LeadCta>
     );
   }
-  const target = program.cta.target;
+  // A real in-page link rather than an onClick scroll: it works before the
+  // page hydrates, and the section's scroll-margin keeps it clear of the navbar.
   return (
-    <Button
-      variant={variant}
-      size="lg"
-      className="relative w-full"
-      onClick={() => scrollToId(target)}
-    >
-      {program.cta.label}
-      <ArrowRight className="size-4" />
+    <Button asChild variant={variant} size="lg" className="relative w-full">
+      <a href={`#${program.cta.target}`}>
+        {program.cta.label}
+        <ArrowRight className="size-4" />
+      </a>
     </Button>
   );
 }
@@ -66,27 +61,13 @@ export function Programs() {
           {PROGRAMS.map((p) => (
             <Reveal key={p.name} className="h-full">
               <TiltCard className="h-full" max={5}>
-                <m.div
-                  whileHover={{ y: -6 }}
-                  transition={{ type: "spring", stiffness: 300, damping: 22 }}
+                <div
                   className={cn(
-                    "glow-card relative flex h-full flex-col overflow-hidden rounded-3xl p-7",
+                    "hover-lift [--lift:6px] glow-card relative flex h-full flex-col overflow-hidden rounded-3xl p-7",
                     p.featured
                       ? "glass-gold shadow-glow ring-1 ring-gold-400/40 shine-border"
                       : "glass"
                   )}
-                  // Pointer position for the glow — see .glow-card in globals.css.
-                  // Written straight to CSS vars so React never re-renders on move.
-                  onPointerMove={(e) => {
-                    const el = e.currentTarget;
-                    const r = el.getBoundingClientRect();
-                    el.style.setProperty("--mx", `${e.clientX - r.left}px`);
-                    el.style.setProperty("--my", `${e.clientY - r.top}px`);
-                  }}
-                  onPointerLeave={(e) => {
-                    e.currentTarget.style.setProperty("--mx", "-100%");
-                    e.currentTarget.style.setProperty("--my", "-100%");
-                  }}
                 >
                   {p.featured && (
                     <>
@@ -135,7 +116,7 @@ export function Programs() {
                       <ArrowRight className="size-3.5" />
                     </Link>
                   </div>
-                </m.div>
+                </div>
               </TiltCard>
             </Reveal>
           ))}

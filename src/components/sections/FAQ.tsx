@@ -1,5 +1,3 @@
-"use client";
-
 import { Reveal } from "@/components/ui/reveal";
 import {
   Accordion,

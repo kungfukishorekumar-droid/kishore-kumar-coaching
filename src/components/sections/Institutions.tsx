@@ -1,6 +1,3 @@
-"use client";
-
-import { m } from "framer-motion";
 import { Check, ArrowRight, Building2 } from "lucide-react";
 import { Reveal, RevealGroup } from "@/components/ui/reveal";
 import { TiltCard } from "@/components/ui/tilt-card";
@@ -53,9 +50,8 @@ export function Institutions() {
           {INSTITUTIONS.offers.map((o) => (
             <Reveal key={o.title} className="h-full">
               <TiltCard className="h-full" max={6}>
-                <m.div
-                  whileHover={{ y: -5 }}
-                  className="flex h-full flex-col rounded-3xl glass p-6"
+                <div
+                  className="hover-lift [--lift:5px] flex h-full flex-col rounded-3xl glass p-6"
                 >
                   <span className="grid size-12 place-items-center rounded-2xl bg-electric-gradient text-white shadow-glow-blue">
                     <Icon name={o.icon} className="size-6" />
@@ -64,7 +60,7 @@ export function Institutions() {
                   <p className="mt-2 text-sm leading-relaxed text-foreground/60">
                     {o.desc}
                   </p>
-                </m.div>
+                </div>
               </TiltCard>
             </Reveal>
           ))}

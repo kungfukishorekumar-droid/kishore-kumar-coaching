@@ -1,15 +1,10 @@
-"use client";
-
-import { m } from "framer-motion";
 import { ArrowRight, MessageCircle, Bot, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { GlowRing } from "@/components/ui/floating-shapes";
-import { Sparkles } from "@/components/ui/sparkles";
-import { ThreeScene } from "@/components/three/scene-host";
-import { risingEmbers } from "@/components/three/particle-field";
+import { Reveal } from "@/components/ui/reveal";
+import { EmberField } from "@/components/three/scenes";
 import { LeadCta } from "@/components/shared/lead-gate";
 import { SITE } from "@/lib/site";
-import { scrollToId } from "@/lib/utils";
 
 export function FinalCTA() {
   return (
@@ -22,19 +17,9 @@ export function FinalCTA() {
           {/* Embers rising through the closing panel — the page's last beat.
               Far below the fold, so by the time anyone gets here three.js is
               usually cached from the Warrior Core block above. */}
-          <ThreeScene
-            className="pointer-events-none absolute inset-0"
-            factory={risingEmbers}
-            fallback={<Sparkles density={0.00028} maxParticles={110} />}
-          />
+          <EmberField className="pointer-events-none absolute inset-0" />
 
-          <m.div
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.7 }}
-            className="relative mx-auto max-w-3xl"
-          >
+          <Reveal variant="rise" className="relative mx-auto max-w-3xl">
             <div className="font-display text-3xl text-gradient-gold sm:text-4xl">
               心技体
             </div>
@@ -79,12 +64,14 @@ export function FinalCTA() {
                   Start with Custom GPT
                 </a>
               </Button>
-              <Button size="lg" variant="ghost" onClick={() => scrollToId("institutions")}>
-                <Building2 className="size-4" />
-                Invite for Workshop
+              <Button asChild size="lg" variant="ghost">
+                <a href="#institutions">
+                  <Building2 className="size-4" />
+                  Invite for Workshop
+                </a>
               </Button>
             </div>
-          </m.div>
+          </Reveal>
         </div>
       </div>
     </section>

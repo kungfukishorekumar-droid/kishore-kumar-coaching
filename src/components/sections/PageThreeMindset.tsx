@@ -1,6 +1,3 @@
-"use client";
-
-import { m } from "framer-motion";
 import {
   Medal,
   Brain,
@@ -20,7 +17,6 @@ import { Button } from "@/components/ui/button";
 import { FloatingShapes, GlowRing } from "@/components/ui/floating-shapes";
 import { LeadCta } from "@/components/shared/lead-gate";
 import { IMAGES } from "@/lib/site";
-import { scrollToId } from "@/lib/utils";
 
 const badges = [
   { icon: Medal, label: "National Wushu Medalist" },
@@ -72,11 +68,7 @@ export function PageThreeMindset() {
                 <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-ink to-transparent lg:hidden" />
 
                 {/* floating chip straddling the seam — connects the two zones */}
-                <m.div
-                  animate={{ y: [0, -9, 0] }}
-                  transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-                  className="absolute right-[-1.75rem] top-16 z-10 hidden items-center gap-2 rounded-2xl glass-gold px-4 py-2.5 shadow-glow lg:flex"
-                >
+                <div className="bob [--bob-dur:6s] [--bob-y:-9px] absolute right-[-1.75rem] top-16 z-10 hidden items-center gap-2 rounded-2xl glass-gold px-4 py-2.5 shadow-glow lg:flex">
                   <span className="font-display text-lg font-bold text-gradient-gold">
                     心技体
                   </span>
@@ -85,7 +77,7 @@ export function PageThreeMindset() {
                     <br />
                     Spirit
                   </span>
-                </m.div>
+                </div>
               </div>
 
               {/* CONTENT — wraps the surrounding space, breathable */}
@@ -133,10 +125,8 @@ export function PageThreeMindset() {
                   >
                     {benefits.map((bn) => (
                       <Reveal key={bn.label}>
-                        <m.div
-                          whileHover={{ y: -4 }}
-                          transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                          className="flex h-full flex-col items-center gap-2 rounded-2xl glass px-2 py-4 text-center"
+                        <div
+                          className="hover-lift [--lift:4px] flex h-full flex-col items-center gap-2 rounded-2xl glass px-2 py-4 text-center"
                         >
                           <span className="grid size-9 place-items-center rounded-xl bg-gold-gradient text-ink shadow-glow">
                             <bn.icon className="size-5" />
@@ -144,15 +134,15 @@ export function PageThreeMindset() {
                           <span className="text-[11px] font-semibold leading-tight text-foreground/85">
                             {bn.label}
                           </span>
-                        </m.div>
+                        </div>
                       </Reveal>
                     ))}
                   </RevealGroup>
                 </div>
 
                 {/* Workshop line */}
-                <button
-                  onClick={() => scrollToId("institutions")}
+                <a
+                  href="#institutions"
                   className="group flex w-full items-center gap-3 rounded-2xl glass px-4 py-3 text-left transition-colors hover:border-gold-400/25"
                 >
                   <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-electric-500/12 text-electric-300 ring-1 ring-electric-400/20">
@@ -162,7 +152,7 @@ export function PageThreeMindset() {
                     Workshops for Athletes, Parents, Schools &amp; Academies
                   </span>
                   <ArrowRight className="ml-auto size-4 text-gold-300 transition-transform group-hover:translate-x-0.5" />
-                </button>
+                </a>
 
                 {/* CTAs */}
                 <div className="flex flex-col gap-3 sm:flex-row">

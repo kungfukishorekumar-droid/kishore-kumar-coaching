@@ -1,6 +1,3 @@
-"use client";
-
-import { m } from "framer-motion";
 import {
   Medal,
   Brain,
@@ -18,7 +15,6 @@ import { Button } from "@/components/ui/button";
 import { FloatingShapes, GlowRing } from "@/components/ui/floating-shapes";
 import { LeadCta } from "@/components/shared/lead-gate";
 import { CREDENTIALS, IMAGES } from "@/lib/site";
-import { scrollToId } from "@/lib/utils";
 
 const trustCards = [
   { icon: Brain, title: "Sports Psychology + Martial Arts" },
@@ -86,9 +82,8 @@ export function PageSixAuthority() {
             <RevealGroup className="mt-4 grid grid-cols-2 gap-3" stagger={0.05}>
               {trustCards.map((t) => (
                 <Reveal key={t.title}>
-                  <m.div
-                    whileHover={{ y: -3 }}
-                    className="flex h-full items-start gap-3 rounded-2xl glass-gold p-4"
+                  <div
+                    className="hover-lift [--lift:3px] flex h-full items-start gap-3 rounded-2xl glass-gold p-4"
                   >
                     <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-gold-gradient text-ink shadow-glow">
                       <t.icon className="size-5" />
@@ -96,7 +91,7 @@ export function PageSixAuthority() {
                     <span className="text-sm font-semibold leading-tight text-foreground/90">
                       {t.title}
                     </span>
-                  </m.div>
+                  </div>
                 </Reveal>
               ))}
             </RevealGroup>
@@ -111,9 +106,11 @@ export function PageSixAuthority() {
                 <CalendarCheck className="size-4" />
                 Book Free Call
               </LeadCta>
-              <Button size="lg" variant="outline" onClick={() => scrollToId("institutions")}>
-                Invite for Workshop
-                <ArrowRight className="size-4" />
+              <Button asChild size="lg" variant="outline">
+                <a href="#institutions">
+                  Invite for Workshop
+                  <ArrowRight className="size-4" />
+                </a>
               </Button>
             </div>
           </div>
@@ -140,11 +137,10 @@ export function PageSixAuthority() {
 
               {/* floating badges — around the image, clear of the face */}
               {floatingBadges.map((b, i) => (
-                <m.div
+                <div
                   key={b.label}
-                  animate={{ y: [0, i % 2 ? 9 : -9, 0] }}
-                  transition={{ duration: 6 + i, repeat: Infinity, ease: "easeInOut" }}
-                  className={`absolute z-10 hidden items-center gap-2 rounded-2xl px-3.5 py-2.5 shadow-card md:flex ${b.pos} ${
+                  style={{ "--bob-y": i % 2 ? "9px" : "-9px", "--bob-dur": `${6 + i}s` } as React.CSSProperties}
+                  className={`bob absolute z-10 hidden items-center gap-2 rounded-2xl px-3.5 py-2.5 shadow-card md:flex ${b.pos} ${
                     b.tint === "gold" ? "glass-gold" : "glass-electric"
                   }`}
                 >
@@ -154,7 +150,7 @@ export function PageSixAuthority() {
                   <span className="text-xs font-semibold text-foreground/90">
                     {b.label}
                   </span>
-                </m.div>
+                </div>
               ))}
             </div>
           </Reveal>

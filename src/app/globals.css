@@ -8,8 +8,9 @@
     --background: 240 6% 4%;
     --foreground: 40 30% 96%;
 
-    /* Motion tokens, mirrored from src/lib/motion.ts so CSS and Framer
-       transitions share one rhythm. */
+    /* Motion tokens — the site's shared easing and durations. (These used to
+       mirror src/lib/motion.ts; the entrances that file served are CSS now,
+       so this is the single source.) */
     --ease-out: cubic-bezier(0.22, 0.61, 0.36, 1);
     --ease-overshoot: cubic-bezier(0.34, 1.56, 0.64, 1);
     --dur-fast: 200ms;
@@ -507,6 +508,81 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
+   Entrances — <Reveal> / <RevealGroup> (src/components/ui/reveal.tsx)
+
+   The same motion the framer-motion variants used to produce (formerly
+   src/lib/motion.ts): 0.7s entrances on an ease-out curve, 3px blur, the 3D
+   stand-up. Now driven by one IntersectionObserver adding `.is-in`, so the
+   sections using them can be server components. Timing and easing for
+   entrances live HERE now.
+
+   Hidden start states only apply under html.reveal-on, set by an inline
+   script before first paint and removed by a failsafe if the observer never
+   loads — so with JavaScript off or broken nothing stays invisible.
+   ═══════════════════════════════════════════════════════════════════════════ */
+@layer components {
+  [data-reveal="up"] {
+    --reveal-from: perspective(1100px) translateY(34px) rotateX(16deg);
+    transform-origin: 50% 100%;
+  }
+  [data-reveal="swing"] {
+    --reveal-from: perspective(1100px) translateX(-18px) rotateY(-22deg);
+    transform-origin: 0% 50%;
+  }
+  [data-reveal="pop"] {
+    --reveal-from: perspective(900px) translateY(10px) translateZ(-80px) scale(0.86);
+    --reveal-ease: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --reveal-dur: 0.55s;
+  }
+  [data-reveal="fade"] {
+    --reveal-from: none;
+    --reveal-dur: 0.55s;
+  }
+  /* A plain rise, no 3D — for small items (chat bubbles, a closing panel). */
+  [data-reveal="rise"] {
+    --reveal-from: translateY(16px);
+  }
+  /* Hairlines drawing out from a point. No transform-origin here — the
+     element's own origin-left / origin-right class decides the direction. */
+  [data-reveal="draw"] {
+    --reveal-from: scaleX(0);
+    --reveal-dur: 0.55s;
+  }
+
+  /* A group item's place in its cascade (--i) is set by RevealObserver: the
+     position among the items that entered view together, not in the grid. */
+
+  .reveal-on [data-reveal] {
+    opacity: 0;
+    transform: var(--reveal-from);
+    filter: blur(3px);
+    transition-property: opacity, transform, filter;
+    transition-duration: var(--reveal-dur, 0.7s);
+    transition-timing-function: var(--reveal-ease, cubic-bezier(0.22, 0.61, 0.36, 1));
+    transition-delay: calc(
+      var(--reveal-base, 0s) + var(--i, 0) * var(--stagger, 0s) + var(--reveal-delay, 0s)
+    );
+  }
+  /* The finished state is `none`, not an identity transform: a lingering
+     transform would make every revealed section a containing block for
+     position:fixed descendants (modals) and its own stacking context. */
+  .reveal-on [data-reveal].is-in {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reveal-on [data-reveal] {
+      transform: none;
+      filter: none;
+      transition-property: opacity;
+      transition-duration: 0.2s;
+    }
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
    3D layer — type, floor, depth. CSS only: none of this downloads anything.
    ═══════════════════════════════════════════════════════════════════════════ */
 @layer utilities {
@@ -746,6 +822,91 @@
       to {
         transform: translateY(5%) scale(1.12);
       }
+    }
+  }
+}
+
+/* ── Ambient loops (FloatingShapes, GlowRing) ──────────────────────────────
+   Individual transform properties, so they compose with positioning
+   transforms in the elements' own classes rather than overwriting them. */
+@layer utilities {
+  .float-orb {
+    animation: float-orb var(--float-dur, 12s) ease-in-out var(--float-delay, 0s) infinite;
+  }
+  @keyframes float-orb {
+    0%,
+    100% {
+      translate: 0 0;
+    }
+    50% {
+      translate: 10px -22px;
+    }
+  }
+  .glow-ring {
+    animation: glow-ring 24s linear infinite;
+  }
+  @keyframes glow-ring {
+    to {
+      rotate: 360deg;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .float-orb,
+    .glow-ring {
+      animation: none;
+    }
+  }
+}
+
+/* ── Section anchors ────────────────────────────────────────────────────────
+   In-page CTAs are real links now (<a href="#programs">) instead of onClick
+   handlers calling scrollToId(), so they work before hydration and without
+   JavaScript. This gives every anchored section the same 80px clearance under
+   the fixed navbar that scrollToId() applied. :where() keeps it at zero
+   specificity, so a section's own scroll-mt-* class still wins. */
+:where(main section[id]) {
+  scroll-margin-top: 80px;
+}
+
+/* ── Hover lift and idle bob (formerly framer whileHover / animate loops) ── */
+@layer utilities {
+  /* `translate`, not `transform`: composes with anything else the element
+     transforms. The curve overshoots slightly, standing in for the spring. */
+  .hover-lift {
+    transition: translate 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .hover-lift:hover {
+      translate: 0 calc(var(--lift, 4px) * -1);
+    }
+  }
+
+  .bob {
+    animation: bob var(--bob-dur, 6s) ease-in-out var(--bob-delay, 0s) infinite;
+  }
+  @keyframes bob {
+    0%,
+    100% {
+      translate: 0 0;
+    }
+    50% {
+      translate: 0 var(--bob-y, -9px);
+    }
+  }
+
+  .fade-in-late {
+    animation: fade-in-late 0.5s ease-out 1s both;
+  }
+  @keyframes fade-in-late {
+    from {
+      opacity: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .bob,
+    .fade-in-late {
+      animation: none;
     }
   }
 }

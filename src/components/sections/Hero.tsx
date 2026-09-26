@@ -1,6 +1,3 @@
-"use client";
-
-import { m } from "framer-motion";
 import {
   ArrowRight,
   MessageCircle,
@@ -15,13 +12,10 @@ import {
 import { Button } from "@/components/ui/button";
 import { FloatingShapes, GlowRing } from "@/components/ui/floating-shapes";
 import { AuthorityBadge } from "@/components/ui/authority-badge";
-import { Sparkles } from "@/components/ui/sparkles";
-import { ThreeScene } from "@/components/three/scene-host";
-import { heroGalaxy } from "@/components/three/particle-field";
+import { HeroGalaxy } from "@/components/three/scenes";
 import { LeadCta } from "@/components/shared/lead-gate";
 import { HERO, SITE } from "@/lib/site";
 import { PORTRAIT } from "@/lib/portrait";
-import { scrollToId } from "@/lib/utils";
 
 /**
  * Floating credential badges around the portrait.
@@ -80,15 +74,9 @@ export function Hero() {
           has loaded and gone idle, so three.js never competes with the LCP
           portrait or the fonts. Phones, reduced motion and anything without
           WebGL keep the 2D sparkles, which are what the server renders. */}
-      <ThreeScene
-        // Faded out toward the bottom: the section clips its overflow, so
-        // without the mask the galaxy stops at a hard line where the hero ends.
-        className="pointer-events-none absolute inset-0 [mask-image:linear-gradient(to_bottom,#000_62%,transparent)]"
-        factory={heroGalaxy}
-        loadWhen="idle"
-        finePointerOnly
-        fallback={<Sparkles />}
-      />
+      {/* Faded out toward the bottom: the section clips its overflow, so
+          without the mask the galaxy stops at a hard line where the hero ends. */}
+      <HeroGalaxy className="pointer-events-none absolute inset-0 [mask-image:linear-gradient(to_bottom,#000_62%,transparent)]" />
       {/* 3D perspective floor running toward the viewer — CSS only, so it
           costs the LCP nothing (see .floor-3d in globals.css). */}
       <div aria-hidden className="floor-3d pointer-events-none absolute inset-x-0 bottom-0 h-[42%] opacity-60">
@@ -213,8 +201,8 @@ export function Hero() {
               <MessageCircle className="size-4" />
               Chat on WhatsApp
             </LeadCta>
-            <Button size="md" variant="ghost" onClick={() => scrollToId("programs")}>
-              Explore Programs →
+            <Button asChild size="md" variant="ghost">
+              <a href="#programs">Explore Programs →</a>
             </Button>
           </div>
 
@@ -234,22 +222,16 @@ export function Hero() {
       </div>
 
       {/* Scroll indicator */}
-      <m.button
-        onClick={() => scrollToId("problems")}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1 }}
-        className="absolute bottom-6 left-1/2 hidden -translate-x-1/2 flex-col items-center gap-1 text-foreground/40 transition-colors hover:text-gold-200 lg:flex"
+      <a
+        href="#problems"
+        className="fade-in-late absolute bottom-6 left-1/2 hidden -translate-x-1/2 flex-col items-center gap-1 text-foreground/40 transition-colors hover:text-gold-200 lg:flex"
         aria-label="Scroll down"
       >
         <span className="text-[10px] uppercase tracking-[0.2em]">Scroll</span>
-        <m.span
-          animate={{ y: [0, 6, 0] }}
-          transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
-        >
+        <span className="bob [--bob-dur:1.6s] [--bob-y:6px]">
           <ChevronDown className="size-5" />
-        </m.span>
-      </m.button>
+        </span>
+      </a>
     </section>
   );
 }

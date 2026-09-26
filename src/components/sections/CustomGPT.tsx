@@ -1,6 +1,3 @@
-"use client";
-
-import { m } from "framer-motion";
 import { Bot, Sparkles, ArrowUpRight, Send } from "lucide-react";
 import { Reveal } from "@/components/ui/reveal";
 import { Button } from "@/components/ui/button";
@@ -128,12 +125,10 @@ export function CustomGPT() {
                 {/* Chat */}
                 <div className="space-y-3 p-5">
                   {chat.map((msg, i) => (
-                    <m.div
+                    <Reveal
                       key={i}
-                      initial={{ opacity: 0, y: 8 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: 0.15 + i * 0.2 }}
+                      variant="rise"
+                      delay={0.15 + i * 0.2}
                       className={`flex items-end gap-2 ${msg.from === "user" ? "justify-end" : "justify-start"}`}
                     >
                       {msg.from === "bot" && (
@@ -150,7 +145,7 @@ export function CustomGPT() {
                       >
                         {msg.text}
                       </div>
-                    </m.div>
+                    </Reveal>
                   ))}
 
                   {/* input */}

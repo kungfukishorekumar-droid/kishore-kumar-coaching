@@ -5,6 +5,8 @@ import { SEO } from "@/lib/seo";
 import { buildCsp, CRM_INBOX_HOST } from "@/lib/csp.mjs";
 import { LeadGateProvider } from "@/components/shared/lead-gate";
 import { MotionProvider } from "@/components/providers/motion-provider";
+import { RevealObserver } from "@/components/ui/reveal-observer";
+import { GlowTracker } from "@/components/ui/glow-tracker";
 import "./globals.css";
 
 /**
@@ -173,7 +175,11 @@ export default function RootLayout({
 }) {
   return (
     // lang="en-IN" signals Indian English locale to search engines + screen readers
+    // suppressHydrationWarning: the pre-paint script in <head> adds
+    // `reveal-on` / `reveal-ready` to this element's class list before React
+    // hydrates. It silences the mismatch for <html>'s own attributes only.
     <html
+      suppressHydrationWarning
       lang="en-IN"
       className={`dark ${bebasNeue.variable} ${inter.variable}`}
     >
@@ -192,6 +198,17 @@ export default function RootLayout({
             crossOrigin because those requests are CORS fetches — a preconnect
             without it opens a connection the fetch cannot reuse. */}
         <link rel="preconnect" href={CRM_INBOX_HOST} crossOrigin="anonymous" />
+        {/* Arms the <Reveal> entrances before first paint, so revealed content
+            never flashes visible and then disappears. Failsafe: if the
+            observer has not arrived within 4s (script blocked, chunk failed,
+            very slow device), un-arm — everything renders in place rather
+            than staying hidden. See RevealObserver. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "(function(d){d.classList.add('reveal-on');setTimeout(function(){if(!d.classList.contains('reveal-ready'))d.classList.remove('reveal-on')},4000)})(document.documentElement)",
+          }}
+        />
       </head>
       <body>
         {/* Keyboard users land here first — lets them jump the navbar entirely */}
@@ -207,6 +224,8 @@ export default function RootLayout({
         <MotionProvider>
           <LeadGateProvider>{children}</LeadGateProvider>
         </MotionProvider>
+        <RevealObserver />
+        <GlowTracker />
 
         {/* WarriorCRM — anonymous visitor analytics + lead backup.
             Analytics: page views with traffic source, campaign and device, so

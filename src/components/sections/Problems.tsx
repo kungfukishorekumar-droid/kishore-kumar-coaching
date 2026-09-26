@@ -1,5 +1,3 @@
-"use client";
-
 import { Reveal, RevealGroup } from "@/components/ui/reveal";
 import { Section, SectionHeading } from "@/components/ui/section";
 import { TiltCard } from "@/components/ui/tilt-card";

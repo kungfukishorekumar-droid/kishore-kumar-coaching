@@ -1,5 +1,3 @@
-"use client";
-
 import { Counter } from "@/components/ui/counter";
 import { Reveal, RevealGroup } from "@/components/ui/reveal";
 import { TiltCard } from "@/components/ui/tilt-card";
