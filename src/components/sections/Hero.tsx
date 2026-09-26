@@ -75,6 +75,11 @@ export function Hero() {
       />
       {/* Drifting motes of light over the whole hero */}
       <Sparkles />
+      {/* 3D perspective floor running toward the viewer — CSS only, so it
+          costs the LCP nothing (see .floor-3d in globals.css). */}
+      <div aria-hidden className="floor-3d pointer-events-none absolute inset-x-0 bottom-0 h-[42%] opacity-60">
+        <div className="floor-3d__plane" />
+      </div>
 
       <div className="container relative grid items-center gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-12">
         {/* IMAGE — seen first (top on mobile, right on desktop) */}

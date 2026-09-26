@@ -9,10 +9,12 @@ import { cn } from "@/lib/utils";
 /**
  * Button — the most-touched element on the site, so it carries the most motion.
  *
- * Four things happen on interaction, all on transform/opacity only:
- *  1. hover  — lifts 2px and deepens its glow
+ * Every filled button is a 3D key: a solid edge sits beneath the face (see the
+ * `key-*` shadows in tailwind.config.js). Four things happen on interaction:
+ *  1. hover  — the face rises 2px while the edge grows 2px, so the key lifts
+ *              off its base instead of sliding up the page
  *  2. hover  — a light sweep crosses the face (::before, so `asChild` still works)
- *  3. press  — dips to 0.97 scale, giving the tap a physical bottom
+ *  3. press  — the face drops 3px onto a 1px edge: the key bottoms out
  *  4. focus  — a gold ring, offset from the button so it reads on dark ground
  *
  * Every transform is wrapped in `motion-safe:`, so a visitor with reduced-motion
@@ -26,9 +28,12 @@ const buttonVariants = cva(
     "[touch-action:manipulation]",
     // shared transition — colour + shadow + transform share one curve
     "transition-[transform,box-shadow,background-color,border-color,color] duration-300 ease-out",
-    // press + lift (motion-safe only)
-    "motion-safe:hover:-translate-y-0.5 motion-safe:active:translate-y-0 motion-safe:active:scale-[0.97]",
-    "motion-safe:active:duration-100",
+    // lift + press (motion-safe only). The edge shadow changes in the variant
+    // classes below by the same distances, which is what keeps the key's
+    // bottom planted. Press is a translate now, not a scale: a key that
+    // shrinks reads as receding, a key that drops reads as pressed.
+    "motion-safe:hover:-translate-y-0.5 motion-safe:active:translate-y-[3px]",
+    "motion-safe:active:duration-75",
     // hover shine sweep
     "before:pointer-events-none before:absolute before:inset-0 before:-z-10",
     "before:-translate-x-full before:bg-gradient-to-r",
@@ -47,13 +52,15 @@ const buttonVariants = cva(
     variants: {
       variant: {
         primary:
-          "btn-gradient-shift bg-gold-gradient text-ink font-bold shadow-glow hover:shadow-glow-lg",
+          "btn-gradient-shift bg-gold-gradient text-ink font-bold shadow-key-gold motion-safe:hover:shadow-key-gold-up motion-safe:active:shadow-key-gold-down",
         electric:
-          "btn-gradient-shift bg-electric-gradient text-white font-bold shadow-glow-blue hover:shadow-glow-blue-lg",
+          "btn-gradient-shift bg-electric-gradient text-white font-bold shadow-key-electric motion-safe:hover:shadow-key-electric-up motion-safe:active:shadow-key-electric-down",
         outline:
-          "border border-gold-400/40 bg-white/5 text-gold-100 backdrop-blur hover:border-gold-400/70 hover:bg-gold-400/10",
+          "border border-gold-400/40 bg-white/5 text-gold-100 backdrop-blur shadow-key-dark hover:border-gold-400/70 hover:bg-gold-400/10 motion-safe:hover:shadow-key-dark-up motion-safe:active:shadow-key-dark-down",
+        // Ghost stays flat on purpose: it is the least important action in any
+        // group, and giving it a body would make it compete with the keys.
         ghost: "text-foreground/80 hover:bg-white/5 hover:text-gold-200",
-        dark: "border border-white/10 bg-white/[0.06] text-foreground backdrop-blur hover:bg-white/[0.1]",
+        dark: "border border-white/10 bg-white/[0.06] text-foreground backdrop-blur shadow-key-dark hover:bg-white/[0.1] motion-safe:hover:shadow-key-dark-up motion-safe:active:shadow-key-dark-down",
       },
       size: {
         // every size clears the 44px touch minimum on its tap area

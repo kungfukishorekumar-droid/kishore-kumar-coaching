@@ -6,19 +6,20 @@ import { cn } from "@/lib/utils";
 import {
   reducedVariants,
   revealUp,
+  swingIn,
   popIn,
   fadeIn,
   staggerContainer,
   viewportOnce,
 } from "@/lib/motion";
 
-const PRESETS = { up: revealUp, pop: popIn, fade: fadeIn } as const;
+const PRESETS = { up: revealUp, swing: swingIn, pop: popIn, fade: fadeIn } as const;
 
 interface RevealProps {
   children: ReactNode;
   className?: string;
   delay?: number;
-  /** Motion character: travel up (default), scale in, or plain fade. */
+  /** Motion character: stand up in 3D (default), swing in, scale in from depth, or plain fade. */
   variant?: keyof typeof PRESETS;
   as?: "div" | "li" | "span" | "p" | "section";
 }

@@ -83,6 +83,29 @@ module.exports = {
         "glow-blue-lg": "0 0 100px -30px rgba(59, 130, 246, 0.28)",
         card: "0 16px 50px -20px rgba(0, 0, 0, 0.85)",
         "gold-inset": "inset 0 1px 0 0 rgba(255, 255, 255, 0.04)",
+        // 3D keys. The first layer is the button's physical edge — a hard,
+        // unblurred band in a darker shade of the face. Its height changes
+        // with state (4px resting, 6px lifted, 1px pressed) by exactly the
+        // distance the face moves, so the bottom of the key never moves and
+        // the button reads as one solid object being pushed down.
+        "key-gold":
+          "inset 0 1px 0 0 rgba(255,244,214,0.55), 0 4px 0 0 #7E5614, 0 10px 22px -10px rgba(0,0,0,0.75), 0 0 50px -18px rgba(207,156,58,0.3)",
+        "key-gold-up":
+          "inset 0 1px 0 0 rgba(255,244,214,0.6), 0 6px 0 0 #7E5614, 0 18px 30px -12px rgba(0,0,0,0.8), 0 0 100px -30px rgba(207,156,58,0.34)",
+        "key-gold-down":
+          "inset 0 1px 0 0 rgba(255,244,214,0.3), 0 1px 0 0 #7E5614, 0 4px 10px -6px rgba(0,0,0,0.6), 0 0 40px -18px rgba(207,156,58,0.26)",
+        "key-electric":
+          "inset 0 1px 0 0 rgba(214,230,255,0.5), 0 4px 0 0 #1B3F9C, 0 10px 22px -10px rgba(0,0,0,0.75), 0 0 50px -18px rgba(59,130,246,0.3)",
+        "key-electric-up":
+          "inset 0 1px 0 0 rgba(214,230,255,0.55), 0 6px 0 0 #1B3F9C, 0 18px 30px -12px rgba(0,0,0,0.8), 0 0 100px -30px rgba(59,130,246,0.32)",
+        "key-electric-down":
+          "inset 0 1px 0 0 rgba(214,230,255,0.25), 0 1px 0 0 #1B3F9C, 0 4px 10px -6px rgba(0,0,0,0.6), 0 0 40px -18px rgba(59,130,246,0.26)",
+        "key-dark":
+          "inset 0 1px 0 0 rgba(255,255,255,0.08), 0 3px 0 0 rgba(0,0,0,0.6), 0 8px 18px -10px rgba(0,0,0,0.7)",
+        "key-dark-up":
+          "inset 0 1px 0 0 rgba(255,255,255,0.1), 0 5px 0 0 rgba(0,0,0,0.6), 0 14px 24px -12px rgba(0,0,0,0.75)",
+        "key-dark-down":
+          "inset 0 1px 0 0 rgba(255,255,255,0.05), 0 1px 0 0 rgba(0,0,0,0.6), 0 3px 8px -6px rgba(0,0,0,0.6)",
       },
       backgroundImage: {
         "gold-gradient": "linear-gradient(135deg, #E6CF9C 0%, #CF9C3A 48%, #8E5F18 100%)",

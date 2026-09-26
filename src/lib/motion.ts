@@ -49,13 +49,49 @@ export const spring = {
 
 /* ── Shared variants ──────────────────────────────────────────────────── */
 
-/** Standard scroll-in: rise, sharpen, fade up. */
+/**
+ * Standard scroll-in: the element stands up into place in 3D.
+ *
+ * It starts tipped back on its bottom edge (rotateX, pivoting on originY: 1)
+ * and a little below its resting spot, then rises and straightens. Because
+ * every section reveals through this one variant, this is what gives the whole
+ * page its sense of depth as you scroll — one token, applied everywhere.
+ *
+ * `transformPerspective` rather than a CSS `perspective` on the parent: the
+ * perspective travels with the element, so the effect works wherever <Reveal>
+ * is placed without each section having to set up a 3D context for it.
+ * The blur is kept light (3px) — a heavy blur on top of a 3D transform is
+ * expensive to rasterise on a phone for the few frames it matters.
+ */
 export const revealUp: Variants = {
-  hidden: { opacity: 0, y: 26, filter: "blur(5px)" },
+  hidden: {
+    opacity: 0,
+    y: 34,
+    rotateX: 16,
+    originY: 1,
+    transformPerspective: 1100,
+    filter: "blur(3px)",
+  },
   show: {
     opacity: 1,
     y: 0,
+    rotateX: 0,
+    originY: 1,
+    transformPerspective: 1100,
     filter: "blur(0px)",
+    transition: { duration: duration.reveal, ease: ease.out },
+  },
+};
+
+/** Swings in from the side on a vertical axis — for items in a horizontal row. */
+export const swingIn: Variants = {
+  hidden: { opacity: 0, rotateY: -22, x: -18, originX: 0, transformPerspective: 1100 },
+  show: {
+    opacity: 1,
+    rotateY: 0,
+    x: 0,
+    originX: 0,
+    transformPerspective: 1100,
     transition: { duration: duration.reveal, ease: ease.out },
   },
 };
@@ -68,11 +104,13 @@ export const fadeIn: Variants = {
 
 /** Arrives with a touch of scale — badges, emblems, medals. */
 export const popIn: Variants = {
-  hidden: { opacity: 0, scale: 0.86, y: 10 },
+  hidden: { opacity: 0, scale: 0.86, y: 10, z: -80, transformPerspective: 900 },
   show: {
     opacity: 1,
     scale: 1,
     y: 0,
+    z: 0,
+    transformPerspective: 900,
     transition: { duration: duration.slow, ease: ease.overshoot },
   },
 };

@@ -483,3 +483,117 @@
     scroll-snap-align: start;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   3D layer — type, floor, depth. CSS only: none of this downloads anything.
+   ═══════════════════════════════════════════════════════════════════════════ */
+@layer utilities {
+  /* ── Extruded display type ──────────────────────────────────────────────
+     Every display h1/h2 is given a body: four stepped shadows in darkening
+     bronze under the face, then a soft cast shadow. Offsets are in `em`, so
+     the extrusion scales with the heading — about 4px deep on a 64px hero
+     line, under half a pixel on a 20px card title, where it would otherwise
+     smear.
+
+     text-shadow rather than filter: drop-shadow for plain text. A filter makes
+     the heading its own compositing surface and re-runs on every repaint;
+     text-shadow is painted with the glyphs and costs nothing afterwards. */
+  :is(h1, h2).font-display,
+  .text-3d {
+    text-shadow:
+      0 0.016em 0 #a8741d,
+      0 0.032em 0 #845b16,
+      0 0.048em 0 #624311,
+      0 0.064em 0 #402b0a,
+      0 0.16em 0.22em rgba(0, 0, 0, 0.55);
+  }
+
+  /* Gradient-filled words are the exception. Their fill is a background
+     clipped to the glyphs, and backgrounds paint BELOW text-shadow — so the
+     shadow above would bury the gold. These get the same stepped extrusion as
+     stacked drop-shadows instead, each one offsetting the result of the last.
+     The sheen span already carried a filter, so this replaces a cost rather
+     than adding one. */
+  :is(h1, h2).font-display :is(.text-gradient-gold, .text-gradient-gold-sheen, .text-gradient-electric),
+  .text-3d:is(.text-gradient-gold, .text-gradient-gold-sheen, .text-gradient-electric) {
+    text-shadow: none;
+    filter: drop-shadow(0 0.016em 0 #7e5614) drop-shadow(0 0.016em 0 #5c3e0e)
+      drop-shadow(0 0.016em 0 #3d2909) drop-shadow(0 0.12em 0.18em rgba(0, 0, 0, 0.5));
+  }
+  :is(h1, h2).font-display .text-gradient-electric,
+  .text-3d.text-gradient-electric {
+    filter: drop-shadow(0 0.016em 0 #1b3f9c) drop-shadow(0 0.016em 0 #142e72)
+      drop-shadow(0 0.016em 0 #0d1f4d) drop-shadow(0 0.12em 0.18em rgba(0, 0, 0, 0.5));
+  }
+
+  /* ── Perspective floor ──────────────────────────────────────────────────
+     A grid plane laid back toward a horizon, running toward the viewer. The
+     run is a translate along the plane's own Y axis (after the rotateX in the
+     transform list), by exactly one cell, so the loop is seamless and stays
+     on the compositor — no background-position animation, no repaint. */
+  .floor-3d {
+    perspective: 560px;
+    perspective-origin: 50% 0%;
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 30%, #000 70%, transparent 100%),
+      linear-gradient(to right, transparent, #000 22%, #000 78%, transparent);
+    -webkit-mask-composite: source-in;
+    mask-image: linear-gradient(to bottom, transparent 0%, #000 30%, #000 70%, transparent 100%),
+      linear-gradient(to right, transparent, #000 22%, #000 78%, transparent);
+    mask-composite: intersect;
+  }
+  .floor-3d__plane {
+    position: absolute;
+    left: -60%;
+    right: -60%;
+    /* Starts one cell above the horizon so the run never exposes an edge. */
+    top: -64px;
+    height: calc(100% + 64px);
+    transform-origin: 50% 0%;
+    transform: rotateX(64deg);
+    background-image:
+      linear-gradient(to right, rgba(224, 169, 60, 0.32) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(224, 169, 60, 0.32) 1px, transparent 1px);
+    background-size: 64px 64px;
+    animation: floor-run 3.2s linear infinite;
+    will-change: transform;
+  }
+  /* The horizon line the floor runs out from. */
+  .floor-3d::before {
+    content: "";
+    position: absolute;
+    inset: 0 10% auto;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(232, 187, 92, 0.7), transparent);
+    box-shadow: 0 0 24px 4px rgba(224, 169, 60, 0.25);
+    z-index: 1;
+  }
+  @keyframes floor-run {
+    from {
+      transform: rotateX(64deg) translateY(0);
+    }
+    to {
+      transform: rotateX(64deg) translateY(64px);
+    }
+  }
+
+  /* ── Slow orbit for decorative 3D objects ─────────────────────────────── */
+  .spin-3d {
+    transform-style: preserve-3d;
+    animation: spin-3d 18s linear infinite;
+  }
+  @keyframes spin-3d {
+    from {
+      transform: rotateX(62deg) rotateZ(0deg);
+    }
+    to {
+      transform: rotateX(62deg) rotateZ(360deg);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .floor-3d__plane,
+    .spin-3d {
+      animation: none;
+    }
+  }
+}
