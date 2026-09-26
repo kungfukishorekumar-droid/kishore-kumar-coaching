@@ -15,6 +15,20 @@ export const SITE = {
   whatsapp: "https://wa.me/919884599939",
   customGpt:
     "https://chatgpt.com/g/g-6a24775509dc81918f4c9887bed35d5c-athlete-mindset-coach-by-kishore",
+  /**
+   * WarriorCRM's own hosted lead form.
+   *
+   * A third way into the CRM, independent of this site's code: it collects the
+   * same columns and writes them itself, so it keeps working even if this app
+   * is down, mid-deploy, or regenerated. `?src=` becomes the lead's Source in
+   * the CRM — change it to distinguish this site from the Spartacus one if you
+   * ever want Channels to split them apart.
+   *
+   * NOT the primary path. The form on this site posts to /api/lead/, which
+   * delivers straight to the CRM's ingest webhook; this is the fallback for
+   * when that fails.
+   */
+  crmLeadForm: "https://crm.spartacusmartialarts.com/lead-form.html?src=Website",
   // NOTE: WarriorCRM is the private lead backend (see /api/lead) — never shown publicly.
   socials: {
     instagram: "https://www.instagram.com/kishorekumar.coach/",

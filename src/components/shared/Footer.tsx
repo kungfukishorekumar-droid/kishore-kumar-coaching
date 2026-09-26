@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Instagram, MessageCircle, Bot, Mail, MapPin, Phone, Youtube, ExternalLink } from "lucide-react";
+import { Instagram, MessageCircle, Bot, ClipboardList, Mail, MapPin, Phone, Youtube, ExternalLink } from "lucide-react";
 import { LeadLink } from "@/components/shared/lead-gate";
 import { NAV_LINKS, SITE } from "@/lib/site";
 import { SEO } from "@/lib/seo";
@@ -129,6 +129,23 @@ export function Footer() {
                 <a href={SITE.customGpt} target="_blank" rel="noreferrer" className="flex items-center gap-2 transition-colors hover:text-gold-200">
                   <Bot className="size-4 text-electric-400" />
                   Athlete Mindset GPT
+                </a>
+              </li>
+              <li>
+                {/* WarriorCRM's hosted form — a route into the CRM that does
+                    not depend on this site's code. Deliberately a plain link
+                    and deliberately down here, not a headline CTA: the gated
+                    form above converts better because it never leaves the
+                    page, and it reaches the CRM by the authenticated ingest
+                    webhook rather than the shared queue. */}
+                <a
+                  href={SITE.crmLeadForm}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex items-center gap-2 transition-colors hover:text-gold-200"
+                >
+                  <ClipboardList className="size-4 text-gold-300" />
+                  Register your interest
                 </a>
               </li>
               <li className="flex items-center gap-2">

@@ -35,22 +35,35 @@ const isProd = process.env.NODE_ENV === "production";
  *  • Cloudflare is needed by Turnstile; youtube-nocookie by the blog video
  *    embeds.
  *
- * `connect-src` is now just 'self'. It used to allow a Supabase host because the
- * lead form POSTed into Supabase straight from the browser; that path is gone —
- * submissions go to /api/lead/ on this origin and the server does the writing
- * (see src/lib/lead-client.ts). Removing the host is not cosmetic: it means a
- * script injected into this page cannot reach the CRM's API at all, whatever
- * credential it manages to find.
+ * `connect-src` allows exactly two hosts beyond 'self', both required by
+ * warriorcrm.js (see the layout): the CRM origin it is served from, and the
+ * Supabase project it writes visits and backup leads into.
+ *
+ * ── What that costs, stated plainly ──────────────────────────────────────────
+ * This partially re-opens something the server-side lead path closed. Form
+ * submissions still go to /api/lead/ and the browser still holds no credential
+ * of OURS — but warriorcrm.js ships the CRM's own publishable Supabase key and
+ * POSTs to the queue directly, so an attacker who injects a script into this
+ * page can once again reach that queue. The key is insert-only under RLS (it
+ * cannot read a single row back), so the exposure is junk rows in the inbox,
+ * not disclosure of anyone's leads. Narrowed to these two hosts on purpose:
+ * without them the tag loads and silently does nothing, which is the worse
+ * outcome — analytics that look installed and record nothing.
  */
 const TURNSTILE_HOST = "https://challenges.cloudflare.com";
+/** Serves warriorcrm.js — visitor tracking + backup lead capture. */
+const CRM_HOST = "https://crm.spartacusmartialarts.com";
+/** The queue warriorcrm.js posts into. NOT this site's own Supabase project —
+ *  it is the CRM's shared inbox, and the value is baked into that script. */
+const CRM_INBOX_HOST = "https://oqwbmtdrjxfbnitlzehe.supabase.co";
 
 const csp = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline'${isProd ? "" : " 'unsafe-eval'"} ${TURNSTILE_HOST}`,
+  `script-src 'self' 'unsafe-inline'${isProd ? "" : " 'unsafe-eval'"} ${TURNSTILE_HOST} ${CRM_HOST}`,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https://i.ytimg.com",
   "font-src 'self' data:",
-  `connect-src 'self' ${TURNSTILE_HOST}`,
+  `connect-src 'self' ${TURNSTILE_HOST} ${CRM_HOST} ${CRM_INBOX_HOST}`,
   "worker-src 'self' blob:",
   `frame-src https://www.youtube-nocookie.com ${TURNSTILE_HOST}`,
   "object-src 'none'",

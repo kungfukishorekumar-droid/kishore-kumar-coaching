@@ -344,6 +344,23 @@ function LeadGateModal({ intent, onClose }: { intent: LeadIntent | null; onClose
                       Open WhatsApp
                     </a>
                   </Button>
+                  {/* Only when the CRM write actually failed. The visitor's
+                      details exist nowhere but the WhatsApp draft at this
+                      point, so the CRM's own hosted form is a second way to
+                      land them — it writes to the CRM itself and does not
+                      depend on this app being healthy. Never shown on the
+                      success path: sending someone to re-type what was just
+                      saved is how you lose them. */}
+                  {!forwarded && (
+                    <a
+                      href={SITE.crmLeadForm}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-xs text-gold-200 underline-offset-2 hover:underline"
+                    >
+                      Or register on the CRM form instead
+                    </a>
+                  )}
                   <button
                     type="button"
                     onClick={onClose}
@@ -366,9 +383,15 @@ function LeadGateModal({ intent, onClose }: { intent: LeadIntent | null; onClose
 
                   <form onSubmit={handleSubmit} className="mt-5 space-y-3">
                     <div className="grid gap-3 sm:grid-cols-2">
+                      {/* `name` on every field: warriorcrm.js maps a field by
+                          its name, then id, then placeholder. It can parse
+                          placeholders like "Your name *", but a plain name is
+                          the one label that cannot drift when the copy is
+                          reworded — and it is what browser autofill keys on. */}
                       <input
                         ref={firstFieldRef}
                         required
+                        name="name"
                         aria-label="Your name"
                         autoComplete="name"
                         placeholder="Your name *"
@@ -379,6 +402,7 @@ function LeadGateModal({ intent, onClose }: { intent: LeadIntent | null; onClose
                       <input
                         required
                         type="tel"
+                        name="phone"
                         aria-label="Phone or WhatsApp number"
                         autoComplete="tel"
                         placeholder="Phone / WhatsApp *"
@@ -391,6 +415,7 @@ function LeadGateModal({ intent, onClose }: { intent: LeadIntent | null; onClose
                     <div className="grid gap-3 sm:grid-cols-2">
                       <input
                         type="email"
+                        name="email"
                         aria-label="Email"
                         autoComplete="email"
                         placeholder="Email (optional)"
@@ -400,6 +425,7 @@ function LeadGateModal({ intent, onClose }: { intent: LeadIntent | null; onClose
                       />
                       <input
                         type="number"
+                        name="age"
                         inputMode="numeric"
                         min={3}
                         max={100}
@@ -412,6 +438,7 @@ function LeadGateModal({ intent, onClose }: { intent: LeadIntent | null; onClose
                     </div>
 
                     <input
+                      name="sport"
                       aria-label="Sport or activity"
                       placeholder="Sport / activity — e.g. Wushu, Cricket"
                       value={fields.sport}
@@ -434,6 +461,7 @@ function LeadGateModal({ intent, onClose }: { intent: LeadIntent | null; onClose
 
                     <textarea
                       rows={2}
+                      name="goal"
                       aria-label="Your goal"
                       placeholder="What do you want to achieve? (optional)"
                       value={fields.goal}
