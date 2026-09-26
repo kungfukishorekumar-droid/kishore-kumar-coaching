@@ -2,6 +2,7 @@
 
 import { Counter } from "@/components/ui/counter";
 import { Reveal, RevealGroup } from "@/components/ui/reveal";
+import { TiltCard } from "@/components/ui/tilt-card";
 import { STATS } from "@/lib/site";
 
 export function Stats() {
@@ -10,8 +11,9 @@ export function Stats() {
       <div className="container">
         <RevealGroup className="grid grid-cols-2 gap-4 md:grid-cols-4">
           {STATS.map((s) => (
-            <Reveal key={s.label}>
-              <div className="glass flex flex-col items-center rounded-2xl px-4 py-6 text-center">
+            <Reveal key={s.label} className="h-full">
+              <TiltCard className="h-full" max={12} radiusClassName="rounded-2xl">
+              <div className="glass flex h-full flex-col items-center rounded-2xl px-4 py-6 text-center">
                 <div className="font-display text-4xl font-bold text-gradient-gold sm:text-5xl">
                   <Counter to={s.value} suffix={s.suffix} />
                 </div>
@@ -19,6 +21,7 @@ export function Stats() {
                   {s.label}
                 </div>
               </div>
+              </TiltCard>
             </Reveal>
           ))}
         </RevealGroup>

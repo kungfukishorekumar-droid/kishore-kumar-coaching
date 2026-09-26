@@ -32,12 +32,29 @@ export function ThreeScene({
   className,
   /** How far outside the viewport to start loading. Early enough to be ready. */
   rootMargin = "200px",
+  loadWhen = "visible",
+  finePointerOnly = false,
 }: {
   factory: SceneFactory;
   /** Rendered until — and instead of — the 3D scene. Must stand on its own. */
   fallback: ReactNode;
   className?: string;
   rootMargin?: string;
+  /**
+   * "visible" — start as soon as the wrapper nears the viewport.
+   * "idle"    — additionally wait for the window `load` event and an idle
+   *             slot. For above-the-fold scenes: they are visible immediately,
+   *             so "visible" would put three.js in a race with the LCP image
+   *             and the fonts. "idle" lets the page finish first.
+   */
+  loadWhen?: "visible" | "idle";
+  /**
+   * Skip WebGL on touch devices and keep the fallback. For scenes on the
+   * first screen, where a phone would otherwise download and parse ~170KB of
+   * three.js before the visitor has done anything — the cost that shows up as
+   * Total Blocking Time in a mobile Lighthouse run.
+   */
+  finePointerOnly?: boolean;
 }) {
   const wrapRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -47,6 +64,21 @@ export function ThreeScene({
    * context loss mid-session degrades instead of leaving a hole.
    */
   const [live, setLive] = useState(false);
+  /**
+   * The fallback is unmounted once the scene has faded in. Keeping it mounted
+   * under an opaque canvas left its own animation running for nothing — the
+   * CSS emblem's Framer loops, or the sparkles canvas's rAF — behind every 3D
+   * scene. It comes back if the scene goes away (context loss).
+   */
+  const [fallbackGone, setFallbackGone] = useState(false);
+  useEffect(() => {
+    if (!live) {
+      setFallbackGone(false);
+      return;
+    }
+    const t = window.setTimeout(() => setFallbackGone(true), 1100);
+    return () => window.clearTimeout(t);
+  }, [live]);
 
   /**
    * The factory is held in a ref so the effect does not re-run — and tear the
@@ -82,14 +114,33 @@ export function ThreeScene({
     if (!supported) return;
 
     const coarse = window.matchMedia("(pointer: coarse)").matches;
+    if (finePointerOnly && coarse) return;
     const cores = nav.hardwareConcurrency ?? 8;
     const quality: Quality = coarse || cores <= 4 ? "low" : "high";
 
     let cancelled = false;
     let cleanup: (() => void) | null = null;
 
+    /** Resolves after `load` and then an idle slot (or 1.5s where
+     *  requestIdleCallback is missing — Safari). */
+    function afterLoadAndIdle(): Promise<void> {
+      return new Promise((resolve) => {
+        const idle = () => {
+          const ric = (window as Window & {
+            requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number;
+          }).requestIdleCallback;
+          if (ric) ric(() => resolve(), { timeout: 3000 });
+          else window.setTimeout(resolve, 1500);
+        };
+        if (document.readyState === "complete") idle();
+        else window.addEventListener("load", idle, { once: true });
+      });
+    }
+
     /** Loaded lazily; `start` is only called once the wrapper is in view. */
     async function start() {
+      if (loadWhen === "idle") await afterLoadAndIdle();
+      if (cancelled) return;
       const THREE = await import("three");
       if (cancelled) return;
 
@@ -148,8 +199,10 @@ export function ThreeScene({
       function onPointerMove(e: PointerEvent) {
         const box = wrap!.getBoundingClientRect();
         if (!box.width || !box.height) return;
-        targetX = ((e.clientX - box.left) / box.width) * 2 - 1;
-        targetY = ((e.clientY - box.top) / box.height) * 2 - 1;
+        // Clamped: a full-bleed scene still receives window-wide moves, and
+        // an unclamped value far outside the box would swing it wildly.
+        targetX = Math.max(-1, Math.min(1, ((e.clientX - box.left) / box.width) * 2 - 1));
+        targetY = Math.max(-1, Math.min(1, ((e.clientY - box.top) / box.height) * 2 - 1));
       }
       function onPointerLeave() {
         targetX = 0;
@@ -255,21 +308,21 @@ export function ThreeScene({
       loader.disconnect();
       cleanup?.();
     };
-  }, [rootMargin]);
+  }, [rootMargin, loadWhen, finePointerOnly]);
 
   return (
     <div ref={wrapRef} className={cn("relative", className)}>
-      {/* The fallback stays mounted beneath the canvas rather than unmounting.
-          It costs one composited layer and means a context loss fades back to
-          something finished instead of to nothing. */}
-      <div
-        className={cn(
-          "absolute inset-0 transition-opacity duration-700",
-          live ? "opacity-0" : "opacity-100"
-        )}
-      >
-        {fallback}
-      </div>
+      {/* Cross-fades out under the canvas, then unmounts (see fallbackGone). */}
+      {!fallbackGone && (
+        <div
+          className={cn(
+            "absolute inset-0 transition-opacity duration-700",
+            live ? "opacity-0" : "opacity-100"
+          )}
+        >
+          {fallback}
+        </div>
+      )}
       <canvas
         ref={canvasRef}
         aria-hidden

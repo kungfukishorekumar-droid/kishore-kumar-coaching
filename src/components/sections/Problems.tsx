@@ -24,7 +24,7 @@ export function Problems() {
       <RevealGroup className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3" stagger={0.06}>
         {PROBLEMS.map((p) => (
           <Reveal key={p.title} className="h-full">
-            <TiltCard className="h-full">
+            <TiltCard className="h-full" radiusClassName="rounded-2xl">
               <div className="group card-interactive relative flex h-full gap-4 overflow-hidden rounded-2xl glass p-5 hover:border-gold-400/25">
                 <div className="pointer-events-none absolute -right-10 -top-10 size-28 rounded-full bg-gold-400/0 blur-2xl transition-all duration-500 group-hover:bg-gold-400/15" />
                 <div className="grid size-11 shrink-0 place-items-center rounded-xl bg-red-500/10 text-red-300/90 ring-1 ring-red-500/20">

@@ -5,6 +5,8 @@ import { ArrowRight, MessageCircle, Bot, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { GlowRing } from "@/components/ui/floating-shapes";
 import { Sparkles } from "@/components/ui/sparkles";
+import { ThreeScene } from "@/components/three/scene-host";
+import { risingEmbers } from "@/components/three/particle-field";
 import { LeadCta } from "@/components/shared/lead-gate";
 import { SITE } from "@/lib/site";
 import { scrollToId } from "@/lib/utils";
@@ -17,8 +19,14 @@ export function FinalCTA() {
           <div className="absolute inset-0 bg-gradient-to-br from-navy-800/70 via-ink to-ink" />
           <GlowRing className="left-1/2 top-1/2 size-[520px] max-w-[120%] -translate-x-1/2 -translate-y-1/2" />
           <div className="pointer-events-none absolute left-1/2 top-0 size-96 -translate-x-1/2 rounded-full bg-gold-400/20 blur-3xl" />
-          {/* Glitter inside the closing panel — the page's last beat */}
-          <Sparkles density={0.00028} maxParticles={110} />
+          {/* Embers rising through the closing panel — the page's last beat.
+              Far below the fold, so by the time anyone gets here three.js is
+              usually cached from the Warrior Core block above. */}
+          <ThreeScene
+            className="pointer-events-none absolute inset-0"
+            factory={risingEmbers}
+            fallback={<Sparkles density={0.00028} maxParticles={110} />}
+          />
 
           <motion.div
             initial={{ opacity: 0, y: 24 }}

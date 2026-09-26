@@ -9,6 +9,7 @@ import { FloatingCTA } from "@/components/shared/FloatingCTA";
 import { BackToTop } from "@/components/shared/BackToTop";
 import { AmbientBackground } from "@/components/ui/ambient-background";
 import { Reveal, RevealGroup } from "@/components/ui/reveal";
+import { TiltCard } from "@/components/ui/tilt-card";
 import { SEO } from "@/lib/seo";
 import { jsonLdString } from "@/lib/utils";
 import { SORTED_POSTS } from "@/content/blog";
@@ -171,40 +172,42 @@ export default function BlogIndex() {
             <RevealGroup className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
               {rest.map((p) => (
                 <Reveal key={p.slug} className="h-full">
-                  <Link
-                    href={`/blog/${p.slug}/`}
-                    className="glow-card group flex h-full flex-col overflow-hidden rounded-3xl glass transition-colors hover:border-gold-400/25"
-                  >
-                    <div className="relative aspect-[16/9] overflow-hidden">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={p.image}
-                        alt={p.imageAlt}
-                        className="size-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
-                        width={1672}
-                        height={941}
-                        loading="lazy"
-                        decoding="async"
-                      />
-                      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-ink/90 to-transparent" />
-                    </div>
+                  <TiltCard className="h-full" max={6} radiusClassName="rounded-3xl">
+                    <Link
+                      href={`/blog/${p.slug}/`}
+                      className="glow-card group flex h-full flex-col overflow-hidden rounded-3xl glass transition-colors hover:border-gold-400/25"
+                    >
+                      <div className="relative aspect-[16/9] overflow-hidden">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={p.image}
+                          alt={p.imageAlt}
+                          className="size-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+                          width={1672}
+                          height={941}
+                          loading="lazy"
+                          decoding="async"
+                        />
+                        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-ink/90 to-transparent" />
+                      </div>
 
-                    <div className="flex grow flex-col p-6">
-                      <span className="text-[11px] font-semibold uppercase tracking-wider text-gold-300">
-                        {p.category}
-                      </span>
-                      <h2 className="mt-2 text-balance font-display text-lg uppercase leading-tight">
-                        {p.title}
-                      </h2>
-                      <p className="mt-2 grow text-sm leading-relaxed text-foreground/65">
-                        {p.excerpt}
-                      </p>
-                      <span className="mt-4 flex items-center gap-1.5 text-xs text-foreground/45">
-                        <Clock className="size-3.5" aria-hidden="true" />
-                        {p.readingMinutes} min read
-                      </span>
-                    </div>
-                  </Link>
+                      <div className="flex grow flex-col p-6">
+                        <span className="text-[11px] font-semibold uppercase tracking-wider text-gold-300">
+                          {p.category}
+                        </span>
+                        <h2 className="mt-2 text-balance font-display text-lg uppercase leading-tight">
+                          {p.title}
+                        </h2>
+                        <p className="mt-2 grow text-sm leading-relaxed text-foreground/65">
+                          {p.excerpt}
+                        </p>
+                        <span className="mt-4 flex items-center gap-1.5 text-xs text-foreground/45">
+                          <Clock className="size-3.5" aria-hidden="true" />
+                          {p.readingMinutes} min read
+                        </span>
+                      </div>
+                    </Link>
+                  </TiltCard>
                 </Reveal>
               ))}
             </RevealGroup>

@@ -3,6 +3,7 @@ import { ArrowRight, Clock, Play } from "lucide-react";
 
 import { Section, SectionHeading } from "@/components/ui/section";
 import { Reveal, RevealGroup } from "@/components/ui/reveal";
+import { TiltCard } from "@/components/ui/tilt-card";
 import { SORTED_POSTS } from "@/content/blog";
 
 /**
@@ -36,25 +37,27 @@ export function LatestArticles() {
       <RevealGroup className="grid gap-5 md:grid-cols-2 lg:grid-cols-3" stagger={0.05}>
         {latest.map((p) => (
           <Reveal key={p.slug} className="h-full">
-            <Link
-              href={`/blog/${p.slug}/`}
-              className="glow-card group flex h-full flex-col rounded-2xl glass p-5 transition-colors hover:border-gold-400/25"
-            >
-              <span className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-gold-300">
-                {p.video && <Play className="size-3" aria-hidden="true" />}
-                {p.category}
-              </span>
-              <h3 className="mt-2 text-balance font-display text-base uppercase leading-tight">
-                {p.title}
-              </h3>
-              <p className="mt-2 grow text-sm leading-relaxed text-foreground/65">
-                {p.excerpt}
-              </p>
-              <span className="mt-4 flex items-center gap-1.5 text-xs text-foreground/45">
-                <Clock className="size-3.5" aria-hidden="true" />
-                {p.readingMinutes} min read
-              </span>
-            </Link>
+            <TiltCard className="h-full" max={6} radiusClassName="rounded-2xl">
+              <Link
+                href={`/blog/${p.slug}/`}
+                className="glow-card group flex h-full flex-col rounded-2xl glass p-5 transition-colors hover:border-gold-400/25"
+              >
+                <span className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-gold-300">
+                  {p.video && <Play className="size-3" aria-hidden="true" />}
+                  {p.category}
+                </span>
+                <h3 className="mt-2 text-balance font-display text-base uppercase leading-tight">
+                  {p.title}
+                </h3>
+                <p className="mt-2 grow text-sm leading-relaxed text-foreground/65">
+                  {p.excerpt}
+                </p>
+                <span className="mt-4 flex items-center gap-1.5 text-xs text-foreground/45">
+                  <Clock className="size-3.5" aria-hidden="true" />
+                  {p.readingMinutes} min read
+                </span>
+              </Link>
+            </TiltCard>
           </Reveal>
         ))}
       </RevealGroup>

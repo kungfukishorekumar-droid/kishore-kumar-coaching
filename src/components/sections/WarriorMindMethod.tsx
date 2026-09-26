@@ -1,8 +1,7 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { Reveal, RevealGroup } from "@/components/ui/reveal";
-import { TiltCard } from "@/components/ui/tilt-card";
+import { Depth, TiltCard } from "@/components/ui/tilt-card";
 import { Icon } from "@/components/ui/icon";
 import { Button } from "@/components/ui/button";
 import { FloatingShapes } from "@/components/ui/floating-shapes";
@@ -44,30 +43,46 @@ export function WarriorMindMethod() {
         <RevealGroup className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
           {METHOD.map((step, i) => (
             <Reveal key={step.tag} className="h-full">
-              <TiltCard className="h-full">
-                <motion.div className="group relative h-full overflow-hidden rounded-3xl glass p-7 shine-border">
-                  <div className="pointer-events-none absolute -right-12 -top-12 size-40 rounded-full bg-gold-400/0 blur-2xl transition-all duration-500 group-hover:bg-gold-400/25" />
-                  <span className="pointer-events-none absolute right-4 top-2 font-display text-7xl text-white/[0.04] transition-colors group-hover:text-gold-400/10">
-                    {kanji[step.tag]}
-                  </span>
+              <TiltCard className="h-full" max={10} lift={24}>
+                {/*
+                  Built in layers so the content can float off the card.
+                  The glass face is a SIBLING behind the content, not its
+                  wrapper: backdrop-filter and overflow clipping both flatten
+                  3D, so anything inside the glass would be pressed back onto
+                  one plane. Here only the face is flat; the icon, title and
+                  copy each sit at their own depth in front of it, and slide
+                  against one another as the card turns.
+                */}
+                <div className="group relative h-full rounded-3xl p-7 [transform-style:preserve-3d]">
+                  {/* `!absolute`: .shine-border sets position: relative (it anchors its
+                      own ::before), and it wins over the plain utility — which
+                      collapsed this face to its 2px border. */}
+                  <div className="!absolute inset-0 overflow-hidden rounded-3xl glass shine-border">
+                    <div className="pointer-events-none absolute -right-12 -top-12 size-40 rounded-full bg-gold-400/0 blur-2xl transition-all duration-500 group-hover:bg-gold-400/25" />
+                    <span className="pointer-events-none absolute right-4 top-2 font-display text-7xl text-white/[0.04] transition-colors group-hover:text-gold-400/10">
+                      {kanji[step.tag]}
+                    </span>
+                  </div>
 
-                  <div className="relative">
-                    <div className="flex items-center justify-between">
-                      <div className="grid size-14 place-items-center rounded-2xl bg-gold-gradient text-ink shadow-glow">
-                        <Icon name={step.icon} className="size-7" />
-                      </div>
-                      <span className="font-display text-2xl font-bold text-white/15">
-                        {`0${i + 1}`}
-                      </span>
+                  <Depth z={56} className="relative flex items-center justify-between">
+                    <div className="grid size-14 place-items-center rounded-2xl bg-gold-gradient text-ink shadow-key-gold">
+                      <Icon name={step.icon} className="size-7" />
                     </div>
+                    <span className="font-display text-2xl font-bold text-white/15">
+                      {`0${i + 1}`}
+                    </span>
+                  </Depth>
+                  <Depth z={36} className="relative">
                     <h3 className="mt-5 font-display text-2xl font-bold uppercase tracking-wide text-foreground">
                       {step.tag}
                     </h3>
+                  </Depth>
+                  <Depth z={18} className="relative">
                     <p className="mt-2 text-sm leading-relaxed text-foreground/65">
                       {step.desc}
                     </p>
-                  </div>
-                </motion.div>
+                  </Depth>
+                </div>
               </TiltCard>
             </Reveal>
           ))}

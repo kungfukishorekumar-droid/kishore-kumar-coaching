@@ -1,5 +1,6 @@
 import type * as THREE from "three";
 import type { SceneFactory } from "./types";
+import { dotTexture } from "./sprites";
 
 /**
  * The Warrior Mind Core — the site's one real WebGL scene.
@@ -49,31 +50,6 @@ export const warriorCore: SceneFactory = ({ THREE, scene, camera, quality }) => 
   function mat<T extends THREE.Material>(m: T): T {
     materials.push(m);
     return m;
-  }
-
-  /**
-   * A soft round dot, drawn once into a 64px canvas.
-   *
-   * Without a map, PointsMaterial draws each particle as a hard square — which
-   * at close range reads as a rendering bug rather than as dust. This is the
-   * cheapest fix available: no network request, no image in the repo, and one
-   * small texture shared by every particle in the field.
-   */
-  function dotTexture(): THREE.Texture {
-    const size = 64;
-    const c = document.createElement("canvas");
-    c.width = size;
-    c.height = size;
-    const ctx = c.getContext("2d")!;
-    const g = ctx.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
-    g.addColorStop(0, "rgba(255,255,255,1)");
-    g.addColorStop(0.35, "rgba(255,255,255,0.65)");
-    g.addColorStop(1, "rgba(255,255,255,0)");
-    ctx.fillStyle = g;
-    ctx.fillRect(0, 0, size, size);
-    const tex = new THREE.CanvasTexture(c);
-    textures.push(tex);
-    return tex;
   }
 
   // ── The core ───────────────────────────────────────────────────────────────
@@ -204,7 +180,11 @@ export const warriorCore: SceneFactory = ({ THREE, scene, camera, quality }) => 
     mat(
       new THREE.PointsMaterial({
         color: GOLD_LIGHT,
-        map: dotTexture(),
+        map: (() => {
+          const t = dotTexture(THREE);
+          textures.push(t);
+          return t;
+        })(),
         // The sprite's own transparent edge does the shaping, so depth writes
         // would punch square holes in whatever is behind each particle.
         alphaTest: 0.01,

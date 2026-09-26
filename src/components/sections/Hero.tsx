@@ -16,6 +16,8 @@ import { Button } from "@/components/ui/button";
 import { FloatingShapes, GlowRing } from "@/components/ui/floating-shapes";
 import { AuthorityBadge } from "@/components/ui/authority-badge";
 import { Sparkles } from "@/components/ui/sparkles";
+import { ThreeScene } from "@/components/three/scene-host";
+import { heroGalaxy } from "@/components/three/particle-field";
 import { LeadCta } from "@/components/shared/lead-gate";
 import { IMAGES, HERO, SITE } from "@/lib/site";
 import { scrollToId } from "@/lib/utils";
@@ -73,8 +75,19 @@ export function Hero() {
           maskImage: "radial-gradient(ellipse 70% 60% at 50% 40%, black, transparent)",
         }}
       />
-      {/* Drifting motes of light over the whole hero */}
-      <Sparkles />
+      {/* WebGL galaxy behind the hero — desktop only, and only after the page
+          has loaded and gone idle, so three.js never competes with the LCP
+          portrait or the fonts. Phones, reduced motion and anything without
+          WebGL keep the 2D sparkles, which are what the server renders. */}
+      <ThreeScene
+        // Faded out toward the bottom: the section clips its overflow, so
+        // without the mask the galaxy stops at a hard line where the hero ends.
+        className="pointer-events-none absolute inset-0 [mask-image:linear-gradient(to_bottom,#000_62%,transparent)]"
+        factory={heroGalaxy}
+        loadWhen="idle"
+        finePointerOnly
+        fallback={<Sparkles />}
+      />
       {/* 3D perspective floor running toward the viewer — CSS only, so it
           costs the LCP nothing (see .floor-3d in globals.css). */}
       <div aria-hidden className="floor-3d pointer-events-none absolute inset-x-0 bottom-0 h-[42%] opacity-60">
@@ -145,7 +158,7 @@ export function Hero() {
             style={{ "--d": "120ms" } as React.CSSProperties}
           >
             {/* SEO H1 keyword line (single H1 on the page) */}
-            <span className="mb-3 block text-xs font-semibold uppercase tracking-[0.22em] text-gold-300 sm:text-sm">
+            <span className="mb-3 block text-xs font-semibold uppercase tracking-[0.22em] text-gold-300 [text-shadow:none] sm:text-sm">
               Sports Psychology &amp; Martial Arts Coach in Chennai
             </span>
             {HERO.headlineTop}
