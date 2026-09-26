@@ -21,7 +21,7 @@ import { Solution } from "@/components/sections/Solution";
 import { PageThreeMindset } from "@/components/sections/PageThreeMindset";
 import { WarriorMindMethod } from "@/components/sections/WarriorMindMethod";
 import { PageSixAuthority } from "@/components/sections/PageSixAuthority";
-import { SplineHeroBlock } from "@/components/sections/SplineHeroBlock";
+import { WarriorCoreBlock } from "@/components/sections/WarriorCoreBlock";
 import { Programs } from "@/components/sections/Programs";
 import { WorkshopSection } from "@/components/sections/WorkshopSection";
 import { LocalSEOSection } from "@/components/sections/LocalSEOSection";
@@ -61,8 +61,8 @@ export default function Home() {
         <SectionDivider className="container max-w-3xl" tint="electric" />
         {/* 6 */} <WarriorMindMethod />
         {/* 7 */} <PageSixAuthority />
-        {/* 3D showcase block */}
-        <SplineHeroBlock />
+        {/* Real WebGL — lazy, below the fold, CSS emblem as fallback */}
+        <WarriorCoreBlock />
         <SectionDivider className="container max-w-3xl" />
         {/* 8 */} <Programs />
         {/* Workshop */} <WorkshopSection />

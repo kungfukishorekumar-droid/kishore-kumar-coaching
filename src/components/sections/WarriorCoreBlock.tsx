@@ -4,18 +4,26 @@ import { ArrowRight } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Spotlight } from "@/components/ui/spotlight";
 import { Button } from "@/components/ui/button";
-import { WarriorEmblem } from "@/components/ui/warrior-emblem";
+import { WarriorCoreCanvas } from "@/components/three/warrior-core-canvas";
 import { LeadCta } from "@/components/shared/lead-gate";
 
 /**
- * Premium "Warrior Mind" 3D-style showcase block.
- * Uses the lightweight CSS/Framer <WarriorEmblem /> (on-brand + fast, no WebGL).
+ * The "Warrior Mind" showcase block — the site's 3D centrepiece.
  *
- * To use a real 3D Spline scene instead: `npm i @splinetool/react-spline`,
- * render <Spline scene="https://prod.spline.design/XXXX/scene.splinecode" /> here,
- * and re-add `'unsafe-eval'` + `*.spline.design` to the CSP in next.config.mjs.
+ * Renamed from SplineHeroBlock: the plan recorded here was to buy a Spline
+ * scene, which would have meant a hosted .splinecode asset, that vendor in the
+ * CSP and `'unsafe-eval'` back in script-src. None of that was worth it for one
+ * decorative object, so the scene is built from three.js primitives instead —
+ * no external host, no eval, and the brand palette as constants rather than
+ * baked into someone else's export. The abandoned @splinetool install has been
+ * removed with it.
+ *
+ * Placed here, roughly two thirds down the page, for a reason: this is the one
+ * section where WebGL is affordable. It is far below the fold, so three.js is
+ * fetched long after the hero's LCP has settled — and only for a visitor who
+ * scrolls this far.
  */
-export function SplineHeroBlock() {
+export function WarriorCoreBlock() {
   return (
     <section className="relative py-16 sm:py-20">
       <div className="container">
@@ -53,9 +61,12 @@ export function SplineHeroBlock() {
               </div>
             </div>
 
-            {/* Warrior Mind emblem — never covers the brand/content */}
-            <div className="relative min-h-[300px] md:min-h-[440px]">
-              <WarriorEmblem className="absolute inset-0 h-full w-full" />
+            {/* The 3D core — never covers the brand/content. A minimum height
+                rather than an aspect ratio: the canvas is absolutely
+                positioned, so without it the grid cell would collapse to zero
+                and the ResizeObserver would have nothing to measure. */}
+            <div className="relative min-h-[320px] md:min-h-[460px]">
+              <WarriorCoreCanvas className="absolute inset-0 size-full" />
               {/* blend into the dark card on small screens */}
               <div className="pointer-events-none absolute inset-x-0 top-0 h-12 bg-gradient-to-b from-ink-50 to-transparent md:hidden" />
             </div>
