@@ -86,7 +86,7 @@ export function Hero() {
       <div className="container relative grid items-center gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-12">
         {/* IMAGE — seen first (top on mobile, right on desktop) */}
         <div
-          className="anim-scale relative order-1 mx-auto w-full max-w-sm sm:max-w-md lg:order-2 lg:max-w-none"
+          className="anim-scale anim-solid relative order-1 mx-auto w-full max-w-sm sm:max-w-md lg:order-2 lg:max-w-none"
           style={{ "--d": "60ms" } as React.CSSProperties}
         >
           <GlowRing className="left-1/2 top-1/2 size-[118%] -translate-x-1/2 -translate-y-1/2" />
@@ -145,7 +145,7 @@ export function Hero() {
           </div>
 
           <h1
-            className="anim-rise text-balance font-display text-fluid-3xl font-extrabold uppercase tracking-[-0.03em]"
+            className="anim-rise anim-solid text-balance font-display text-fluid-3xl font-extrabold uppercase tracking-[-0.03em]"
             style={{ "--d": "120ms" } as React.CSSProperties}
           >
             {/* SEO H1 keyword line (single H1 on the page) */}

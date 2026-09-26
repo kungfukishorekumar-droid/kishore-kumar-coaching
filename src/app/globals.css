@@ -153,6 +153,39 @@
     }
   }
 
+  /* ── The two LCP candidates move, but never start transparent ─────────────
+     Chrome does not record an element as a Largest Contentful Paint candidate
+     if it is painted at opacity 0, and does not reliably pick it up again when
+     a fade raises the opacity. The portrait and the headline both used to fade
+     in from 0, so whether LCP got recorded at all came down to a race between
+     the portrait decoding and its fade starting: Lighthouse intermittently
+     returned NO_LCP (no Performance score) — in builds before and after the
+     server-component refactor alike — and real visitors' field data could log
+     a smaller, later element as the LCP instead. `.anim-solid` keeps the
+     entrance movement and drops only the fade. */
+  .anim-rise.anim-solid {
+    animation-name: rise-in-solid;
+  }
+  .anim-scale.anim-solid {
+    animation-name: scale-in-solid;
+  }
+  @keyframes rise-in-solid {
+    from {
+      transform: translate3d(0, 26px, 0);
+    }
+    to {
+      transform: none;
+    }
+  }
+  @keyframes scale-in-solid {
+    from {
+      transform: scale(0.94);
+    }
+    to {
+      transform: none;
+    }
+  }
+
   /* Ambient drift for the hero credential badges. Period is set per badge via
      --float-dur so they don't bob in lockstep. */
   .badge-float {
