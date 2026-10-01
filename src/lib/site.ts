@@ -86,7 +86,7 @@ export const BADGES = [
   "National Wushu Medalist",
   "Sports Psychologist",
   "Martial Artist",
-  "Wushu Coach & Judge",
+  "Wushu Coach & State Judge",
   "Athlete Mindset Coach",
 ];
 

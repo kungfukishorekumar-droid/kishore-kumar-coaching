@@ -22,7 +22,7 @@ import { PHOTOS } from "@/lib/media";
 const badges = [
   { icon: Medal, label: "National Wushu Medalist" },
   { icon: Brain, label: "Sports Psychologist" },
-  { icon: Scale, label: "Wushu Coach & Judge" },
+  { icon: Scale, label: "Wushu Coach & State Judge" },
 ];
 
 const benefits = [

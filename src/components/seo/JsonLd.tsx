@@ -131,7 +131,7 @@ export function JsonLd() {
       "Competition Mindset",
     ],
     description:
-      "Kishore Kumar is a National Wushu Medalist, Sports Psychologist, Wushu Coach & Judge, and Athlete Mindset Coach based in Chennai, India. He is the creator of the Warrior Mind Method™ — a five-part system combining Sports Psychology and martial-arts discipline to help athletes build focus, confidence, emotional control, and a winning competition mindset.",
+      "Kishore Kumar is a National Wushu Medalist, Sports Psychologist, Wushu Coach & State Judge, and Athlete Mindset Coach based in Chennai, India. He is the creator of the Warrior Mind Method™ — a five-part system combining Sports Psychology and martial-arts discipline to help athletes build focus, confidence, emotional control, and a winning competition mindset.",
   };
 
   // ── Services ──────────────────────────────────────────────────────────────

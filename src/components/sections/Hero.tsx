@@ -34,7 +34,7 @@ const authorityBadges = [
   { title: "National Wushu Medalist", icon: Medal, pos: "absolute left-0 top-[9%] 2xl:left-[-6%]", tint: "gold" },
   { title: "Sports Psychologist", icon: Brain, pos: "absolute right-0 top-[18%] 2xl:right-[-6%]", tint: "electric" },
   { title: "Martial Artist", icon: Flame, pos: "absolute left-0 top-[47%] 2xl:left-[-8%]", tint: "gold" },
-  { title: "Wushu Coach & Judge", icon: ShieldCheck, pos: "absolute right-0 bottom-[25%] 2xl:right-[-7%]", tint: "electric" },
+  { title: "Wushu Coach & State Judge", icon: ShieldCheck, pos: "absolute right-0 bottom-[25%] 2xl:right-[-7%]", tint: "electric" },
   { title: "Athlete Mindset Coach", icon: Target, pos: "absolute left-0 bottom-[13%] 2xl:left-[-5%]", tint: "gold" },
 ] as const;
 
@@ -42,7 +42,7 @@ const trustLine = [
   "National Wushu Medalist",
   "Sports Psychologist",
   "Martial Artist",
-  "Wushu Coach & Judge",
+  "Wushu Coach & State Judge",
 ];
 
 export function Hero() {

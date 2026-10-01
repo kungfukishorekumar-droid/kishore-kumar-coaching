@@ -27,7 +27,7 @@ const trustCards = [
 
 const floatingBadges = [
   { icon: Medal, label: "National Wushu Medalist", pos: "right-[-1.5rem] top-12", tint: "gold" },
-  { icon: Scale, label: "Wushu Coach & Judge", pos: "right-[-1.25rem] top-1/2", tint: "electric" },
+  { icon: Scale, label: "Wushu Coach & State Judge", pos: "right-[-1.25rem] top-1/2", tint: "electric" },
   { icon: Brain, label: "Sports Psychologist", pos: "left-[-1.25rem] bottom-14", tint: "gold" },
 ] as const;
 
