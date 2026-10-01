@@ -57,10 +57,24 @@ export const metadata: Metadata = {
   },
 };
 
+/**
+ * Credentials shown on this page: the site-wide list plus the two the academy
+ * site (spartacusmartialarts.com) also states — Kung Fu black belt and
+ * state-level Wushu judge — so both of Kishore's sites describe him the same
+ * way. Search and answer engines weigh facts that agree across sources.
+ */
+const ABOUT_CREDENTIALS = [
+  ...CREDENTIALS.slice(0, 1), // National Wushu Medalist
+  { icon: "Award", label: "Kung Fu Black Belt" },
+  ...CREDENTIALS.slice(1).map((c) =>
+    c.label === "Wushu Judge" ? { ...c, label: "State-level Wushu Judge" } : c
+  ),
+];
+
 const FAQ = [
   {
     q: "Who is Kishore Kumar?",
-    a: "Kishore Kumar is a sports psychologist, National Wushu Medalist and martial arts coach based in Chennai, India. He combines sports psychology with martial arts training to help athletes, students and martial artists build focus, discipline, confidence, emotional control and pressure handling.",
+    a: "Kishore Kumar is a sports psychologist, National Wushu Medalist, Kung Fu black belt, state-level Wushu judge and martial arts coach based in Chennai, India. He combines sports psychology with martial arts training to help athletes, students and martial artists build focus, discipline, confidence, emotional control and pressure handling.",
   },
   {
     q: "What is the Warrior Mind Method?",
@@ -97,7 +111,7 @@ export default function AboutPage() {
         isPartOf: { "@id": `${SEO.siteUrl}/#website` },
         primaryImageOfPage: { "@id": `${URL}#portrait` },
         breadcrumb: { "@id": `${URL}#breadcrumb` },
-        dateModified: "2026-10-01",
+        dateModified: "2026-10-02",
         mainEntity: {
           "@type": "Person",
           "@id": `${SEO.siteUrl}/#kishore`,
@@ -122,9 +136,16 @@ export default function AboutPage() {
           hasOccupation: [
             { "@type": "Occupation", name: "Sports Psychologist", occupationLocation: { "@type": "City", name: "Chennai" } },
             { "@type": "Occupation", name: "Martial Arts Coach", occupationLocation: { "@type": "City", name: "Chennai" } },
-            { "@type": "Occupation", name: "Wushu Judge" },
+            { "@type": "Occupation", name: "State-level Wushu Judge" },
           ],
           award: ["National Wushu Medalist"],
+          // Same credential set, in the same form, as the academy site's Person.
+          hasCredential: [
+            { "@type": "EducationalOccupationalCredential", credentialCategory: "Award", name: "Wushu National Medalist" },
+            { "@type": "EducationalOccupationalCredential", credentialCategory: "Rank", name: "Kung Fu Black Belt" },
+            { "@type": "EducationalOccupationalCredential", credentialCategory: "Certification", name: "Wushu Coach" },
+            { "@type": "EducationalOccupationalCredential", credentialCategory: "Certification", name: "State-level Wushu Judge" },
+          ],
           worksFor: {
             "@type": "Organization",
             "@id": `${SEO.siteUrl}/#organization`,
@@ -251,7 +272,7 @@ export default function AboutPage() {
               </h2>
             </Reveal>
             <ul className="mt-6 grid gap-3 sm:grid-cols-2">
-              {CREDENTIALS.map((c) => (
+              {ABOUT_CREDENTIALS.map((c) => (
                 <li key={c.label} className="flex items-center gap-3 rounded-2xl glass px-4 py-3">
                   <span className="grid size-6 shrink-0 place-items-center rounded-full bg-gold-400/15 text-gold-300">
                     <Check className="size-3.5" />
