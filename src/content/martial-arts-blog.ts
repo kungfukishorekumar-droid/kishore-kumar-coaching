@@ -35,7 +35,6 @@ const MA_SEEDS: Omit<BlogPost, "publishedAt">[] = [
       "Wushu competition India",
     ],
     image: "/images/gesture.webp",
-    imageAlt: "Wushu training — Taolu forms and Sanda sparring",
     quickAnswer:
       "Wushu has two competitive branches. Taolu is judged routines, scored on precision, power, balance and difficulty. Sanda is full-contact fighting combining strikes with throws. Beginners train shared fundamentals — stances, basic strikes, conditioning — before choosing, and most discover their preference within about three months.",
     sections: [
@@ -102,7 +101,6 @@ const MA_SEEDS: Omit<BlogPost, "publishedAt">[] = [
       "is judo safe",
     ],
     image: "/images/hero-wide.webp",
-    imageAlt: "Judo breakfall training",
     quickAnswer:
       "Judo teaches breakfalling (ukemi) before any throw, because a student who cannot land safely cannot be thrown safely. It is the first skill taught, the one practised in every session for years, and the one that transfers furthest outside the dojo — most students who use Judo in real life use it by falling well.",
     sections: [
@@ -172,7 +170,6 @@ const MA_SEEDS: Omit<BlogPost, "publishedAt">[] = [
       "which martial art for beginners",
     ],
     image: "/images/strong-mind.webp",
-    imageAlt: "Kick boxing and boxing training",
     quickAnswer:
       "Boxing trains hands, head movement and footwork to a high level of refinement within a narrow range. Kick boxing adds kicks and knees, so it covers more range but refines each tool more slowly. For pure conditioning and the fastest visible fitness gains, either works; for self-defence range, kick boxing; for depth of skill soonest, boxing.",
     sections: [
@@ -242,7 +239,6 @@ const MA_SEEDS: Omit<BlogPost, "publishedAt">[] = [
       "karate belt order",
     ],
     image: "/images/portrait.webp",
-    imageAlt: "Martial arts belt grading",
     quickAnswer:
       "A belt records that a student met one academy's standard on one day — nothing more. There is no universal scale, so the same belt means different things at different schools. Judge a grading by what the student can demonstrate, not by the colour, and treat rapid automatic promotion as a warning sign.",
     sections: [
@@ -311,7 +307,6 @@ const MA_SEEDS: Omit<BlogPost, "publishedAt">[] = [
       "realistic self defence training",
     ],
     image: "/images/gesture.webp",
-    imageAlt: "Self-defence and martial arts training",
     quickAnswer:
       "Martial arts training helps with self-defence mainly through attributes rather than techniques: awareness, composure under adrenaline, distance management and the confidence to act decisively. The single most useful outcome is avoiding or leaving a situation early — the techniques matter far less often than training marketing suggests.",
     sections: [

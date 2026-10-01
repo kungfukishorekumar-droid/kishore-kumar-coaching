@@ -1,4 +1,5 @@
 import { SEO } from "@/lib/seo";
+import { PHOTOS, imageObject } from "@/lib/media";
 import { FAQS, WORKSHOP } from "@/lib/site";
 import { jsonLdString } from "@/lib/utils";
 
@@ -6,7 +7,8 @@ import { jsonLdString } from "@/lib/utils";
  * Structured-data (JSON-LD) @graph for the home page.
  *
  * Schema types emitted:
- *  • WebSite             — site-level entity + sitelinks search box
+ *  • WebSite             — site-level entity and the site name Google shows
+ *  • ImageObject         — the hero portrait (#primaryimage), linked to Person
  *  • WebPage             — page entity with SpeakableSpecification (AEO)
  *  • Organization        — brand entity
  *  • LocalBusiness       — Spartacus Martial Arts (SportsActivityLocation)
@@ -32,8 +34,18 @@ export function JsonLd() {
       "Warrior Mind Method",
     ],
     url: SEO.siteUrl,
-    image: `${SEO.siteUrl}/images/portrait.webp`,
-    logo: `${SEO.siteUrl}/favicon.svg`,
+    image: { "@id": `${SEO.siteUrl}/#primaryimage` },
+    // Raster, square, ≥112px — what Google's logo guidelines ask for. The SVG
+    // favicon it replaces rendered its "KK" in whatever font the reader had.
+    logo: {
+      "@type": "ImageObject",
+      "@id": `${SEO.siteUrl}/#logo`,
+      url: `${SEO.siteUrl}/icons/icon-512.png`,
+      contentUrl: `${SEO.siteUrl}/icons/icon-512.png`,
+      width: 512,
+      height: 512,
+      caption: "Kishore Kumar — KK monogram",
+    },
     telephone: SEO.phoneE164,
     email: SEO.email,
     founder: { "@id": `${SEO.siteUrl}/#kishore` },
@@ -82,8 +94,17 @@ export function JsonLd() {
     familyName: "Kumar",
     jobTitle: SEO.role,
     worksFor: { "@id": `${SEO.siteUrl}/#organization` },
-    image: `${SEO.siteUrl}/images/portrait.webp`,
-    url: SEO.siteUrl,
+    // Every photograph on the site is of Kishore; listing them here lets image
+    // search and knowledge panels associate all of them with this entity.
+    image: [
+      { "@id": `${SEO.siteUrl}/#primaryimage` },
+      imageObject(PHOTOS.gesture),
+      imageObject(PHOTOS.heroWide),
+      imageObject(PHOTOS.strongMind),
+    ],
+    // The entity's home: the profile page, not the homepage.
+    url: `${SEO.siteUrl}/about/`,
+    mainEntityOfPage: `${SEO.siteUrl}/about/`,
     sameAs: SEO.sameAs,
     address: {
       "@type": "PostalAddress",
@@ -258,7 +279,7 @@ export function JsonLd() {
       audienceType: "Athletes, students, parents, coaches, schools and academies",
     },
     inLanguage: "en-IN",
-    image: `${SEO.siteUrl}/images/strong-mind.webp`,
+    image: imageObject(PHOTOS.strongMind),
     url: `${SEO.siteUrl}/#workshop`,
   };
 
@@ -277,18 +298,16 @@ export function JsonLd() {
   const website = {
     "@type": "WebSite",
     "@id": `${SEO.siteUrl}/#website`,
-    url: SEO.siteUrl,
-    name: SEO.title,
+    url: `${SEO.siteUrl}/`,
+    // Short and stable: this is what Google uses for the site name shown above
+    // results. It was the full page title.
+    name: "Kishore Kumar",
+    alternateName: ["Kishore Kumar Coach", "kishorekumarcoach.com", SEO.brand],
     inLanguage: "en-IN",
     publisher: { "@id": `${SEO.siteUrl}/#organization` },
-    potentialAction: {
-      "@type": "SearchAction",
-      target: {
-        "@type": "EntryPoint",
-        urlTemplate: `${SEO.siteUrl}/?q={search_term_string}`,
-      },
-      "query-input": "required name=search_term_string",
-    },
+    // No SearchAction: the site has no search, so the one declared here pointed
+    // at a /?q= URL that did nothing — and Google retired the sitelinks search
+    // box it fed in November 2024.
   };
 
   // ── WebPage with SpeakableSpecification (voice search / AI AEO) ──────────
@@ -309,6 +328,14 @@ export function JsonLd() {
     },
     mainEntity: { "@id": `${SEO.siteUrl}/#organization` },
     breadcrumb: { "@id": `${SEO.siteUrl}/#breadcrumb` },
+    primaryImageOfPage: { "@id": `${SEO.siteUrl}/#primaryimage` },
+    image: { "@id": `${SEO.siteUrl}/#primaryimage` },
+  };
+
+  // ── Primary image — the hero portrait, defined once and referenced by id ──
+  const primaryImage = {
+    ...imageObject(PHOTOS.portrait, `${SEO.siteUrl}/#primaryimage`),
+    representativeOfPage: true,
   };
 
   // ── BreadcrumbList ────────────────────────────────────────────────────────
@@ -325,6 +352,7 @@ export function JsonLd() {
     "@graph": [
       website,
       webpage,
+      primaryImage,
       org,
       person,
       ...services,

@@ -5,7 +5,8 @@ import { m, AnimatePresence } from "framer-motion";
 import { CheckCircle2, Loader2, ShieldCheck, Download, MessageCircle } from "lucide-react";
 import { Reveal } from "@/components/ui/reveal";
 import { Button } from "@/components/ui/button";
-import { IMAGES, LEAD_FORM, whatsappLink } from "@/lib/site";
+import { LEAD_FORM, whatsappLink } from "@/lib/site";
+import { PHOTOS } from "@/lib/media";
 import { submitLead } from "@/lib/lead-client";
 import { Turnstile, turnstileEnabled } from "@/components/ui/turnstile";
 import { cn } from "@/lib/utils";
@@ -98,8 +99,10 @@ export function LeadForm() {
                 the drift runs, so it cannot trap the scroll timeline. */}
             <div className="relative hidden overflow-hidden lg:block">
               <img
-                src={IMAGES.strongMind}
-                alt="Strong Mind. Stronger You. — Athlete focus & confidence"
+                src={PHOTOS.strongMind.src}
+                  srcSet={PHOTOS.strongMind.srcSet}
+                  sizes="(min-width: 1024px) 1600px, 640px"
+                alt={PHOTOS.strongMind.alt}
                 className="parallax-img absolute inset-0 size-full object-cover object-left"
                 width={1672}
                 height={941}

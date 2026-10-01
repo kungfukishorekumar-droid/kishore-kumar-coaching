@@ -16,7 +16,8 @@ import { Reveal, RevealGroup } from "@/components/ui/reveal";
 import { Button } from "@/components/ui/button";
 import { FloatingShapes, GlowRing } from "@/components/ui/floating-shapes";
 import { LeadCta } from "@/components/shared/lead-gate";
-import { IMAGES } from "@/lib/site";
+import { PHOTOS } from "@/lib/media";
+
 
 const badges = [
   { icon: Medal, label: "National Wushu Medalist" },
@@ -55,8 +56,10 @@ export function PageThreeMindset() {
               {/* FIGURE — bleeds into the backdrop, no hard card edge */}
               <div className="relative lg:col-span-5">
                 <img
-                  src={IMAGES.gesture}
-                  alt="Kishore Kumar — Sports Psychology & Martial Arts Coach"
+                  src={PHOTOS.gesture.src}
+                  srcSet={PHOTOS.gesture.srcSet}
+                  sizes="(min-width: 1024px) 1200px, 100vw"
+                  alt={PHOTOS.gesture.alt}
                   className="h-80 w-full object-cover object-[36%_18%] sm:h-[26rem] lg:h-full lg:min-h-[660px]"
                   width={1672}
                   height={941}

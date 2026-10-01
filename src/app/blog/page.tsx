@@ -1,4 +1,5 @@
 
+import { shareImages } from "@/lib/og-cards";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, Clock } from "lucide-react";
@@ -11,6 +12,7 @@ import { AmbientBackground } from "@/components/ui/ambient-background";
 import { Reveal, RevealGroup } from "@/components/ui/reveal";
 import { TiltCard } from "@/components/ui/tilt-card";
 import { SEO } from "@/lib/seo";
+import { authorRef, publisherRef } from "@/lib/schema";
 import { jsonLdString } from "@/lib/utils";
 import { SORTED_POSTS } from "@/content/blog";
 
@@ -34,13 +36,17 @@ export const metadata: Metadata = {
     "Articles on sports psychology, athlete mindset, Wushu and martial arts training by Kishore Kumar — National Wushu Medalist and sports psychologist in Chennai.",
   alternates: { canonical: url },
   openGraph: {
+    images: shareImages("blog").og,
     type: "website",
     locale: "en_IN",
     title: "Blog | Kishore Kumar — Sports Psychology & Martial Arts, Chennai",
     description:
       "Practical articles on focus, confidence, pressure handling and martial arts training from Chennai sports psychologist Kishore Kumar.",
     url,
-    images: [{ url: "/images/strong-mind.webp", width: 1200, height: 630 }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    images: shareImages("blog").twitter,
   },
 };
 
@@ -56,15 +62,15 @@ export default function BlogIndex() {
           "Articles on sports psychology, athlete mindset and martial arts training in Chennai.",
         url,
         inLanguage: "en-IN",
-        publisher: { "@id": `${SEO.siteUrl}/#organization` },
-        author: { "@id": `${SEO.siteUrl}/#kishore` },
+        publisher: publisherRef(),
+        author: authorRef(),
         blogPost: SORTED_POSTS.map((p) => ({
           "@type": "BlogPosting",
           headline: p.title,
           // `url` already ends in a slash (trailingSlash: true), so no separator.
           url: `${url}${p.slug}/`,
           datePublished: p.publishedAt,
-          author: { "@id": `${SEO.siteUrl}/#kishore` },
+          author: authorRef(),
         })),
       },
       {
@@ -156,10 +162,12 @@ export default function BlogIndex() {
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={lead.image}
+                      srcSet={lead.photo?.srcSet}
+                      sizes="(min-width: 768px) 560px, 100vw"
                       alt={lead.imageAlt}
                       className="h-full min-h-52 w-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
-                      width={1672}
-                      height={941}
+                      width={lead.photo?.width ?? 1672}
+                      height={lead.photo?.height ?? 941}
                       loading="eager"
                       fetchPriority="high"
                       decoding="async"
@@ -181,6 +189,8 @@ export default function BlogIndex() {
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                           src={p.image}
+                          srcSet={p.photo?.srcSet}
+                          sizes="(min-width: 1024px) 400px, (min-width: 768px) 50vw, 100vw"
                           alt={p.imageAlt}
                           className="size-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
                           width={1672}

@@ -51,11 +51,12 @@ training drills. Canonical page: /blog/warrior-mind-method-five-pillars/
 
 ## Key pages
 
+- Profile (canonical page about Kishore Kumar): https://kishorekumarcoach.com/about/
 - Home: https://kishorekumarcoach.com/
-- Who is Kishore Kumar: https://kishorekumarcoach.com/blog/who-is-kishore-kumar-sports-psychologist-chennai/
+- Who is Kishore Kumar (long-form story): https://kishorekumarcoach.com/blog/who-is-kishore-kumar-sports-psychologist-chennai/
 - The Warrior Mind Method™: https://kishorekumarcoach.com/blog/warrior-mind-method-five-pillars/
 - All programs: https://kishorekumarcoach.com/programs/
-- Blog (29 articles): https://kishorekumarcoach.com/blog/
+- Blog (43 articles, including 18 written companions to YouTube Shorts): https://kishorekumarcoach.com/blog/
 - Sports psychology guide: https://kishorekumarcoach.com/blog/sports-psychology-chennai-athletes-guide/
 - Wushu in Chennai: https://kishorekumarcoach.com/blog/wushu-training-chennai-beginners-guide/
 - Tamil Nadu athlete support (SDAT / Khelo India): https://kishorekumarcoach.com/blog/tamil-nadu-support-young-athletes-sdat-khelo-india/
@@ -78,9 +79,21 @@ with the Tamil diaspora in Dubai, Singapore and Malaysia.
 
 Contact: WhatsApp +91 98845 99939
 
+## Elsewhere (same person)
+
+- YouTube: https://www.youtube.com/@KishoreKumarSportsPsychologist
+- Instagram: https://www.instagram.com/kishorekumar.coach/
+- Spartacus Martial Arts Academy: https://spartacusmartialarts.com/
+
+## Images
+
+Every photograph on this site is of Kishore Kumar. Each page also has a share
+image at /og/<page>.jpg (for example /og/about.jpg) showing the page title,
+his name and his photograph.
+
 ## Usage
 
 Content may be quoted and cited with attribution to Kishore Kumar and a link to
 the source page. Please attribute credentials accurately as listed above.
 
-Last updated: 2026-08-11
+Last updated: 2026-10-01

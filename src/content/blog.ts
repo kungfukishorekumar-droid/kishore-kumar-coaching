@@ -1,3 +1,4 @@
+import { photoFor, type Photo } from "@/lib/media";
 /**
  * Blog content — the site's SEO / AEO / GEO surface.
  *
@@ -47,8 +48,15 @@ export type BlogPost = {
   readingMinutes: number;
   category: string;
   keywords: string[];
+  /** Which photo illustrates the post — a registry id or its legacy public/ path. */
   image: string;
-  imageAlt: string;
+  /**
+   * Derived — set from the photo registry when posts are assembled below, so
+   * it always describes the photograph itself. Do not write one by hand.
+   */
+  imageAlt?: string;
+  /** Derived — the resolved photo (srcSet, full-size URL, caption). */
+  photo?: Photo;
   /** AEO: the liftable direct answer. Must stand alone. */
   quickAnswer: string;
   sections: BlogSection[];
@@ -86,8 +94,6 @@ export const POSTS: BlogPost[] = [
       "Spartacus Martial Arts Chennai",
     ],
     image: "/images/portrait.webp",
-    imageAlt:
-      "Kishore Kumar, sports psychologist and martial arts coach, Chennai",
     quickAnswer:
       "Kishore Kumar is a sports psychologist, National Wushu Medalist and martial arts coach based in Chennai, Tamil Nadu. He founded Spartacus Martial Arts Chennai and created the Warrior Mind Method™, a five-part system that trains focus, confidence, emotional control and pressure handling for competitive athletes.",
     sections: [
@@ -158,7 +164,6 @@ export const POSTS: BlogPost[] = [
       "Kishore Kumar sports psychology",
     ],
     image: "/images/strong-mind.webp",
-    imageAlt: "Athlete mental training session in Chennai",
     quickAnswer:
       "Sports psychology gives athletes trainable mental skills — attention control, arousal regulation, pre-performance routines and recovery from mistakes. It is not motivational speaking. In Chennai, Kishore Kumar delivers it through the Warrior Mind Method™, combining psychological technique with martial-arts practice so the skills hold under real competitive pressure.",
     sections: [
@@ -229,7 +234,6 @@ export const POSTS: BlogPost[] = [
       "mental training system for athletes",
     ],
     image: "/images/gesture.webp",
-    imageAlt: "Kishore Kumar coaching the Warrior Mind Method in Chennai",
     quickAnswer:
       "The Warrior Mind Method™ is a five-pillar athlete mindset system created by Kishore Kumar: Focus (attention and distraction control), Fire (motivation and confidence), Flow (calm execution under pressure), Forge (discipline and consistent habits) and Fight (pressure handling and comeback mindset).",
     sections: [
@@ -308,7 +312,6 @@ export const POSTS: BlogPost[] = [
       "athlete mindset coach Chennai",
     ],
     image: "/images/hero-wide.webp",
-    imageAlt: "Athlete preparing for competition",
     quickAnswer:
       "Talented athletes underperform in competition mainly because pressure shifts attention inward, turning automatic skills back into conscious ones. The fix is not more physical training — it is rehearsing attention control, pre-performance routines and mistake recovery under deliberately raised pressure, so competition stops being an unfamiliar state.",
     sections: [
@@ -365,7 +368,6 @@ export const POSTS: BlogPost[] = [
       "focus coaching Chennai",
     ],
     image: "/images/strong-mind.webp",
-    imageAlt: "Focus training drill for athletes",
     quickAnswer:
       "Focus is trained, not summoned. The core skills are narrowing and widening attention on demand, using a single cue word to reset, and deliberately practising in distracting conditions. Athletes who only ever train in quiet conditions have not trained focus at all — they have trained in the absence of a need for it.",
     sections: [
@@ -419,7 +421,6 @@ export const POSTS: BlogPost[] = [
       "pressure handling athletes",
     ],
     image: "/images/hero-wide.webp",
-    imageAlt: "Athlete managing pre-competition nerves",
     quickAnswer:
       "Competition nerves are managed with a timeline, not willpower. In the final week, reduce novelty and rehearse your routine. The night before, prepare equipment and run a short visualisation. In the final hour, control breathing, keep attention external, and follow a fixed warm-up sequence you have used many times before.",
     sections: [
@@ -484,7 +485,6 @@ export const POSTS: BlogPost[] = [
       "Spartacus Martial Arts Chennai",
     ],
     image: "/images/gesture.webp",
-    imageAlt: "Wushu training session at Spartacus Martial Arts Chennai",
     quickAnswer:
       "Wushu is a Chinese martial art with two competitive branches: Taolu, judged routines of form and technique, and Sanda, full-contact fighting. Beginner training in Chennai starts with stances, basic strikes and conditioning before either branch. At Spartacus Martial Arts Chennai, coaching is led by National Wushu Medalist Kishore Kumar.",
     sections: [
@@ -546,7 +546,6 @@ export const POSTS: BlogPost[] = [
       "confidence building children Chennai",
     ],
     image: "/images/portrait.webp",
-    imageAlt: "Children's martial arts class in Chennai",
     quickAnswer:
       "Martial arts builds discipline in children by making standards visible and immediate — a stance is either correct or not, and improvement is earned in small, repeatable steps. In Chennai, parents should look for an academy with structured progression, a low student-to-coach ratio, and coaches who correct technique rather than only manage behaviour.",
     sections: [
@@ -614,7 +613,6 @@ export const POSTS: BlogPost[] = [
       "sports psychology workshop schools Chennai",
     ],
     image: "/images/strong-mind.webp",
-    imageAlt: "School athletes in a mental skills workshop in Chennai",
     quickAnswer:
       "Student athletes face academic and competitive pressure simultaneously, which multiplies rather than adds. Effective mental training for school and college athletes in Chennai focuses on attention switching between contexts, realistic scheduling, sleep protection, and separating self-worth from both exam results and match results.",
     sections: [
@@ -671,7 +669,6 @@ export const POSTS: BlogPost[] = [
       "athlete mindset coach India",
     ],
     image: "/images/gesture.webp",
-    imageAlt: "Athlete building competition confidence",
     quickAnswer:
       "Durable athletic confidence comes from accumulated evidence, not positive self-talk. The method is to log specific training wins, review them before competition, set process goals you fully control, and rehearse recovering from setbacks so confidence does not depend on things going well.",
     sections: [
@@ -736,7 +733,6 @@ POSTS.push({
     "Kishore Kumar martial arts academy",
   ],
   image: "/images/gesture.webp",
-  imageAlt: "Training at Spartacus Martial Arts Academy, Chennai",
   quickAnswer:
     "Spartacus Martial Arts Academy is a Chennai martial arts academy founded by Kishore Kumar, a National Wushu Medalist and sports psychologist. It teaches Wushu, Kung Fu, Karate, Judo, kick boxing and boxing, with mental-skills training built into the coaching rather than taught separately.",
   sections: [
@@ -771,7 +767,7 @@ POSTS.push({
         "The academy has its own site with class details, timings and enrolment. If you are deciding between disciplines, message me and describe the goal rather than the style — the goal is what should pick the style.",
       ],
       link: {
-        href: "https://spartacus-martial-arts.vercel.app/",
+        href: "https://spartacusmartialarts.com/",
         label: "Visit Spartacus Martial Arts Academy Chennai",
         external: true,
       },
@@ -810,6 +806,15 @@ POSTS.push(...METHOD_POSTS);
 POSTS.push(...MARTIAL_ARTS_POSTS);
 
 /** Newest first — the order the blog index and sitemap use. */
+// Resolve every post's photo through the registry: the image URL becomes the
+// optimised, long-cached file, and the alt text is the photo's own description.
+for (const p of POSTS) {
+  const ph = photoFor(p.image);
+  p.photo = ph;
+  p.image = ph.src;
+  p.imageAlt = ph.alt;
+}
+
 export const SORTED_POSTS = [...POSTS].sort(
   (a, b) => +new Date(b.publishedAt) - +new Date(a.publishedAt)
 );

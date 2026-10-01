@@ -101,6 +101,12 @@ export function Footer() {
                   <ExternalLink className="size-3" aria-hidden="true" />
                 </a>
               </li>
+              {/* The profile page — not a homepage section, so not in NAV_LINKS. */}
+              <li>
+                <Link href="/about/" className="text-sm text-foreground/55 transition-colors hover:text-gold-200">
+                  About Kishore Kumar
+                </Link>
+              </li>
             </ul>
           </div>
 

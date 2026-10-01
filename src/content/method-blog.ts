@@ -34,7 +34,6 @@ const METHOD_SEEDS: Omit<BlogPost, "publishedAt">[] = [
       "Kishore Kumar Warrior Mind Method",
     ],
     image: "/images/strong-mind.webp",
-    imageAlt: "Focus and attention training for athletes",
     quickAnswer:
       "Focus, the first pillar of the Warrior Mind Method™, is the trained ability to choose what you attend to and hold it there. It is built by practising three things: switching attention between wide and narrow on demand, using a single cue word to reset, and deliberately training in distracting conditions rather than only in quiet ones.",
     sections: [
@@ -101,7 +100,6 @@ const METHOD_SEEDS: Omit<BlogPost, "publishedAt">[] = [
       "self belief athletes",
     ],
     image: "/images/gesture.webp",
-    imageAlt: "Building motivation and confidence in athletes",
     quickAnswer:
       "Fire, the second pillar of the Warrior Mind Method™, is durable internal drive and confidence. It is built from evidence rather than hype: logging specific training wins, setting goals on the process you control, and separating identity from results so a loss is information rather than a verdict on who you are.",
     sections: [
@@ -168,7 +166,6 @@ const METHOD_SEEDS: Omit<BlogPost, "publishedAt">[] = [
       "pre-performance routine",
     ],
     image: "/images/hero-wide.webp",
-    imageAlt: "Athlete performing in a flow state",
     quickAnswer:
       "Flow, the third pillar of the Warrior Mind Method™, is executing without over-thinking. It is not luck: it follows a clear external task focus, a challenge matched to your current skill, and a body that is not over-aroused. Those three conditions can be rehearsed, which is what makes flow repeatable rather than occasional.",
     sections: [
@@ -233,7 +230,6 @@ const METHOD_SEEDS: Omit<BlogPost, "publishedAt">[] = [
       "discipline over motivation",
     ],
     image: "/images/portrait.webp",
-    imageAlt: "Discipline and consistent training habits",
     quickAnswer:
       "Forge, the fourth pillar of the Warrior Mind Method™, is discipline built as a system rather than summoned as willpower. It works by shrinking the unit of commitment until skipping is harder than starting, fixing time and place to remove decisions, and tracking a visible streak so consistency becomes something you are unwilling to break.",
     sections: [
@@ -300,7 +296,6 @@ const METHOD_SEEDS: Omit<BlogPost, "publishedAt">[] = [
       "competition confidence",
     ],
     image: "/images/strong-mind.webp",
-    imageAlt: "Athlete handling pressure in competition",
     quickAnswer:
       "Fight, the fifth pillar of the Warrior Mind Method™, is what happens after something goes wrong. It is trained with a rehearsed mistake-recovery cue, deliberate adversity in practice, and repeatedly rehearsing the specific scenario the athlete most fears until it stops being novel. One error becoming three is a training gap, not a character flaw.",
     sections: [

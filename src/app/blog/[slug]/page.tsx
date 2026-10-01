@@ -1,3 +1,5 @@
+import { shareImages, cardUrl } from "@/lib/og-cards";
+import { imageObject } from "@/lib/media";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -12,6 +14,7 @@ import { SectionDivider } from "@/components/ui/section-divider";
 import { Button } from "@/components/ui/button";
 import { LeadCta } from "@/components/shared/lead-gate";
 import { SEO } from "@/lib/seo";
+import { authorRef, publisherRef } from "@/lib/schema";
 import { jsonLdString } from "@/lib/utils";
 import { POSTS, SORTED_POSTS, getPost } from "@/content/blog";
 
@@ -33,9 +36,10 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
     title: post.title,
     description: post.description,
     keywords: post.keywords,
-    authors: [{ name: SEO.founder, url: SEO.siteUrl }],
+    authors: [{ name: SEO.founder, url: `${SEO.siteUrl}/about/` }],
     alternates: { canonical: url },
     openGraph: {
+      images: shareImages(`blog/${post.slug}`).og,
       type: "article",
       locale: "en_IN",
       title: post.title,
@@ -44,13 +48,12 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
       publishedTime: post.publishedAt,
       modifiedTime: post.updatedAt ?? post.publishedAt,
       authors: [SEO.founder],
-      images: [{ url: post.image, width: 1200, height: 630, alt: post.imageAlt }],
     },
     twitter: {
+      images: shareImages(`blog/${post.slug}`).twitter,
       card: "summary_large_image",
       title: post.title,
       description: post.description,
-      images: [post.image],
     },
   };
 }
@@ -79,11 +82,23 @@ export default async function BlogPostPage({ params }: Params) {
         "@id": `${url}#article`,
         headline: post.title,
         description: post.description,
-        image: `${SEO.siteUrl}${post.image}`,
+        // Two aspect ratios, both ≥1200px wide, as Google's article guidance
+        // asks: the post's own 1200×630 share card (unique to this article)
+        // and the full-size 16:9 photograph.
+        image: [
+          {
+            "@type": "ImageObject",
+            url: `${SEO.siteUrl}${cardUrl(`blog/${post.slug}`)}`,
+            width: 1200,
+            height: 630,
+            caption: post.title,
+          },
+          ...(post.photo ? [imageObject(post.photo)] : []),
+        ],
         datePublished: post.publishedAt,
         dateModified: post.updatedAt ?? post.publishedAt,
-        author: { "@id": `${SEO.siteUrl}/#kishore` },
-        publisher: { "@id": `${SEO.siteUrl}/#organization` },
+        author: authorRef(),
+        publisher: publisherRef(),
         mainEntityOfPage: { "@type": "WebPage", "@id": url },
         inLanguage: "en-IN",
         keywords: post.keywords.join(", "),
@@ -137,8 +152,8 @@ export default async function BlogPostPage({ params }: Params) {
               uploadDate: post.publishedAt,
               contentUrl: `https://www.youtube.com/watch?v=${post.video.id}`,
               embedUrl: `https://www.youtube-nocookie.com/embed/${post.video.id}`,
-              publisher: { "@id": `${SEO.siteUrl}/#organization` },
-              author: { "@id": `${SEO.siteUrl}/#kishore` },
+              publisher: publisherRef(),
+              author: authorRef(),
             },
           ]
         : []),
@@ -187,9 +202,13 @@ export default async function BlogPostPage({ params }: Params) {
               <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-foreground/55">
                 <span>
                   By{" "}
-                  <span className="font-semibold text-gold-200">
+                  <Link
+                    href="/about/"
+                    rel="author"
+                    className="font-semibold text-gold-200 underline-offset-2 hover:underline"
+                  >
                     {SEO.founder}
-                  </span>{" "}
+                  </Link>{" "}
                   — {SEO.role}
                 </span>
                 <time dateTime={post.publishedAt}>{published}</time>
@@ -207,6 +226,8 @@ export default async function BlogPostPage({ params }: Params) {
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={post.image}
+                srcSet={post.photo?.srcSet}
+                sizes="(min-width: 896px) 864px, 100vw"
                 alt={post.imageAlt}
                 className="aspect-[16/9] w-full object-cover"
                 width={1672}

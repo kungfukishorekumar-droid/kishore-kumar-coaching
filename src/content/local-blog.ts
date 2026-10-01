@@ -34,7 +34,6 @@ const LOCAL_SEEDS: Omit<BlogPost, "publishedAt">[] = [
       "Spartacus Martial Arts Academy",
     ],
     image: "/images/gesture.webp",
-    imageAlt: "Martial arts training in Perambur, Chennai",
     quickAnswer:
       "Spartacus Martial Arts Academy in Perambur, Chennai teaches Wushu, Kung Fu, Karate, Judo, kick boxing and boxing to children, teenagers and adults. It is led by Kishore Kumar, a Wushu National Medalist, Kung Fu Black Belt and Sports Psychologist, and mental-skills training is built into the coaching rather than taught separately.",
     sections: [
@@ -107,7 +106,6 @@ const LOCAL_SEEDS: Omit<BlogPost, "publishedAt">[] = [
       "choosing karate class for child",
     ],
     image: "/images/strong-mind.webp",
-    imageAlt: "Parent choosing a martial arts academy in Chennai",
     quickAnswer:
       "Judge a Chennai martial arts academy on five things: the coach's verifiable credentials, whether every student is actually corrected in a session, a structured grading path, a visible safety culture, and honest pricing. Visit an ordinary class unannounced — a scheduled tour shows you the academy at its best, not its normal.",
     sections: [
@@ -186,7 +184,6 @@ const LOCAL_SEEDS: Omit<BlogPost, "publishedAt">[] = [
       "Kishore Kumar sports psychologist",
     ],
     image: "/images/portrait.webp",
-    imageAlt: "Sports psychology session in Chennai",
     quickAnswer:
       "A sports psychology session is skills training, not a pep talk. The first session finds where performance is leaking — usually attention, arousal or mistake recovery. After that you practise specific drills under increasing pressure until they hold in competition. Simple tools show up within two to three weeks; season-long consistency takes a few months.",
     sections: [
@@ -268,7 +265,6 @@ const LOCAL_SEEDS: Omit<BlogPost, "publishedAt">[] = [
       "kids self defence Chennai",
     ],
     image: "/images/hero-wide.webp",
-    imageAlt: "Children's martial arts class in Chennai",
     quickAnswer:
       "Most children can begin structured martial arts around age six, when they can follow sequenced instructions and train safely in a group. Younger children benefit from movement and coordination sessions rather than technique. The deciding factor is whether the class is age-appropriate, not the child's birthday.",
     sections: [

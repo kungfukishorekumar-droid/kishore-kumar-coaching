@@ -14,13 +14,13 @@ export default function manifest(): MetadataRoute.Manifest {
     theme_color: "#08080a",
     orientation: "portrait-primary",
     categories: ["sports", "education", "health"],
+    // Android's install prompt needs 192 and 512 px raster icons; the maskable
+    // one keeps the monogram inside the safe zone for circle/squircle masks.
     icons: [
-      {
-        src: "/favicon.svg",
-        sizes: "any",
-        type: "image/svg+xml",
-        purpose: "any",
-      },
+      { src: "/favicon.svg", sizes: "any", type: "image/svg+xml", purpose: "any" },
+      { src: "/icons/icon-192.png", sizes: "192x192", type: "image/png", purpose: "any" },
+      { src: "/icons/icon-512.png", sizes: "512x512", type: "image/png", purpose: "any" },
+      { src: "/icons/icon-maskable-512.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
     ],
   };
 }

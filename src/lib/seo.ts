@@ -111,7 +111,9 @@ export const SEO = {
   sameAs: [
     "https://www.instagram.com/kishorekumar.coach/",
     "https://www.youtube.com/@KishoreKumarSportsPsychologist",
-    "https://spartacus-martial-arts.vercel.app/",
+    // The academy's own domain. The *.vercel.app address listed here before
+    // now returns 404, so this claim was pointing search engines at nothing.
+    "https://spartacusmartialarts.com/",
     // "https://www.google.com/maps?cid=YOUR_GOOGLE_BUSINESS_CID",
     // "https://www.justdial.com/your-listing",
   ],
@@ -119,10 +121,8 @@ export const SEO = {
   /** The sister academy site, cross-linked from the footer and blog. */
   academy: {
     name: "Spartacus Martial Arts Academy",
-    url: "https://spartacus-martial-arts.vercel.app/",
-    // NOTE: spartacusmartialarts.in is referenced inside the academy site's
-    // markup but does not currently resolve. Switch `url` to it once it does —
-    // a custom domain carries more authority than a *.vercel.app subdomain.
+    // Custom domain, live. (spartacus-martial-arts.vercel.app now 404s.)
+    url: "https://spartacusmartialarts.com/",
   },
 
   /** YouTube channel — used for sameAs and video article linking. */

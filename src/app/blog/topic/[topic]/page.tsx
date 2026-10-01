@@ -1,4 +1,5 @@
 
+import { shareImages } from "@/lib/og-cards";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -12,6 +13,7 @@ import { AmbientBackground } from "@/components/ui/ambient-background";
 import { Reveal, RevealGroup } from "@/components/ui/reveal";
 import { SEO } from "@/lib/seo";
 import { jsonLdString } from "@/lib/utils";
+import { topics, topicSlug as toSlug } from "@/content/topics";
 import { SORTED_POSTS } from "@/content/blog";
 
 /**
@@ -23,16 +25,6 @@ import { SORTED_POSTS } from "@/content/blog";
  * every article a second internal link from a topically relevant page.
  */
 
-const toSlug = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-
-function topics() {
-  const map = new Map<string, { name: string; count: number }>();
-  for (const p of SORTED_POSTS) {
-    const slug = toSlug(p.category);
-    map.set(slug, { name: p.category, count: (map.get(slug)?.count ?? 0) + 1 });
-  }
-  return map;
-}
 
 export function generateStaticParams() {
   return [...topics().keys()].map((topic) => ({ topic }));
@@ -51,11 +43,16 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
     description: `${t.count} articles on ${t.name.toLowerCase()} by Kishore Kumar — National Wushu Medalist and sports psychologist in ${SEO.address.locality}.`,
     alternates: { canonical: url },
     openGraph: {
+      images: shareImages(`blog/topic/${topic}`).og,
       type: "website",
       locale: "en_IN",
       title: `${t.name} — Kishore Kumar`,
       description: `Articles on ${t.name.toLowerCase()} from Chennai sports psychologist Kishore Kumar.`,
       url,
+    },
+    twitter: {
+      card: "summary_large_image",
+      images: shareImages(`blog/topic/${topic}`).twitter,
     },
   };
 }

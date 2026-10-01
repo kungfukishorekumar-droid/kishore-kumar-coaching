@@ -12,20 +12,21 @@ import type { BlogPost } from "./blog";
  * the mechanism and the FAQ coverage that makes it rank and makes it useful
  * after the video ends. Thin "watch the video" pages rank for nothing.
  *
- * `IMAGE_POOL` rotates the four available photographs. Replace per-post once
- * real Spartacus/Instagram imagery is available — distinct images per article
- * are better for image search and social previews.
+ * `IMAGE_POOL` rotates the four available photographs. Their alt text comes
+ * from the photo registry (src/lib/media.ts), never from here. Each post also
+ * gets its own generated share card (opengraph-image), which is what social
+ * previews and article rich results show.
  */
 const IMAGE_POOL = [
-  { src: "/images/strong-mind.webp", alt: "Athlete mental training, Chennai" },
-  { src: "/images/gesture.webp", alt: "Kishore Kumar coaching in Chennai" },
-  { src: "/images/hero-wide.webp", alt: "Martial arts and mindset training" },
-  { src: "/images/portrait.webp", alt: "Kishore Kumar, sports psychologist, Chennai" },
+  "/images/strong-mind.webp",
+  "/images/gesture.webp",
+  "/images/hero-wide.webp",
+  "/images/portrait.webp",
 ];
 
-const img = (i: number) => IMAGE_POOL[i % IMAGE_POOL.length];
+const img = (i: number) => ({ src: IMAGE_POOL[i % IMAGE_POOL.length] });
 
-type VideoSeed = Omit<BlogPost, "image" | "imageAlt" | "publishedAt" | "readingMinutes">;
+type VideoSeed = Omit<BlogPost, "image" | "imageAlt" | "photo" | "publishedAt" | "readingMinutes">;
 
 const SEEDS: VideoSeed[] = [
   {
@@ -866,5 +867,4 @@ export const VIDEO_POSTS: BlogPost[] = SEEDS.map((s, i) => ({
   publishedAt: "2026-08-04",
   readingMinutes: 4,
   image: img(i).src,
-  imageAlt: img(i).alt,
 }));

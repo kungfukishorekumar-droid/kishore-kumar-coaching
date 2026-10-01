@@ -1,4 +1,5 @@
 
+import { shareImages } from "@/lib/og-cards";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, Check } from "lucide-react";
@@ -20,13 +21,17 @@ export const metadata: Metadata = {
     "Explore Kishore Kumar's sports psychology + martial arts programs in Chennai — 1-day and 3-day workshops, a 7-day challenge, a 21-day transformation, personal coaching, and school & academy workshops.",
   alternates: { canonical: url },
   openGraph: {
+    images: shareImages("programs").og,
     type: "website",
     locale: "en_IN",
     title: "Programs | Kishore Kumar — Sports Psychology & Martial Arts, Chennai",
     description:
       "Sports psychology + martial arts programs for athletes, students, parents, schools and academies in Chennai.",
     url,
-    images: [{ url: "/images/strong-mind.webp", width: 1200, height: 630 }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    images: shareImages("programs").twitter,
   },
 };
 

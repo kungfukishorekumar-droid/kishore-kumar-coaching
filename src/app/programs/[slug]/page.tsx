@@ -1,3 +1,4 @@
+import { shareImages } from "@/lib/og-cards";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -12,6 +13,7 @@ import { FloatingShapes, GlowRing } from "@/components/ui/floating-shapes";
 import { LeadCta } from "@/components/shared/lead-gate";
 import { PROGRAMS, getProgram, SITE } from "@/lib/site";
 import { SEO } from "@/lib/seo";
+import { authorRef, publisherRef } from "@/lib/schema";
 import { jsonLdString } from "@/lib/utils";
 
 export function generateStaticParams() {
@@ -36,12 +38,16 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
     description: p.description,
     alternates: { canonical: url },
     openGraph: {
+      images: shareImages(`programs/${p.slug}`).og,
       type: "website",
       locale: "en_IN",
       title: `${p.name} | Kishore Kumar — Chennai`,
       description: p.description,
       url,
-      images: [{ url: "/images/strong-mind.webp", width: 1200, height: 630 }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      images: shareImages(`programs/${p.slug}`).twitter,
     },
   };
 }
@@ -65,7 +71,7 @@ export default async function ProgramPage({ params }: Params) {
         name: program.name,
         description: program.description,
         serviceType: "Athlete mindset & martial arts coaching",
-        provider: { "@id": `${SEO.siteUrl}/#organization` },
+        provider: publisherRef(),
         areaServed: SEO.areasServed.map((a) => ({ "@type": "City", name: a })),
         url: `${SEO.siteUrl}/programs/${program.slug}/`,
       },
@@ -79,7 +85,7 @@ export default async function ProgramPage({ params }: Params) {
         name: program.name,
         description: program.description,
         url: `${SEO.siteUrl}/programs/${program.slug}/`,
-        provider: { "@id": `${SEO.siteUrl}/#organization` },
+        provider: publisherRef(),
         educationalLevel: "Beginner to advanced",
         teaches: program.focus,
         inLanguage: "en-IN",

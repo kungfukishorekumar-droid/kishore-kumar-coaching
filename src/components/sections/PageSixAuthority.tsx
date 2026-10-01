@@ -1,3 +1,4 @@
+import Link from "next/link";
 import {
   Medal,
   Brain,
@@ -14,7 +15,8 @@ import { Icon } from "@/components/ui/icon";
 import { Button } from "@/components/ui/button";
 import { FloatingShapes, GlowRing } from "@/components/ui/floating-shapes";
 import { LeadCta } from "@/components/shared/lead-gate";
-import { CREDENTIALS, IMAGES } from "@/lib/site";
+import { CREDENTIALS } from "@/lib/site";
+import { PHOTOS } from "@/lib/media";
 
 const trustCards = [
   { icon: Brain, title: "Sports Psychology + Martial Arts" },
@@ -59,6 +61,13 @@ export function PageSixAuthority() {
                 A unique blend of martial arts discipline, sports psychology,
                 athlete mindset coaching, and real performance experience.
               </p>
+              <Link
+                href="/about/"
+                className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-gold-200 underline-offset-4 hover:underline"
+              >
+                More about Kishore Kumar
+                <ArrowRight className="size-4" />
+              </Link>
             </Reveal>
 
             {/* 8 authority points */}
@@ -124,8 +133,10 @@ export function PageSixAuthority() {
 
               <div className="shine-border relative h-full min-h-[26rem] overflow-hidden rounded-[2rem] border border-white/10 shadow-glow-lg lg:min-h-[34rem]">
                 <img
-                  src={IMAGES.heroWide}
-                  alt="Kishore Kumar — National Wushu Medalist & Sports Psychologist, Chennai"
+                  src={PHOTOS.heroWide.src}
+                  srcSet={PHOTOS.heroWide.srcSet}
+                  sizes="(min-width: 1024px) 1100px, 100vw"
+                  alt={PHOTOS.heroWide.alt}
                   className="parallax-img h-full w-full object-cover object-[32%_center]"
                   width={1672}
                   height={941}
