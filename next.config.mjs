@@ -52,6 +52,14 @@ const securityHeaders = [
 ];
 
 const nextConfig = {
+  experimental: {
+    // Cap the static-generation workers. Next defaults to one per CPU core;
+    // on a many-core shared host that is dozens of workers, and each one now
+    // loads the share-card renderer (fonts, portrait, WASM) to draw 58 images
+    // — enough to exhaust a shared plan's memory. Two keeps the build small
+    // and costs a few seconds.
+    cpus: 2,
+  },
   trailingSlash: true,
   reactStrictMode: true,
   // Trim the response a little and stop advertising the framework version.

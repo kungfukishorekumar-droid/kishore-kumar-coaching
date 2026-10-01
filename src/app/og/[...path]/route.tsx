@@ -1,5 +1,4 @@
 import { notFound } from "next/navigation";
-import sharp from "sharp";
 import { shareCard } from "@/lib/og";
 import { CARDS } from "@/lib/og-cards";
 
@@ -25,12 +24,29 @@ export async function GET(_req: Request, { params }: { params: Promise<{ path: s
   if (!card) notFound();
 
   const png = Buffer.from(await (await shareCard({ eyebrow: card.eyebrow, title: card.title })).arrayBuffer());
-  // mozjpeg at q82: indistinguishable from the PNG at preview sizes, ~5× smaller.
-  const jpg = await sharp(png).jpeg({ quality: 82, mozjpeg: true, chromaSubsampling: "4:4:4" }).toBuffer();
 
-  return new Response(new Uint8Array(jpg), {
+  // JPEG via sharp when it is available — mozjpeg at q82 is indistinguishable
+  // from the PNG at preview sizes and ~5× smaller (48–80KB vs ~400KB).
+  //
+  // sharp is loaded optionally, NOT as a hard dependency: it is a native
+  // module that Next only lists as optional, and a build that could not load
+  // it would fail outright. If it is missing the card is served as PNG with an
+  // honest Content-Type — scrapers go by the header, not the .jpg extension.
+  let body: Uint8Array<ArrayBuffer> = new Uint8Array(png);
+  let type = "image/png";
+  try {
+    const { default: sharp } = await import("sharp");
+    body = new Uint8Array(
+      await sharp(png).jpeg({ quality: 82, mozjpeg: true, chromaSubsampling: "4:4:4" }).toBuffer()
+    );
+    type = "image/jpeg";
+  } catch {
+    // keep the PNG
+  }
+
+  return new Response(body, {
     headers: {
-      "Content-Type": "image/jpeg",
+      "Content-Type": type,
       // A card only changes when its page's title does: keep it a day, then
       // revalidate in the background.
       "Cache-Control": "public, max-age=86400, stale-while-revalidate=604800",

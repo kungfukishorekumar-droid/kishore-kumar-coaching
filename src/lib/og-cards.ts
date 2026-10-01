@@ -81,6 +81,8 @@ export const cardUrl = (key: string) => `/og/${key}.jpg`;
 export function shareImages(key: string) {
   const card = CARDS().get(key);
   if (!card) throw new Error(`No share card for "${key}" — add it to src/lib/og-cards.ts`);
-  const image = { url: cardUrl(key), width: 1200, height: 630, type: "image/jpeg", alt: card.alt };
+  // No `type`: the card is JPEG when sharp is available and PNG otherwise
+  // (see the route), and the HTTP Content-Type already says which.
+  const image = { url: cardUrl(key), width: 1200, height: 630, alt: card.alt };
   return { og: [image], twitter: [image] };
 }
