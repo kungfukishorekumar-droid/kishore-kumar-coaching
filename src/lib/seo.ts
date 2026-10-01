@@ -93,9 +93,10 @@ export const SEO = {
   // ── Credentials / awards (entity enrichment for AEO) ────────────────────
   credentials: [
     "National Wushu Medalist",
+    "Kung Fu Black Belt",
     "Sports Psychologist",
     "Wushu Coach",
-    "Wushu Judge",
+    "State-level Wushu Judge",
     "Certified Martial Artist",
     "Athlete Mindset Coach",
   ],

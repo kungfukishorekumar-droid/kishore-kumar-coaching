@@ -235,13 +235,19 @@ export const PROGRAMS: Program[] = [
   },
 ];
 
+/**
+ * Kishore's credentials — the homepage authority badges and the /about/ list.
+ * Worded to match the academy site (spartacusmartialarts.com), which links to
+ * /about/ as the same person: engines trust facts that agree across sources.
+ * Eight items on purpose — the homepage lays them out two per row.
+ */
 export const CREDENTIALS = [
   { icon: "Medal", label: "National Wushu Medalist" },
+  { icon: "Flame", label: "Kung Fu Black Belt" },
   { icon: "Brain", label: "Sports Psychologist" },
   { icon: "Swords", label: "Martial Artist" },
   { icon: "GraduationCap", label: "Wushu Coach" },
-  { icon: "Scale", label: "Wushu Judge" },
-  { icon: "Flame", label: "Kung Fu / Martial Arts" },
+  { icon: "Scale", label: "State-level Wushu Judge" },
   { icon: "Target", label: "Athlete Mindset Coach" },
   { icon: "MapPin", label: "Chennai-based Coach" },
 ];

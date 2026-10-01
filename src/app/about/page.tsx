@@ -57,20 +57,6 @@ export const metadata: Metadata = {
   },
 };
 
-/**
- * Credentials shown on this page: the site-wide list plus the two the academy
- * site (spartacusmartialarts.com) also states — Kung Fu black belt and
- * state-level Wushu judge — so both of Kishore's sites describe him the same
- * way. Search and answer engines weigh facts that agree across sources.
- */
-const ABOUT_CREDENTIALS = [
-  ...CREDENTIALS.slice(0, 1), // National Wushu Medalist
-  { icon: "Award", label: "Kung Fu Black Belt" },
-  ...CREDENTIALS.slice(1).map((c) =>
-    c.label === "Wushu Judge" ? { ...c, label: "State-level Wushu Judge" } : c
-  ),
-];
-
 const FAQ = [
   {
     q: "Who is Kishore Kumar?",
@@ -272,7 +258,7 @@ export default function AboutPage() {
               </h2>
             </Reveal>
             <ul className="mt-6 grid gap-3 sm:grid-cols-2">
-              {ABOUT_CREDENTIALS.map((c) => (
+              {CREDENTIALS.map((c) => (
                 <li key={c.label} className="flex items-center gap-3 rounded-2xl glass px-4 py-3">
                   <span className="grid size-6 shrink-0 place-items-center rounded-full bg-gold-400/15 text-gold-300">
                     <Check className="size-3.5" />
