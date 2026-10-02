@@ -110,6 +110,15 @@ export const PROBLEMS = [
   { icon: "Activity", title: "Inconsistency in training", desc: "Great one day, flat the next — performance you can't rely on." },
 ];
 
+/** The watermark character for each Method pillar (cards on / and /about/). */
+export const METHOD_KANJI: Record<string, string> = {
+  Focus: "集中",
+  Fire: "気",
+  Flow: "流",
+  Forge: "鍛",
+  Fight: "闘",
+};
+
 export const METHOD = [
   { tag: "Focus", icon: "Crosshair", desc: "Attention, clarity, distraction control and mental sharpness." },
   { tag: "Fire", icon: "Flame", desc: "Motivation, confidence, energy and inner drive." },

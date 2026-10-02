@@ -43,7 +43,7 @@ export function Footer() {
                   target="_blank"
                   rel="noreferrer"
                   aria-label={s.label}
-                  className="grid size-10 place-items-center rounded-full glass text-foreground/70 transition-colors hover:text-gold-200"
+                  className="grid size-11 place-items-center rounded-full glass text-foreground/70 transition-colors hover:text-gold-200"
                 >
                   <s.icon className="size-5" />
                 </a>
@@ -54,7 +54,7 @@ export function Footer() {
                 intent="I found you through the site and I'd like to know more."
                 campaign="footer-social-whatsapp"
                 ariaLabel="WhatsApp"
-                className="grid size-10 place-items-center rounded-full glass text-foreground/70 transition-colors hover:text-gold-200"
+                className="grid size-11 place-items-center rounded-full glass text-foreground/70 transition-colors hover:text-gold-200"
               >
                 <MessageCircle className="size-5" />
               </LeadLink>
@@ -67,20 +67,20 @@ export function Footer() {
             <h3 className="font-display text-sm font-semibold uppercase tracking-wider text-foreground">
               Explore
             </h3>
-            <ul className="mt-4 space-y-2.5">
+            <ul className="mt-3">
               {NAV_LINKS.map((l) => (
                 <li key={l.label}>
                   {l.href ? (
                     <Link
                       href={l.href}
-                      className="text-sm text-foreground/55 transition-colors hover:text-gold-200"
+                      className="inline-flex min-h-10 items-center text-sm text-foreground/55 transition-colors hover:text-gold-200"
                     >
                       {l.label}
                     </Link>
                   ) : (
                     <button
                       onClick={() => scrollToId(l.id!)}
-                      className="text-sm text-foreground/55 transition-colors hover:text-gold-200"
+                      className="inline-flex min-h-10 items-center text-sm text-foreground/55 transition-colors hover:text-gold-200"
                     >
                       {l.label}
                     </button>
@@ -95,7 +95,7 @@ export function Footer() {
                   href={SEO.academy.url}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-1.5 text-sm text-foreground/55 transition-colors hover:text-gold-200"
+                  className="inline-flex min-h-10 items-center gap-1.5 text-sm text-foreground/55 transition-colors hover:text-gold-200"
                 >
                   {SEO.academy.name}
                   <ExternalLink className="size-3" aria-hidden="true" />
@@ -103,7 +103,7 @@ export function Footer() {
               </li>
               {/* The profile page — not a homepage section, so not in NAV_LINKS. */}
               <li>
-                <Link href="/about/" className="text-sm text-foreground/55 transition-colors hover:text-gold-200">
+                <Link href="/about/" className="inline-flex min-h-10 items-center text-sm text-foreground/55 transition-colors hover:text-gold-200">
                   About Kishore Kumar
                 </Link>
               </li>
@@ -114,25 +114,25 @@ export function Footer() {
             <h3 className="font-display text-sm font-semibold uppercase tracking-wider text-foreground">
               Get in touch
             </h3>
-            <ul className="mt-4 space-y-3 text-sm text-foreground/55">
+            <ul className="mt-3 text-sm text-foreground/55">
               <li>
                 <LeadLink
                   intent="I'd like to talk about coaching."
                   campaign="footer-phone"
-                  className="flex items-center gap-2 transition-colors hover:text-gold-200"
+                  className="flex min-h-10 items-center gap-2 transition-colors hover:text-gold-200"
                 >
                   <Phone className="size-4 text-gold-300" />
                   {SITE.phone}
                 </LeadLink>
               </li>
               <li>
-                <a href={`mailto:${SITE.email}`} className="flex items-center gap-2 transition-colors hover:text-gold-200">
+                <a href={`mailto:${SITE.email}`} className="flex min-h-10 items-center gap-2 transition-colors hover:text-gold-200">
                   <Mail className="size-4 text-gold-300" />
                   {SITE.email}
                 </a>
               </li>
               <li>
-                <a href={SITE.customGpt} target="_blank" rel="noreferrer" className="flex items-center gap-2 transition-colors hover:text-gold-200">
+                <a href={SITE.customGpt} target="_blank" rel="noreferrer" className="flex min-h-10 items-center gap-2 transition-colors hover:text-gold-200">
                   <Bot className="size-4 text-electric-400" />
                   Athlete Mindset GPT
                 </a>
@@ -148,13 +148,13 @@ export function Footer() {
                   href={SITE.crmLeadForm}
                   target="_blank"
                   rel="noreferrer"
-                  className="flex items-center gap-2 transition-colors hover:text-gold-200"
+                  className="flex min-h-10 items-center gap-2 transition-colors hover:text-gold-200"
                 >
                   <ClipboardList className="size-4 text-gold-300" />
                   Register your interest
                 </a>
               </li>
-              <li className="flex items-center gap-2">
+              <li className="flex min-h-10 items-center gap-2">
                 <MapPin className="size-4 text-gold-300" />
                 {SITE.location}
               </li>

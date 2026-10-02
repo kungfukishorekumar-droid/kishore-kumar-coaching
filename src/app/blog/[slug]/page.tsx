@@ -11,6 +11,12 @@ import { FloatingCTA } from "@/components/shared/FloatingCTA";
 import { BackToTop } from "@/components/shared/BackToTop";
 import { AmbientBackground } from "@/components/ui/ambient-background";
 import { SectionDivider } from "@/components/ui/section-divider";
+import { Breadcrumbs } from "@/components/ui/breadcrumbs";
+import { Reveal, RevealGroup } from "@/components/ui/reveal";
+import { ScrollProgress } from "@/components/shared/ScrollProgress";
+import { PostCard } from "@/components/blog/post-card";
+import { Toc, type TocItem } from "@/components/blog/toc";
+import { topicSlug } from "@/content/topics";
 import { Button } from "@/components/ui/button";
 import { LeadCta } from "@/components/shared/lead-gate";
 import { SEO } from "@/lib/seo";
@@ -160,6 +166,16 @@ export default async function BlogPostPage({ params }: Params) {
     ],
   };
 
+  // Section anchors for "In this article". Slugged headings, suffixed if a
+  // post ever repeats one, so every id is unique.
+  const seen = new Set<string>();
+  const toc: TocItem[] = post.sections.map((sec) => {
+    let id = topicSlug(sec.heading) || "section";
+    while (seen.has(id)) id += "-2";
+    seen.add(id);
+    return { id, label: sec.heading };
+  });
+
   const published = new Date(post.publishedAt).toLocaleDateString("en-IN", {
     day: "numeric",
     month: "long",
@@ -173,6 +189,7 @@ export default async function BlogPostPage({ params }: Params) {
         dangerouslySetInnerHTML={{ __html: jsonLdString(jsonLd) }}
       />
       <AmbientBackground />
+      <ScrollProgress />
       <Navbar />
 
       <main id="main">
@@ -180,26 +197,26 @@ export default async function BlogPostPage({ params }: Params) {
           {/* Header */}
           <header className="relative pb-10 pt-28 md:pt-32">
             <div className="container relative max-w-3xl">
-              <nav
-                aria-label="Breadcrumb"
-                className="flex flex-wrap items-center gap-1.5 text-xs text-foreground/50"
-              >
-                <Link href="/" className="transition-colors hover:text-gold-200">
-                  Home
-                </Link>
-                <span aria-hidden="true">/</span>
-                <Link href="/blog/" className="transition-colors hover:text-gold-200">
-                  Blog
-                </Link>
-                <span aria-hidden="true">/</span>
-                <span className="text-foreground/80">{post.category}</span>
-              </nav>
+              <Breadcrumbs
+                items={[
+                  { label: "Home", href: "/" },
+                  { label: "Blog", href: "/blog/" },
+                  // The category is a real page — its topic hub — so link it.
+                  { label: post.category, href: `/blog/topic/${topicSlug(post.category)}/` },
+                ]}
+              />
 
-              <h1 className="mt-5 text-balance font-display text-fluid-2xl font-bold uppercase leading-[1.05]">
+              <h1
+                className="anim-rise anim-solid mt-5 text-balance font-display text-fluid-2xl font-bold uppercase leading-[1.05]"
+                style={{ "--d": "40ms" } as React.CSSProperties}
+              >
                 {post.title}
               </h1>
 
-              <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-foreground/55">
+              <div
+                className="anim-rise mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-foreground/55"
+                style={{ "--d": "120ms" } as React.CSSProperties}
+              >
                 <span>
                   By{" "}
                   <Link
@@ -242,7 +259,7 @@ export default async function BlogPostPage({ params }: Params) {
 
           {/* Quick answer — the passage built to be lifted by answer engines */}
           <div className="container mt-10 max-w-3xl">
-            <div className="quick-answer rounded-2xl glass-gold p-6">
+            <div className="quick-answer shine-border relative rounded-2xl glass-gold p-6">
               <h2 className="flex items-center gap-2 font-display text-sm uppercase tracking-wider text-gold-200">
                 <Sparkle className="size-4" aria-hidden="true" />
                 Short answer
@@ -270,11 +287,29 @@ export default async function BlogPostPage({ params }: Params) {
             </div>
           )}
 
+          {/* In this article — collapsed, for screens without room for the rail */}
+          {toc.length > 2 && (
+            <div className="container mt-6 max-w-3xl xl:hidden">
+              <Toc items={toc} variant="inline" />
+            </div>
+          )}
+
           {/* Body */}
-          <div className="container mt-10 max-w-3xl">
-            {post.sections.map((s) => (
-              <section key={s.heading} className="mb-9">
-                <h2 className="font-display text-xl uppercase tracking-tight text-gold-100 sm:text-2xl">
+          <div className="container relative mt-10 max-w-3xl">
+            {/* In this article — a sticky rail in the margin on wide screens */}
+            {toc.length > 2 && (
+              <aside className="absolute left-full top-0 ml-8 hidden h-full w-52 xl:block">
+                <div className="sticky top-28">
+                  <Toc items={toc} variant="rail" />
+                </div>
+              </aside>
+            )}
+            {post.sections.map((s, i) => (
+              <section key={s.heading} id={toc[i].id} className="mb-10 scroll-mt-24">
+                <h2 className="flex items-baseline gap-3 font-display text-xl uppercase tracking-tight text-gold-100 sm:text-2xl">
+                  <span aria-hidden="true" className="font-display text-sm tabular-nums text-gold-300">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
                   {s.heading}
                 </h2>
                 {s.body.map((para, i) => (
@@ -291,7 +326,7 @@ export default async function BlogPostPage({ params }: Params) {
                     {...(s.link.external
                       ? { target: "_blank", rel: "noreferrer" }
                       : {})}
-                    className="link-underline mt-4 inline-flex items-center gap-1.5 font-semibold text-gold-200"
+                    className="link-underline mt-2 inline-flex min-h-11 items-center gap-1.5 font-semibold text-gold-200"
                   >
                     {s.link.label}
                     <ArrowRight className="size-4" aria-hidden="true" />
@@ -323,14 +358,11 @@ export default async function BlogPostPage({ params }: Params) {
             </h2>
             <div className="mt-5 space-y-3">
               {post.faqs.map((f) => (
-                <details
-                  key={f.q}
-                  className="group rounded-2xl glass p-5 [&[open]]:border-gold-400/25"
-                >
-                  <summary className="cursor-pointer list-none font-semibold text-foreground/90 marker:hidden">
+                <details key={f.q} className="faq-item rounded-2xl glass">
+                  <summary className="flex min-h-14 cursor-pointer list-none items-center px-5 py-3 font-semibold text-foreground/90 marker:hidden">
                     {f.q}
                   </summary>
-                  <p className="mt-3 leading-relaxed text-foreground/70">{f.a}</p>
+                  <p className="px-5 pb-5 leading-relaxed text-foreground/70">{f.a}</p>
                 </details>
               ))}
             </div>
@@ -338,7 +370,8 @@ export default async function BlogPostPage({ params }: Params) {
 
           {/* CTA */}
           <section className="container mt-14 max-w-3xl">
-            <div className="rounded-3xl glass-gold p-8 text-center">
+            <Reveal variant="pop" className="relative overflow-hidden rounded-3xl glass-gold p-8 text-center">
+              <span aria-hidden="true" className="beam-ring" />
               <h2 className="font-display text-2xl uppercase">
                 Work with {SEO.founder}
               </h2>
@@ -363,7 +396,7 @@ export default async function BlogPostPage({ params }: Params) {
                   </Link>
                 </Button>
               </div>
-            </div>
+            </Reveal>
           </section>
 
           {/* Related — internal linking, which is what makes a blog rank as a set */}
@@ -371,31 +404,18 @@ export default async function BlogPostPage({ params }: Params) {
             <h2 className="font-display text-xl uppercase tracking-tight">
               Keep reading
             </h2>
-            <div className="mt-5 grid gap-5 md:grid-cols-3">
+            <RevealGroup className="mt-5 grid gap-3 md:grid-cols-3 md:gap-5" stagger={0.06}>
               {related.map((r) => (
-                <Link
-                  key={r.slug}
-                  href={`/blog/${r.slug}/`}
-                  className="glow-card group flex h-full flex-col rounded-2xl glass p-5 transition-colors hover:border-gold-400/25"
-                >
-                  <span className="text-[11px] font-semibold uppercase tracking-wider text-gold-300">
-                    {r.category}
-                  </span>
-                  <h3 className="mt-2 text-balance font-display text-base uppercase leading-tight">
-                    {r.title}
-                  </h3>
-                  <span className="mt-3 inline-flex items-center gap-1.5 text-sm text-gold-200">
-                    Read
-                    <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
-                  </span>
-                </Link>
+                <Reveal key={r.slug} className="h-full">
+                  <PostCard post={r} headingLevel="h3" />
+                </Reveal>
               ))}
-            </div>
+            </RevealGroup>
 
             <div className="mt-10">
               <Link
                 href="/blog/"
-                className="inline-flex items-center gap-2 text-sm text-foreground/55 transition-colors hover:text-gold-200"
+                className="inline-flex min-h-11 items-center gap-2 text-sm text-foreground/55 transition-colors hover:text-gold-200"
               >
                 <ArrowLeft className="size-4" aria-hidden="true" />
                 All articles

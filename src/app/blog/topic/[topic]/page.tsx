@@ -3,7 +3,7 @@ import { shareImages } from "@/lib/og-cards";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Clock, Play } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 
 import { Navbar } from "@/components/shared/Navbar";
 import { Footer } from "@/components/shared/Footer";
@@ -11,6 +11,9 @@ import { FloatingCTA } from "@/components/shared/FloatingCTA";
 import { BackToTop } from "@/components/shared/BackToTop";
 import { AmbientBackground } from "@/components/ui/ambient-background";
 import { Reveal, RevealGroup } from "@/components/ui/reveal";
+import { Breadcrumbs } from "@/components/ui/breadcrumbs";
+import { PostCard } from "@/components/blog/post-card";
+import { TopicChips } from "@/components/blog/topic-chips";
 import { SEO } from "@/lib/seo";
 import { jsonLdString } from "@/lib/utils";
 import { topics, topicSlug as toSlug } from "@/content/topics";
@@ -111,17 +114,17 @@ export default async function TopicPage({ params }: Params) {
       <main id="main">
         <section className="relative pb-10 pt-28 md:pt-32">
           <div className="container relative max-w-4xl text-center">
-            <nav aria-label="Breadcrumb" className="flex justify-center gap-1.5 text-xs text-foreground/50">
-              <Link href="/" className="transition-colors hover:text-gold-200">Home</Link>
-              <span aria-hidden="true">/</span>
-              <Link href="/blog/" className="transition-colors hover:text-gold-200">Blog</Link>
-              <span aria-hidden="true">/</span>
-              <span className="text-foreground/80">{t.name}</span>
-            </nav>
-            <h1 className="mt-5 text-balance font-display text-fluid-2xl font-bold uppercase leading-[1.05]">
+            <Breadcrumbs
+              align="center"
+              items={[{ label: "Home", href: "/" }, { label: "Blog", href: "/blog/" }, { label: t.name }]}
+            />
+            <h1
+              className="anim-rise anim-solid mt-5 text-balance font-display text-fluid-2xl font-bold uppercase leading-[1.05]"
+              style={{ "--d": "60ms" } as React.CSSProperties}
+            >
               {t.name}
             </h1>
-            <p className="mx-auto mt-3 text-foreground/65">
+            <p className="anim-rise mx-auto mt-3 text-foreground/65" style={{ "--d": "140ms" } as React.CSSProperties}>
               {posts.length} article{posts.length === 1 ? "" : "s"} by {SEO.founder}
             </p>
           </div>
@@ -129,28 +132,10 @@ export default async function TopicPage({ params }: Params) {
 
         <section className="relative pb-16">
           <div className="container max-w-6xl">
-            <RevealGroup className="grid gap-5 md:grid-cols-2 lg:grid-cols-3" stagger={0.04}>
+            <RevealGroup className="grid gap-3 md:grid-cols-2 md:gap-5 lg:grid-cols-3" stagger={0.04}>
               {posts.map((p) => (
                 <Reveal key={p.slug} className="h-full">
-                  <Link
-                    href={`/blog/${p.slug}/`}
-                    className="glow-card group flex h-full flex-col rounded-2xl glass p-5 transition-colors hover:border-gold-400/25"
-                  >
-                    <span className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-gold-300">
-                      {p.video && <Play className="size-3" aria-hidden="true" />}
-                      {p.video ? "Video" : "Article"}
-                    </span>
-                    <h2 className="mt-2 text-balance font-display text-base uppercase leading-tight">
-                      {p.title}
-                    </h2>
-                    <p className="mt-2 grow text-sm leading-relaxed text-foreground/65">
-                      {p.excerpt}
-                    </p>
-                    <span className="mt-4 flex items-center gap-1.5 text-xs text-foreground/45">
-                      <Clock className="size-3.5" aria-hidden="true" />
-                      {p.readingMinutes} min read
-                    </span>
-                  </Link>
+                  <PostCard post={p} />
                 </Reveal>
               ))}
             </RevealGroup>
@@ -160,24 +145,15 @@ export default async function TopicPage({ params }: Params) {
               <h2 className="font-display text-sm uppercase tracking-wider text-foreground/60">
                 Other topics
               </h2>
-              <div className="mt-4 flex flex-wrap gap-2.5">
-                {others.map(([slug, o]) => (
-                  <Link
-                    key={slug}
-                    href={`/blog/topic/${slug}/`}
-                    className="rounded-full border border-gold-400/25 bg-white/5 px-4 py-2 text-sm text-foreground/75 transition-colors hover:border-gold-400/60 hover:text-gold-100"
-                  >
-                    {o.name}
-                    <span className="ml-1.5 text-foreground/40">{o.count}</span>
-                  </Link>
-                ))}
+              <div className="mt-4">
+                <TopicChips align="left" topics={others.map(([slug, o]) => ({ slug, ...o }))} />
               </div>
             </div>
 
             <div className="mt-10">
               <Link
                 href="/blog/"
-                className="inline-flex items-center gap-2 text-sm text-foreground/55 transition-colors hover:text-gold-200"
+                className="inline-flex min-h-11 items-center gap-2 text-sm text-foreground/55 transition-colors hover:text-gold-200"
               >
                 <ArrowLeft className="size-4" aria-hidden="true" />
                 All articles

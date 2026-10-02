@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { m, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Menu, X, MessageCircle } from "lucide-react";
 import { LeadCta, LeadLink } from "@/components/shared/lead-gate";
@@ -16,6 +17,7 @@ export function Navbar() {
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState<string | null>(null);
   const reduce = useReducedMotion();
+  const pathname = usePathname();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -26,9 +28,11 @@ export function Navbar() {
 
   // Scroll spy — the section crossing the middle of the screen is "here".
   // One observer, a thin band at mid-screen, and only the sections the nav
-  // links to; on pages without them (blog, programs) nothing is observed and
-  // no link lights up.
+  // links to. Homepage only: the links point at homepage sections, and
+  // /about/ has an FAQ of its own that lit up the homepage's "FAQ" link.
   useEffect(() => {
+    setActive(null);
+    if (pathname !== "/") return;
     const sections = NAV_LINKS.flatMap((l) => (l.id ? [document.getElementById(l.id)] : [])).filter(
       (el): el is HTMLElement => el !== null
     );
@@ -41,7 +45,7 @@ export function Navbar() {
     );
     sections.forEach((el) => io.observe(el));
     return () => io.disconnect();
-  }, []);
+  }, [pathname]);
 
   // Escape closes the mobile menu, as any disclosure should.
   useEffect(() => {
@@ -193,7 +197,7 @@ export function Navbar() {
                   );
                   const inner = (
                     <>
-                      <span className="font-display text-xs tabular-nums text-gold-400/70">
+                      <span className="font-display text-xs tabular-nums text-gold-300">
                         {String(i + 1).padStart(2, "0")}
                       </span>
                       <span className="font-display text-base font-semibold uppercase tracking-wide">

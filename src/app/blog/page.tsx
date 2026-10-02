@@ -2,7 +2,7 @@
 import { shareImages } from "@/lib/og-cards";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowLeft, ArrowRight, Clock } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 
 import { Navbar } from "@/components/shared/Navbar";
 import { Footer } from "@/components/shared/Footer";
@@ -10,7 +10,10 @@ import { FloatingCTA } from "@/components/shared/FloatingCTA";
 import { BackToTop } from "@/components/shared/BackToTop";
 import { AmbientBackground } from "@/components/ui/ambient-background";
 import { Reveal, RevealGroup } from "@/components/ui/reveal";
-import { TiltCard } from "@/components/ui/tilt-card";
+import { Breadcrumbs } from "@/components/ui/breadcrumbs";
+import { KineticBand } from "@/components/ui/kinetic-band";
+import { PostCard } from "@/components/blog/post-card";
+import { TopicChips } from "@/components/blog/topic-chips";
 import { SEO } from "@/lib/seo";
 import { authorRef, publisherRef } from "@/lib/schema";
 import { jsonLdString } from "@/lib/utils";
@@ -97,39 +100,32 @@ export default function BlogIndex() {
       <main id="main">
         <section className="relative pb-12 pt-28 md:pt-32">
           <div className="container relative max-w-4xl text-center">
-            <nav
-              aria-label="Breadcrumb"
-              className="flex justify-center gap-1.5 text-xs text-foreground/50"
-            >
-              <Link href="/" className="transition-colors hover:text-gold-200">
-                Home
-              </Link>
-              <span aria-hidden="true">/</span>
-              <span className="text-foreground/80">Blog</span>
-            </nav>
+            <Breadcrumbs align="center" items={[{ label: "Home", href: "/" }, { label: "Blog" }]} />
 
-            <h1 className="mt-5 text-balance font-display text-fluid-3xl font-bold uppercase leading-[1.02]">
+            <h1
+              className="anim-rise anim-solid mt-5 text-balance font-display text-fluid-3xl font-bold uppercase leading-[1.02]"
+              style={{ "--d": "60ms" } as React.CSSProperties}
+            >
               Sports Psychology &amp;{" "}
               <span className="text-gradient-gold-sheen">Martial Arts</span>
             </h1>
-            <p className="mx-auto mt-4 max-w-[62ch] text-pretty text-foreground/70">
+            <p
+              className="anim-rise mx-auto mt-4 max-w-[62ch] text-pretty text-foreground/70"
+              style={{ "--d": "140ms" } as React.CSSProperties}
+            >
               Practical writing on focus, confidence, pressure handling and
               martial arts training — from Kishore Kumar, National Wushu
               Medalist and sports psychologist in Chennai.
             </p>
 
-            {/* Topic hubs — the cluster entry points */}
-            <div className="mt-7 flex flex-wrap justify-center gap-2.5">
-              {TOPICS.map((t) => (
-                <Link
-                  key={t.slug}
-                  href={`/blog/topic/${t.slug}/`}
-                  className="rounded-full border border-gold-400/25 bg-white/5 px-4 py-2 text-sm text-foreground/75 transition-colors hover:border-gold-400/60 hover:text-gold-100"
-                >
-                  {t.name}
-                  <span className="ml-1.5 text-foreground/40">{t.count}</span>
-                </Link>
-              ))}
+            {/* Topic hubs — the cluster entry points. One swipeable row on a
+                phone (it wrapped to three ragged lines), centred and wrapping
+                from sm up. */}
+            <div
+              className="anim-rise mt-7"
+              style={{ "--d": "220ms" } as React.CSSProperties}
+            >
+              <TopicChips topics={TOPICS} />
             </div>
           </div>
         </section>
@@ -141,7 +137,7 @@ export default function BlogIndex() {
               <Reveal>
                 <Link
                   href={`/blog/${lead.slug}/`}
-                  className="glow-card group mb-8 grid gap-6 overflow-hidden rounded-3xl glass-gold p-7 md:grid-cols-[1.1fr_1fr] md:p-9"
+                  className="glow-card group mb-6 grid gap-6 overflow-hidden rounded-3xl glass-gold p-5 sm:p-7 md:mb-8 md:grid-cols-[1.1fr_1fr] md:p-9"
                 >
                   <div className="flex flex-col justify-center">
                     <span className="inline-flex w-fit rounded-full border border-gold-400/30 bg-white/5 px-3 py-1 font-display text-xs uppercase tracking-wide text-gold-200">
@@ -177,55 +173,17 @@ export default function BlogIndex() {
               </Reveal>
             )}
 
-            <RevealGroup className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+            <RevealGroup className="grid gap-3 md:grid-cols-2 md:gap-5 lg:grid-cols-3">
               {rest.map((p) => (
                 <Reveal key={p.slug} className="h-full">
-                  <TiltCard className="h-full" max={6} radiusClassName="rounded-3xl">
-                    <Link
-                      href={`/blog/${p.slug}/`}
-                      className="glow-card group flex h-full flex-col overflow-hidden rounded-3xl glass transition-colors hover:border-gold-400/25"
-                    >
-                      <div className="relative aspect-[16/9] overflow-hidden">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          src={p.image}
-                          srcSet={p.photo?.srcSet}
-                          sizes="(min-width: 1024px) 400px, (min-width: 768px) 50vw, 100vw"
-                          alt={p.imageAlt}
-                          className="size-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
-                          width={1672}
-                          height={941}
-                          loading="lazy"
-                          decoding="async"
-                        />
-                        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-ink/90 to-transparent" />
-                      </div>
-
-                      <div className="flex grow flex-col p-6">
-                        <span className="text-[11px] font-semibold uppercase tracking-wider text-gold-300">
-                          {p.category}
-                        </span>
-                        <h2 className="mt-2 text-balance font-display text-lg uppercase leading-tight">
-                          {p.title}
-                        </h2>
-                        <p className="mt-2 grow text-sm leading-relaxed text-foreground/65">
-                          {p.excerpt}
-                        </p>
-                        <span className="mt-4 flex items-center gap-1.5 text-xs text-foreground/45">
-                          <Clock className="size-3.5" aria-hidden="true" />
-                          {p.readingMinutes} min read
-                        </span>
-                      </div>
-                    </Link>
-                  </TiltCard>
+                  <PostCard post={p} />
                 </Reveal>
               ))}
             </RevealGroup>
-
             <div className="mt-10">
               <Link
                 href="/"
-                className="inline-flex items-center gap-2 text-sm text-foreground/55 transition-colors hover:text-gold-200"
+                className="inline-flex min-h-11 items-center gap-2 text-sm text-foreground/55 transition-colors hover:text-gold-200"
               >
                 <ArrowLeft className="size-4" aria-hidden="true" />
                 Back to home
@@ -233,6 +191,10 @@ export default function BlogIndex() {
             </div>
           </div>
         </section>
+        <KineticBand
+          top={["Focus", "Confidence", "Pressure", "Discipline"]}
+          bottom={["Sports psychology", "Written down", "心技体"]}
+        />
       </main>
 
       <Footer />

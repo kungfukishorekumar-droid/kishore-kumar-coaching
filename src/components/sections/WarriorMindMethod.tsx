@@ -4,15 +4,8 @@ import { Depth, TiltCard } from "@/components/ui/tilt-card";
 import { Icon } from "@/components/ui/icon";
 import { Button } from "@/components/ui/button";
 import { FloatingShapes } from "@/components/ui/floating-shapes";
-import { METHOD } from "@/lib/site";
+import { METHOD, METHOD_KANJI } from "@/lib/site";
 
-const kanji: Record<string, string> = {
-  Focus: "集中",
-  Fire: "気",
-  Flow: "流",
-  Forge: "鍛",
-  Fight: "闘",
-};
 
 export function WarriorMindMethod() {
   return (
@@ -59,7 +52,7 @@ export function WarriorMindMethod() {
                   <div className="!absolute inset-0 overflow-hidden rounded-3xl glass shine-border">
                     <div className="pointer-events-none absolute -right-12 -top-12 size-40 rounded-full bg-gold-400/0 blur-2xl transition-all duration-500 group-hover:bg-gold-400/25" />
                     <span className="ink-in pointer-events-none absolute right-4 top-2 origin-top-right font-display text-7xl text-white/[0.04] transition-colors group-hover:text-gold-400/10">
-                      {kanji[step.tag]}
+                      {METHOD_KANJI[step.tag]}
                     </span>
                   </div>
 
