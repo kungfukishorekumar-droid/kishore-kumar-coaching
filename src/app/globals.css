@@ -943,3 +943,261 @@
     }
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Motion graphics — kinetic type, card rails, border beam.
+
+   Same rules as everything above: transforms and opacity only where the
+   motion loops, CSS rather than JavaScript, and nothing moves for a visitor
+   who asked for reduced motion.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Kinetic type band (src/components/ui/kinetic-band.tsx) ────────────────
+   Two strips of oversized type laid across each other like tape: a solid gold
+   strip and an outlined one, tilted in opposite directions and running in
+   opposite directions. Two motions compose on each strip:
+     • the track loops forever on `translate` (compositor-only), and
+     • the strip itself shifts with the page's scroll on `transform`,
+       so the type speeds past as the reader scrolls.
+   The track holds the words twice and moves by exactly half its width, so the
+   loop is seamless. */
+.kinetic {
+  position: relative;
+  overflow: clip;
+  padding-block: clamp(2.5rem, 7vw, 5rem);
+}
+.kinetic-row {
+  display: flex;
+  width: max-content;
+  margin-inline: -10vw;
+  white-space: nowrap;
+}
+.kinetic-row--a {
+  rotate: -2.5deg;
+  background: linear-gradient(90deg, #c5963a, #f1d58e 45%, #c5963a);
+  color: #0a0a0c;
+  box-shadow: 0 18px 40px -18px rgba(224, 169, 60, 0.55);
+}
+.kinetic-row--b {
+  rotate: 2deg;
+  margin-top: -0.35em;
+  background: rgba(10, 10, 12, 0.92);
+  border-block: 1px solid rgba(232, 187, 92, 0.22);
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(232, 187, 92, 0.6);
+}
+.kinetic-track {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  padding: 0.18em 0.25em 0.08em;
+  animation: kinetic-loop var(--kinetic-dur, 38s) linear infinite;
+  will-change: translate;
+}
+.kinetic-row--b .kinetic-track {
+  animation-direction: reverse;
+}
+.kinetic-track > span {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+}
+.kinetic-star {
+  font-size: 0.5em;
+  color: currentColor;
+}
+.kinetic-row--b .kinetic-star {
+  color: rgba(232, 187, 92, 0.7);
+  -webkit-text-stroke: 0;
+}
+@keyframes kinetic-loop {
+  to {
+    translate: -50% 0;
+  }
+}
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .kinetic-row--a {
+      animation: kinetic-drift-a linear both;
+      animation-timeline: view();
+    }
+    .kinetic-row--b {
+      animation: kinetic-drift-b linear both;
+      animation-timeline: view();
+    }
+    @keyframes kinetic-drift-a {
+      from {
+        transform: translateX(6vw);
+      }
+      to {
+        transform: translateX(-6vw);
+      }
+    }
+    @keyframes kinetic-drift-b {
+      from {
+        transform: translateX(-6vw);
+      }
+      to {
+        transform: translateX(6vw);
+      }
+    }
+  }
+}
+
+/* ── Card rails (phones) ─────────────────────────────────────────────────
+   Long card grids stack into a wall of scrolling on a phone — the Problems
+   grid alone was eight screens of cards. Under md they become a swipeable
+   rail instead: one card and a peek of the next, snapping card to card, with
+   a progress bar underneath driven by the rail's own scroll position
+   (a named scroll timeline, so no JavaScript). From md up they are the grid
+   they always were. Unlayered and doubled-up so they beat the grid's
+   utility classes. */
+.rail-meta {
+  display: none;
+}
+@media (max-width: 767.98px) {
+  .rail-scope {
+    timeline-scope: --rail;
+  }
+  .rail.rail {
+    display: flex;
+    gap: 0.875rem;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    margin-inline: -1.5rem;
+    padding: 0.5rem 1.5rem 0.75rem;
+    scroll-padding-inline: 1.5rem;
+    scrollbar-width: none;
+    scroll-timeline: --rail inline;
+  }
+  .rail.rail::-webkit-scrollbar {
+    display: none;
+  }
+  .rail.rail > * {
+    flex: 0 0 min(84%, 22rem);
+    scroll-snap-align: start;
+  }
+  .rail-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    margin-top: 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(232, 187, 92, 0.75);
+  }
+}
+.rail-bar {
+  position: relative;
+  flex: 1;
+  height: 2px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+}
+.rail-bar::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #c5963a, #f1d58e);
+  transform-origin: 0 50%;
+  transform: scaleX(0.2);
+}
+.rail-nudge {
+  display: inline-block;
+  animation: rail-nudge 1.8s ease-in-out infinite;
+}
+@keyframes rail-nudge {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 5px 0;
+  }
+}
+@supports (animation-timeline: scroll()) {
+  .rail-bar::after {
+    animation: rail-fill linear both;
+    animation-timeline: --rail;
+  }
+  @keyframes rail-fill {
+    from {
+      transform: scaleX(0.2);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
+}
+
+/* ── Border beam ────────────────────────────────────────────────────────────
+   A point of light running around a card's edge — the featured program.
+   The ring is a conic gradient masked down to a 1.5px border; the light's
+   angle is a registered custom property so it can be animated. It is its own
+   element (<span class="beam-ring">) because the cards already spend both
+   pseudo-elements on .glow-card. */
+@property --beam-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+.beam-ring {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: inherit;
+  padding: 1.5px;
+  pointer-events: none;
+  background: conic-gradient(
+    from var(--beam-angle),
+    transparent 0deg 250deg,
+    rgba(232, 187, 92, 0.6) 300deg,
+    #fff6dc 340deg,
+    transparent 360deg
+  );
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  animation: border-beam 6s linear infinite;
+}
+@keyframes border-beam {
+  to {
+    --beam-angle: 360deg;
+  }
+}
+
+/* ── Heading rules draw on ──────────────────────────────────────────────────
+   The short gold rule before each section eyebrow draws out as the heading
+   scrolls into view — the first stroke of the section. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .eyebrow > [aria-hidden="true"].h-px {
+      transform-origin: 100% 50%;
+      animation: rule-draw linear both;
+      animation-timeline: view();
+      animation-range: entry 20% cover 35%;
+    }
+    @keyframes rule-draw {
+      from {
+        transform: scaleX(0);
+        opacity: 0;
+      }
+      to {
+        transform: scaleX(1);
+        opacity: 1;
+      }
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kinetic-track,
+  .rail-nudge,
+  .beam-ring {
+    animation: none;
+  }
+}

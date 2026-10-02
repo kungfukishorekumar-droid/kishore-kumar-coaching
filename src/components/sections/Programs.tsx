@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Check, Sparkles, ArrowRight } from "lucide-react";
 import { Reveal, RevealGroup } from "@/components/ui/reveal";
+import { RailMeta, RailScope } from "@/components/ui/rail";
 import { TiltCard } from "@/components/ui/tilt-card";
 import { Button } from "@/components/ui/button";
 import { LeadCta } from "@/components/shared/lead-gate";
@@ -57,7 +58,8 @@ export function Programs() {
           </p>
         </Reveal>
 
-        <RevealGroup className="grid items-stretch gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <RailScope>
+        <RevealGroup className="rail grid items-stretch gap-6 md:grid-cols-2 lg:grid-cols-3">
           {PROGRAMS.map((p) => (
             <Reveal key={p.name} className="h-full">
               <TiltCard className="h-full" max={5}>
@@ -71,8 +73,9 @@ export function Programs() {
                 >
                   {p.featured && (
                     <>
+                      <span aria-hidden="true" className="beam-ring" />
                       <div className="pointer-events-none absolute -right-16 -top-16 size-48 rounded-full bg-gold-400/20 blur-3xl" />
-                      <span className="absolute right-5 top-5 inline-flex items-center gap-1 rounded-full bg-gold-gradient px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-ink">
+                      <span className="absolute right-5 top-5 inline-flex items-center gap-1 rounded-full bg-gold-gradient px-3 py-1 text-xs font-bold uppercase tracking-wide text-ink">
                         <Sparkles className="size-3" />
                         Popular
                       </span>
@@ -106,11 +109,11 @@ export function Programs() {
                     ))}
                   </ul>
 
-                  <div className="relative mt-7 space-y-3">
+                  <div className="relative mt-7 space-y-1">
                     <ProgramCTA program={p} />
                     <Link
                       href={`/programs/${p.slug}/`}
-                      className="flex items-center justify-center gap-1.5 text-xs font-semibold text-foreground/55 transition-colors hover:text-gold-200"
+                      className="flex min-h-11 items-center justify-center gap-1.5 text-xs font-semibold text-foreground/55 transition-colors hover:text-gold-200"
                     >
                       View program details
                       <ArrowRight className="size-3.5" />
@@ -121,6 +124,8 @@ export function Programs() {
             </Reveal>
           ))}
         </RevealGroup>
+        <RailMeta label="Swipe programs" />
+        </RailScope>
       </div>
     </section>
   );

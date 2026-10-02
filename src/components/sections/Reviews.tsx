@@ -144,7 +144,7 @@ export function Reviews() {
                 <div className="font-display text-xl font-bold text-gradient-gold sm:text-2xl">
                   {s.value}
                 </div>
-                <div className="mt-1 text-[11px] leading-tight text-foreground/55">
+                <div className="mt-1 text-xs leading-tight text-foreground/55">
                   {s.label}
                 </div>
               </div>
@@ -176,7 +176,7 @@ export function Reviews() {
                     : "Real verified reviews from students & parents"}
                 </p>
                 <div className="mt-5">
-                  <Button asChild variant="outline" size="sm" className="w-full">
+                  <Button asChild variant="outline" size="md" className="w-full">
                     <a href={src.link} target="_blank" rel="noreferrer">
                       View on {src.platform.replace(" Reviews", "")}
                       <ArrowUpRight className="size-4" />
@@ -196,7 +196,7 @@ export function Reviews() {
                 key={t}
                 onClick={() => setTab(t)}
                 className={cn(
-                  "rounded-full border px-4 py-2 text-xs font-semibold transition-all",
+                  "min-h-10 rounded-full border px-4 py-2 text-xs font-semibold transition-all",
                   tab === t
                     ? "border-gold-400 bg-gold-gradient text-ink"
                     : "border-white/12 bg-white/[0.03] text-foreground/70 hover:border-gold-400/40 hover:text-gold-100"

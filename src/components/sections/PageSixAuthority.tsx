@@ -63,7 +63,7 @@ export function PageSixAuthority() {
               </p>
               <Link
                 href="/about/"
-                className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-gold-200 underline-offset-4 hover:underline"
+                className="mt-1 inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold text-gold-200 underline-offset-4 hover:underline"
               >
                 More about Kishore Kumar
                 <ArrowRight className="size-4" />

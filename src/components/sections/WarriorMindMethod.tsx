@@ -1,4 +1,5 @@
 import { Reveal, RevealGroup } from "@/components/ui/reveal";
+import { RailMeta, RailScope } from "@/components/ui/rail";
 import { Depth, TiltCard } from "@/components/ui/tilt-card";
 import { Icon } from "@/components/ui/icon";
 import { Button } from "@/components/ui/button";
@@ -37,7 +38,8 @@ export function WarriorMindMethod() {
           </p>
         </Reveal>
 
-        <RevealGroup className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+        <RailScope>
+        <RevealGroup className="rail grid gap-5 md:grid-cols-2 lg:grid-cols-3">
           {METHOD.map((step, i) => (
             <Reveal key={step.tag} className="h-full">
               <TiltCard className="h-full" max={10} lift={24}>
@@ -102,6 +104,8 @@ export function WarriorMindMethod() {
             </div>
           </Reveal>
         </RevealGroup>
+        <RailMeta label="Swipe the method" />
+        </RailScope>
       </div>
     </section>
   );

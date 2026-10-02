@@ -92,7 +92,7 @@ export function LeadForm() {
       <div className="pointer-events-none absolute inset-0 bg-radial-glow opacity-60" />
       <div className="container relative">
         <div className="overflow-hidden rounded-[2.5rem] border border-gold-400/15 glass shadow-glow-lg">
-          <div className="grid lg:grid-cols-2">
+          <div className="grid grid-cols-1 lg:grid-cols-2">
             {/* Visual side. overflow-hidden because the photo drifts at 112%
                 scale (.parallax-img) and would otherwise spill ~40px into the
                 form column. globals.css turns this into overflow: clip where
@@ -213,7 +213,10 @@ export function LeadForm() {
                     <Button
                       type="submit"
                       size="lg"
-                      className="w-full"
+                      // Allowed to wrap: at 390px the label is wider than
+                      // the card, and a nowrap button pushed the whole form
+                      // past the right edge.
+                      className="h-auto w-full whitespace-normal py-3 leading-tight"
                       // Block submit until the challenge is solved — but only
                       // when Turnstile is actually on, so the form isn't dead
                       // before it's configured.
@@ -308,7 +311,7 @@ function ChipGroup({
             key={o}
             onClick={() => onChange(o)}
             className={cn(
-              "rounded-full border px-3.5 py-1.5 text-xs font-medium transition-all",
+              "min-h-10 rounded-full border px-3.5 py-1.5 text-xs font-medium transition-all",
               value === o
                 ? "border-gold-400 bg-gold-gradient text-ink"
                 : "border-white/15 bg-white/5 text-foreground/70 hover:border-gold-400/40"

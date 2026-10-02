@@ -9,6 +9,7 @@ import { FloatingCTA } from "@/components/shared/FloatingCTA";
 import { BackToTop } from "@/components/shared/BackToTop";
 import { AmbientBackground } from "@/components/ui/ambient-background";
 import { ScrollProgress } from "@/components/shared/ScrollProgress";
+import { KineticBand } from "@/components/ui/kinetic-band";
 import { SectionDivider } from "@/components/ui/section-divider";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { PORTRAIT } from "@/lib/portrait";
@@ -65,7 +66,11 @@ export default function Home() {
         <SectionDivider className="container max-w-3xl" />
         {/* 4 */} <Solution />
         {/* 5 */} <PageThreeMindset />
-        <SectionDivider className="container max-w-3xl" tint="electric" />
+        {/* Kinetic type — the five pillars run past on the way into the Method */}
+        <KineticBand
+          top={["Focus", "Fire", "Flow", "Forge", "Fight"]}
+          bottom={["Train the mind", "Like the body", "心技体"]}
+        />
         {/* 6 */} <WarriorMindMethod />
         {/* 7 */} <PageSixAuthority />
         {/* Real WebGL — lazy, below the fold, CSS emblem as fallback */}
@@ -82,7 +87,10 @@ export default function Home() {
         {/* Blog teaser — in-content links from the strongest page on the domain */}
         <LatestArticles />
         {/* 14 */} <FAQ />
-        <SectionDivider className="container max-w-3xl" />
+        <KineticBand
+          top={["Train your mind", "Like a warrior"]}
+          bottom={["Perform like a champion", "Mind · Skill · Body"]}
+        />
         {/* 15 */} <FinalCTA />
       </main>
       <Footer />

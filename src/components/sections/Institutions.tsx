@@ -1,5 +1,6 @@
 import { Check, ArrowRight, Building2 } from "lucide-react";
 import { Reveal, RevealGroup } from "@/components/ui/reveal";
+import { RailMeta, RailScope } from "@/components/ui/rail";
 import { TiltCard } from "@/components/ui/tilt-card";
 import { Icon } from "@/components/ui/icon";
 import { Button } from "@/components/ui/button";
@@ -46,7 +47,8 @@ export function Institutions() {
           </div>
         </Reveal>
 
-        <RevealGroup className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+        <RailScope>
+        <RevealGroup className="rail grid gap-5 md:grid-cols-2 lg:grid-cols-4">
           {INSTITUTIONS.offers.map((o) => (
             <Reveal key={o.title} className="h-full">
               <TiltCard className="h-full" max={6}>
@@ -65,6 +67,8 @@ export function Institutions() {
             </Reveal>
           ))}
         </RevealGroup>
+        <RailMeta />
+        </RailScope>
 
         {/* Benefits + CTA banner */}
         <Reveal delay={0.1}>

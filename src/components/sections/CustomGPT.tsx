@@ -112,7 +112,7 @@ export function CustomGPT() {
                       <div className="font-display text-base font-bold leading-tight">
                         Athlete Mindset Coach
                       </div>
-                      <div className="text-[11px] text-foreground/60">
+                      <div className="text-xs text-foreground/60">
                         AI trained on the Warrior Mind Method™
                       </div>
                     </div>

@@ -126,7 +126,7 @@ function CountUnit({ value, label }: { value: number; label: string }) {
           {String(value).padStart(2, "0")}
         </span>
       </div>
-      <span className="text-[10px] font-semibold uppercase tracking-widest text-foreground/40">
+      <span className="text-[11px] font-semibold uppercase tracking-widest text-foreground/45">
         {label}
       </span>
     </div>
@@ -615,14 +615,14 @@ export function WorkshopSection() {
 
             {/* CTAs */}
             <div className="flex flex-col gap-3 sm:flex-row">
-              <Button size="lg" className="flex-1" onClick={() => setShowModal(true)}>
+              <Button size="lg" className="sm:flex-1" onClick={() => setShowModal(true)}>
                 {isStale ? "Get the Next Date" : "Reserve Your Seat"}
                 <ArrowRight className="size-4" />
               </Button>
               <LeadCta
                 size="lg"
                 variant="outline"
-                className="flex-1"
+                className="sm:flex-1"
                 intent={waMsg.replace(/^Hi Kishore,\s*/i, "")}
                 campaign={isStale ? "workshop-next-date" : "workshop-ask"}
                 title={WORKSHOP.title}
@@ -658,7 +658,7 @@ export function WorkshopSection() {
                     {i + 1}
                   </div>
                   <div>
-                    <span className="text-[11px] font-semibold uppercase tracking-widest text-foreground/35">
+                    <span className="text-xs font-semibold uppercase tracking-widest text-foreground/40">
                       {item.time}
                     </span>
                     <p className="mt-0.5 text-sm font-medium leading-snug text-foreground/80">
@@ -677,7 +677,7 @@ export function WorkshopSection() {
               </p>
               <button
                 onClick={() => setShowModal(true)}
-                className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-gold-200 transition-colors hover:text-gold-100"
+                className="mt-1 inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold text-gold-200 transition-colors hover:text-gold-100"
               >
                 {isStale ? "Tell me the next date" : "Register now"}{" "}
                 <ArrowRight className="size-4" />

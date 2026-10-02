@@ -3,6 +3,7 @@ import { ArrowRight, Clock, Play } from "lucide-react";
 
 import { Section, SectionHeading } from "@/components/ui/section";
 import { Reveal, RevealGroup } from "@/components/ui/reveal";
+import { RailMeta, RailScope } from "@/components/ui/rail";
 import { TiltCard } from "@/components/ui/tilt-card";
 import { SORTED_POSTS } from "@/content/blog";
 
@@ -34,7 +35,8 @@ export function LatestArticles() {
         lead="Practical articles on focus, confidence, pressure handling and martial arts training — plus a written companion to every video."
       />
 
-      <RevealGroup className="grid gap-5 md:grid-cols-2 lg:grid-cols-3" stagger={0.05}>
+      <RailScope>
+      <RevealGroup className="rail grid gap-5 md:grid-cols-2 lg:grid-cols-3" stagger={0.05}>
         {latest.map((p) => (
           <Reveal key={p.slug} className="h-full">
             <TiltCard className="h-full" max={6} radiusClassName="rounded-2xl">
@@ -42,7 +44,7 @@ export function LatestArticles() {
                 href={`/blog/${p.slug}/`}
                 className="glow-card group flex h-full flex-col rounded-2xl glass p-5 transition-colors hover:border-gold-400/25"
               >
-                <span className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-gold-300">
+                <span className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-gold-300">
                   {p.video && <Play className="size-3" aria-hidden="true" />}
                   {p.category}
                 </span>
@@ -61,6 +63,8 @@ export function LatestArticles() {
           </Reveal>
         ))}
       </RevealGroup>
+      <RailMeta label="Swipe articles" />
+      </RailScope>
 
       <Reveal className="mt-9 text-center">
         <Link

@@ -91,7 +91,7 @@ export function LocalSEOSection() {
                 <LeadLink
                   intent="I'm in Chennai and I'd like to know more about your coaching."
                   campaign="local-seo-phone"
-                  className="inline-flex items-center gap-1.5 transition-colors hover:text-gold-200"
+                  className="inline-flex min-h-11 items-center gap-1.5 transition-colors hover:text-gold-200"
                 >
                   <Phone className="size-4 text-gold-300" />
                   {SITE.phone}
@@ -106,7 +106,7 @@ export function LocalSEOSection() {
                   href={d.href}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-2 rounded-full border px-3.5 py-2 text-xs font-semibold text-foreground/85 transition-colors hover:bg-white/5"
+                  className="inline-flex min-h-11 items-center gap-2 rounded-full border px-4 py-2 text-xs font-semibold text-foreground/85 transition-colors hover:bg-white/5"
                   style={{ borderColor: `${d.color}55`, backgroundColor: `${d.color}14` }}
                 >
                   <Star className="size-3.5" style={{ color: d.color }} />

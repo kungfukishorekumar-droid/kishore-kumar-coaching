@@ -134,7 +134,7 @@ export function PageThreeMindset() {
                           <span className="grid size-9 place-items-center rounded-xl bg-gold-gradient text-ink shadow-glow">
                             <bn.icon className="size-5" />
                           </span>
-                          <span className="text-[11px] font-semibold leading-tight text-foreground/85">
+                          <span className="text-xs font-semibold leading-tight text-foreground/85">
                             {bn.label}
                           </span>
                         </div>

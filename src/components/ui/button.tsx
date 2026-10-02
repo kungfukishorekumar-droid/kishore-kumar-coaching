@@ -64,9 +64,12 @@ const buttonVariants = cva(
       },
       size: {
         // every size clears the 44px touch minimum on its tap area
-        sm: "h-10 px-4 text-sm",
-        md: "h-11 px-6 text-sm",
-        lg: "h-14 px-8 text-base",
+        // min-h as well as h: a flex-1 button in a column stack gets its
+        // height from flex-basis, which overrode h-* and squashed the
+        // workshop CTAs to 24px on phones. min-h is a floor flex can't take.
+        sm: "h-10 min-h-10 px-4 text-sm",
+        md: "h-11 min-h-11 px-6 text-sm",
+        lg: "h-14 min-h-14 px-8 text-base",
         icon: "size-11",
       },
     },

@@ -1,4 +1,5 @@
 import { Reveal, RevealGroup } from "@/components/ui/reveal";
+import { RailMeta, RailScope } from "@/components/ui/rail";
 import { Section, SectionHeading } from "@/components/ui/section";
 import { TiltCard } from "@/components/ui/tilt-card";
 import { Icon } from "@/components/ui/icon";
@@ -19,7 +20,8 @@ export function Problems() {
         lead="Sound familiar? These are the silent performance killers we train away — for athletes, students and young competitors."
       />
 
-      <RevealGroup className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3" stagger={0.06}>
+      <RailScope>
+      <RevealGroup className="rail grid gap-4 sm:grid-cols-2 lg:grid-cols-3" stagger={0.06}>
         {PROBLEMS.map((p) => (
           <Reveal key={p.title} className="h-full">
             <TiltCard className="h-full" radiusClassName="rounded-2xl">
@@ -41,6 +43,8 @@ export function Problems() {
           </Reveal>
         ))}
       </RevealGroup>
+      <RailMeta label="Swipe" />
+      </RailScope>
     </Section>
   );
 }

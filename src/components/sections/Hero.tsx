@@ -49,7 +49,7 @@ export function Hero() {
   return (
     <section
       id="top"
-      className="relative min-h-screen overflow-hidden pb-20 pt-28 md:pt-32"
+      className="relative min-h-screen overflow-hidden pb-16 pt-24 md:pb-20 md:pt-32"
     >
       {/* Background layers */}
       <div className="pointer-events-none absolute inset-0 bg-radial-glow" />
@@ -102,7 +102,7 @@ export function Hero() {
               srcSet={PORTRAIT.srcSet}
               sizes={PORTRAIT.sizes}
               alt="Kishore Kumar — Sports Psychology & Martial Arts Coach, Chennai"
-              className="aspect-[4/5] w-full object-cover object-top lg:aspect-[5/6]"
+              className="aspect-[4/4.6] w-full object-cover object-top sm:aspect-[4/5] lg:aspect-[5/6]"
               width={800}
               height={1000}
               loading="eager"
@@ -110,7 +110,8 @@ export function Hero() {
               decoding="async"
             />
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-transparent" />
-            <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-ink to-transparent" />
+            {/* Taller fade on phones: the headline below rises over it */}
+            <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-ink via-ink/60 to-transparent lg:h-1/3 lg:via-transparent" />
           </div>
 
           {/* Floating authority badges — desktop only, around the image */}
@@ -127,22 +128,11 @@ export function Hero() {
           ))}
         </div>
 
-        {/* CONTENT — after the image (below on mobile, left on desktop) */}
-        <div className="order-2 min-w-0 text-center lg:order-1 lg:text-left">
-          {/* Authority badges — mobile swipe row (desktop uses floating badges) */}
-          <div className="scroll-row mb-6 flex min-w-0 gap-2.5 overflow-x-auto pb-2 lg:hidden">
-            {authorityBadges.map((b, i) => (
-              <AuthorityBadge
-                key={b.title}
-                title={b.title}
-                icon={b.icon}
-                tint={b.tint}
-                delay={i * 0.08}
-                float={false}
-                className="shrink-0"
-              />
-            ))}
-          </div>
+        {/* CONTENT — after the image (below on mobile, left on desktop).
+            On phones it rises over the portrait's faded lower half, like a
+            poster: the headline lands on the first screen instead of a full
+            screen down, and the photo and the promise read as one picture. */}
+        <div className="relative z-10 order-2 -mt-28 min-w-0 text-center sm:-mt-24 lg:order-1 lg:mt-0 lg:text-left">
 
           <h1
             className="anim-rise anim-solid text-balance font-display text-fluid-3xl font-extrabold uppercase tracking-[-0.03em]"
@@ -206,9 +196,26 @@ export function Hero() {
             </Button>
           </div>
 
-          {/* Trust line */}
+          {/* Authority badges — mobile swipe row (desktop uses floating
+              badges and the trust line below). After the buttons, so the
+              first screen is the promise and the action. */}
+          <div className="scroll-row -mx-6 mt-8 flex min-w-0 snap-x gap-2.5 overflow-x-auto scroll-px-6 px-6 pb-2 lg:hidden">
+            {authorityBadges.map((b, i) => (
+              <AuthorityBadge
+                key={b.title}
+                title={b.title}
+                icon={b.icon}
+                tint={b.tint}
+                delay={0.4 + i * 0.08}
+                float={false}
+                className="shrink-0 snap-start"
+              />
+            ))}
+          </div>
+
+          {/* Trust line — desktop; phones get the badge row above */}
           <div
-            className="anim-rise mt-8 flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1.5 text-[11px] font-medium uppercase tracking-wide text-foreground/55 sm:text-xs lg:justify-start"
+            className="anim-rise mt-8 hidden flex-wrap items-center justify-center gap-x-2.5 gap-y-1.5 text-xs font-medium uppercase tracking-wide text-foreground/55 lg:flex lg:justify-start"
             style={{ "--d": "400ms" } as React.CSSProperties}
           >
             {trustLine.map((t, i) => (
@@ -227,7 +234,7 @@ export function Hero() {
         className="fade-in-late absolute bottom-6 left-1/2 hidden -translate-x-1/2 flex-col items-center gap-1 text-foreground/40 transition-colors hover:text-gold-200 lg:flex"
         aria-label="Scroll down"
       >
-        <span className="text-[10px] uppercase tracking-[0.2em]">Scroll</span>
+        <span className="text-xs uppercase tracking-[0.2em]">Scroll</span>
         <span className="bob [--bob-dur:1.6s] [--bob-y:6px]">
           <ChevronDown className="size-5" />
         </span>
