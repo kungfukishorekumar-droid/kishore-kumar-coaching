@@ -7,7 +7,10 @@ import { cn } from "@/lib/utils";
  * in globals.css).
  *
  * Decorative: every word on it is said in full elsewhere on the page, so the
- * band is hidden from assistive tech rather than read out twice.
+ * band is hidden from assistive tech rather than read out twice. The words
+ * are drawn by CSS (`content: attr(data-w)`) rather than written as text:
+ * the outlined strip is deliberately low-contrast ornament, and as real text
+ * it failed Lighthouse's contrast audit despite aria-hidden.
  */
 export function KineticBand({
   top,
@@ -39,8 +42,8 @@ function Strip({ words, className }: { words: string[]; className: string }) {
           <span key={copy}>
             {run.map((w, i) => (
               <Fragment key={i}>
-                <span>{w}</span>
-                <span className="kinetic-star">✦</span>
+                <span className="kinetic-word" data-w={w} />
+                <span className="kinetic-star" />
               </Fragment>
             ))}
           </span>

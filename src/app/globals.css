@@ -1002,6 +1002,12 @@
   align-items: center;
   gap: 0.5em;
 }
+.kinetic-word::before {
+  content: attr(data-w);
+}
+.kinetic-star::before {
+  content: "✦";
+}
 .kinetic-star {
   font-size: 0.5em;
   color: currentColor;
