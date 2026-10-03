@@ -2,13 +2,17 @@
 import { shareImages } from "@/lib/og-cards";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowLeft, ArrowRight, Check } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 
 import { Navbar } from "@/components/shared/Navbar";
 import { Footer } from "@/components/shared/Footer";
 import { FloatingCTA } from "@/components/shared/FloatingCTA";
 import { BackToTop } from "@/components/shared/BackToTop";
 import { FloatingShapes } from "@/components/ui/floating-shapes";
+import { Breadcrumbs } from "@/components/ui/breadcrumbs";
+import { KineticBand } from "@/components/ui/kinetic-band";
+import { Reveal, RevealGroup } from "@/components/ui/reveal";
+import { ProgramCard } from "@/components/programs/program-card";
 import { PROGRAMS } from "@/lib/site";
 import { SEO } from "@/lib/seo";
 import { jsonLdString } from "@/lib/utils";
@@ -67,7 +71,7 @@ export default function ProgramsIndex() {
       />
       <Navbar />
 
-      <main>
+      <main id="main">
         <section className="relative overflow-hidden pb-12 pt-28 md:pt-32">
           <div className="pointer-events-none absolute inset-0 bg-radial-glow" />
           <FloatingShapes
@@ -77,17 +81,19 @@ export default function ProgramsIndex() {
             ]}
           />
           <div className="container relative max-w-4xl text-center">
-            <nav aria-label="Breadcrumb" className="flex justify-center gap-1.5 text-xs text-foreground/50">
-              <Link href="/" className="transition-colors hover:text-gold-200">Home</Link>
-              <span>/</span>
-              <span className="text-foreground/80">Programs</span>
-            </nav>
-            <h1 className="mt-5 font-display text-4xl font-bold uppercase leading-[1.04] tracking-tight sm:text-5xl">
+            <Breadcrumbs align="center" items={[{ label: "Home", href: "/" }, { label: "Programs" }]} />
+            <h1
+              className="anim-rise anim-solid mt-5 font-display text-4xl font-bold uppercase leading-[1.04] tracking-tight sm:text-6xl"
+              style={{ "--d": "60ms" } as React.CSSProperties}
+            >
               Athlete Mindset &amp; Martial Arts
               <br />
-              <span className="text-gradient-gold">Programs in Chennai</span>
+              <span className="text-gradient-gold-sheen">Programs in Chennai</span>
             </h1>
-            <p className="mx-auto mt-4 max-w-2xl text-pretty text-foreground/70">
+            <p
+              className="anim-rise mx-auto mt-4 max-w-2xl text-pretty text-foreground/70"
+              style={{ "--d": "140ms" } as React.CSSProperties}
+            >
               From a single workshop to a full transformation — sports psychology +
               martial arts coaching for athletes, students, parents, schools and
               academies.
@@ -97,49 +103,27 @@ export default function ProgramsIndex() {
 
         <section className="relative pb-20">
           <div className="container max-w-6xl">
-            <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+            <RevealGroup className="grid gap-4 md:grid-cols-2 md:gap-5 lg:grid-cols-3" stagger={0.06}>
               {PROGRAMS.map((p) => (
-                <Link
-                  key={p.slug}
-                  href={`/programs/${p.slug}/`}
-                  className="group flex h-full flex-col rounded-3xl glass p-7 transition-colors hover:border-gold-400/25"
-                >
-                  <span className="inline-flex w-fit rounded-full border border-gold-400/30 bg-white/5 px-3 py-1 font-display text-xs font-semibold uppercase tracking-wide text-gold-200">
-                    {p.badge}
-                  </span>
-                  <h2 className="mt-4 font-display text-xl font-bold">{p.name}</h2>
-                  <p className="mt-1 text-xs uppercase tracking-wide text-foreground/45">
-                    {p.forWho}
-                  </p>
-                  <p className="mt-3 text-sm leading-relaxed text-foreground/65">
-                    {p.description}
-                  </p>
-                  <ul className="mt-4 grow space-y-2">
-                    {p.features.slice(0, 3).map((f) => (
-                      <li key={f} className="flex items-start gap-2.5 text-sm">
-                        <span className="mt-0.5 grid size-5 shrink-0 place-items-center rounded-full bg-gold-400/15 text-gold-300">
-                          <Check className="size-3" />
-                        </span>
-                        <span className="text-foreground/80">{f}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  <span className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-gold-200">
-                    Learn more
-                    <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
-                  </span>
-                </Link>
+                <Reveal key={p.slug} className="h-full">
+                  <ProgramCard program={p} />
+                </Reveal>
               ))}
-            </div>
+            </RevealGroup>
 
             <div className="mt-10">
-              <Link href="/" className="inline-flex items-center gap-2 text-sm text-foreground/55 transition-colors hover:text-gold-200">
+              <Link href="/" className="inline-flex min-h-11 items-center gap-2 text-sm text-foreground/55 transition-colors hover:text-gold-200">
                 <ArrowLeft className="size-4" />
                 Back to home
               </Link>
             </div>
           </div>
         </section>
+
+        <KineticBand
+          top={["90 minutes", "3 days", "7 days", "21 days", "1-on-1"]}
+          bottom={["Train the mind", "Like the body", "心技体"]}
+        />
       </main>
 
       <Footer />
