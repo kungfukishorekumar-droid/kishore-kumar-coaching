@@ -91,8 +91,8 @@ export const BADGES = [
 ];
 
 export const STATS = [
-  { value: 500, suffix: "+", label: "Athletes & Students Coached" },
-  { value: 12, suffix: "+", label: "Years in Martial Arts" },
+  { value: 1500, suffix: "+", label: "Athletes & Students Coached" },
+  { value: 25, suffix: "+", label: "Years in Martial Arts" },
   { value: 50, suffix: "+", label: "Workshops Delivered" },
   { value: 30, suffix: "+", label: "Medals Mentored" },
 ];
@@ -348,9 +348,10 @@ export type ReviewSource = {
 };
 
 /**
- * ⚠️ PLACEHOLDER REVIEWS — replace every entry below with REAL, manually
- * approved reviews (text, names, dates, ratings) and the real profile links
- * from each platform before launch. Do NOT publish fabricated reviews.
+ * Reviews from Kishore's Google, Justdial and BookMyPlayer profiles —
+ * confirmed genuine by Kishore on 2026-10-04.
+ * ⚠️ Still to fill in: each platform's real `link` (currently "#"), and
+ * `rating` / `totalReviews`. Add new reviews only from the real profiles.
  */
 export const REVIEW_SOURCES: ReviewSource[] = [
   {

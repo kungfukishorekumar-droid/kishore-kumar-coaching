@@ -26,9 +26,10 @@ import { AuthorityBadge } from "@/components/ui/authority-badge";
 import { Section, SectionHeading } from "@/components/ui/section";
 import { Icon } from "@/components/ui/icon";
 import { TiltCard } from "@/components/ui/tilt-card";
+import { Counter } from "@/components/ui/counter";
 import { KineticBand } from "@/components/ui/kinetic-band";
 import { RailMeta, RailScope } from "@/components/ui/rail";
-import { CREDENTIALS, METHOD, METHOD_KANJI, SITE } from "@/lib/site";
+import { CREDENTIALS, METHOD, METHOD_KANJI, SITE, STATS } from "@/lib/site";
 import { SEO } from "@/lib/seo";
 import { PHOTOS, imageObject } from "@/lib/media";
 import { shareImages } from "@/lib/og-cards";
@@ -301,6 +302,22 @@ export default function AboutPage() {
             </div>
           </div>
         </section>
+
+        {/* Experience in numbers — the same figures as the homepage strip */}
+        <Section spacing="sm" width="wide" className="pb-0 sm:pb-0">
+          <RevealGroup as="ul" className="grid grid-cols-2 gap-3 md:grid-cols-4" stagger={0.06}>
+            {STATS.map((st) => (
+              <Reveal key={st.label} as="li" variant="pop" className="h-full">
+                <div className="glass flex h-full flex-col items-center rounded-2xl px-4 py-6 text-center">
+                  <span className="font-display text-4xl font-bold text-gradient-gold sm:text-5xl">
+                    <Counter to={st.value} suffix={st.suffix} />
+                  </span>
+                  <span className="mt-1.5 text-xs text-foreground/60 sm:text-sm">{st.label}</span>
+                </div>
+              </Reveal>
+            ))}
+          </RevealGroup>
+        </Section>
 
         {/* Credentials */}
         <Section spacing="sm" width="wide">
