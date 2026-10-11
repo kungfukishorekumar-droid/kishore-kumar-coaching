@@ -117,7 +117,10 @@ export default function AboutPage() {
         isPartOf: { "@id": `${SEO.siteUrl}/#website` },
         primaryImageOfPage: { "@id": `${URL}#portrait` },
         breadcrumb: { "@id": `${URL}#breadcrumb` },
-        dateModified: "2026-10-02",
+        // ProfilePage wants a full ISO 8601 date-time with timezone — a bare
+        // date was flagged in Search Console as an invalid datetime.
+        // Update this when the page's content changes.
+        dateModified: "2026-10-04T12:00:00+05:30",
         mainEntity: {
           "@type": "Person",
           "@id": `${SEO.siteUrl}/#kishore`,
